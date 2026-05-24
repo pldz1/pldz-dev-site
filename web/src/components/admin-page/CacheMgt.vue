@@ -42,6 +42,7 @@
             <span class="field-value field-value--muted">{{ formatFileSize(cache.size) }}</span>
           </div>
           <div class="inline-actions">
+            <button class="btn btn-outline" @click="onCopyRawCacheLink(cache)">复制 Raw 链接</button>
             <button class="btn btn-info" @click="onDownloadCacheFile(cache)">下载</button>
             <button class="btn btn-danger" @click="onDeleteCacheFile(cache)">删除</button>
           </div>
@@ -148,6 +149,49 @@ async function onDownloadCacheFile(fileObj) {
     markTransferFailed(fname);
     errorMessage.value = "下载缓存文件失败，请稍后再试";
     Toast.error("下载缓存文件失败，请稍后再试");
+  }
+}
+
+async function onCopyRawCacheLink(fileObj) {
+  const link = buildRawCacheUrl(fileObj.filename);
+  try {
+    await copyText(link);
+    Toast.success("Raw 链接已复制");
+    errorMessage.value = "";
+  } catch (err) {
+    console.error("复制 Raw 链接失败:", err);
+    errorMessage.value = "复制 Raw 链接失败，请手动复制";
+    Toast.error("复制 Raw 链接失败");
+  }
+}
+
+function buildRawCacheUrl(filename) {
+  const encodedPath = String(filename)
+    .split("/")
+    .map((segment) => encodeURIComponent(segment))
+    .join("/");
+  return new URL(`/api/v1/resource/cache/raw/${encodedPath}`, window.location.origin).href;
+}
+
+async function copyText(text) {
+  if (navigator.clipboard?.writeText) {
+    await navigator.clipboard.writeText(text);
+    return;
+  }
+
+  const textarea = document.createElement("textarea");
+  textarea.value = text;
+  textarea.setAttribute("readonly", "");
+  textarea.style.position = "fixed";
+  textarea.style.left = "-9999px";
+  textarea.style.top = "0";
+  document.body.appendChild(textarea);
+  textarea.select();
+
+  const copied = document.execCommand("copy");
+  document.body.removeChild(textarea);
+  if (!copied) {
+    throw new Error("execCommand copy failed");
   }
 }
 

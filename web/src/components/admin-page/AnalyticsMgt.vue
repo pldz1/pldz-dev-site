@@ -121,6 +121,31 @@
           <p>当前区间暂无文章点击明细。</p>
         </div>
       </section>
+
+      <section class="stats-panel stats-panel--wide article-table-panel">
+        <div class="panel-header">
+          <h2>Live Demo 点击明细</h2>
+          <p>来源 / 点击</p>
+        </div>
+
+        <div v-if="ctaRows.length" class="article-table">
+          <div class="article-table-head demo-table-head">
+            <span>排名</span>
+            <span>来源</span>
+            <span>点击</span>
+            <span>占比</span>
+          </div>
+          <div v-for="item in ctaRows" :key="item.source" class="article-row demo-row">
+            <span class="rank">{{ item.rank }}</span>
+            <span class="article-title" :title="item.source">{{ formatCtaSource(item.source) }}</span>
+            <span>{{ formatNumber(item.clicks) }}</span>
+            <span>{{ item.rate }}%</span>
+          </div>
+        </div>
+        <div v-else class="empty-state stats-empty">
+          <p>当前区间暂无 Live Demo 点击明细。</p>
+        </div>
+      </section>
     </div>
   </div>
 </template>
@@ -166,6 +191,18 @@ const articleRows = computed(() =>
     uv: Number(item.uv || 0),
   }))
 );
+const ctaRows = computed(() => {
+  const totalClicks = Number(cta.value.clicks || 0);
+  return (cta.value.sources || []).map((item, index) => {
+    const clicks = Number(item.clicks || 0);
+    return {
+      ...item,
+      rank: index + 1,
+      clicks,
+      rate: totalClicks > 0 ? ((clicks / totalClicks) * 100).toFixed(2) : "0.00",
+    };
+  });
+});
 
 const articlePalette = ["#2563eb", "#0f766e", "#f59e0b", "#db2777", "#7c3aed", "#0891b2", "#65a30d", "#ea580c", "#475569", "#9333ea"];
 
@@ -328,6 +365,19 @@ function shortenLabel(value) {
 
 function formatNumber(value) {
   return new Intl.NumberFormat("zh-CN").format(Number(value || 0));
+}
+
+function formatCtaSource(value) {
+  const text = String(value || "unknown");
+  const labels = {
+    "home.hero": "首页 Hero",
+    "home.featured_demo": "首页精选 Demo",
+  };
+
+  if (labels[text]) return labels[text];
+  if (text.startsWith("home.demo_card.")) return `首页 Demo 卡片 / ${text.replace("home.demo_card.", "")}`;
+  if (text.startsWith("livedemo.list.")) return `Live Demo 列表 / ${text.replace("livedemo.list.", "")}`;
+  return text;
 }
 
 onMounted(() => {

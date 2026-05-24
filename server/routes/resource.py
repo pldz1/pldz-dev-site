@@ -97,6 +97,38 @@ async def api_get_user_agreement():
     return HTMLResponse(content=html_response, status_code=200)
 
 
+@RESOURCE_ROUTE.get('/raw/{file_path:path}')
+async def api_get_raw_resource_file(file_path: str):
+    """
+    获取资源目录下的原始文件内容
+    :param file_path: 相对于资源目录的文件路径
+    :return: 原始文件响应
+    """
+    normalized_file_path = file_path.strip().lstrip('/\\')
+    if not normalized_file_path:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="File path must be provided."
+        )
+
+    resource_path = os.path.abspath(ProjectConfig.get_resource_path())
+    target_path = os.path.abspath(os.path.join(resource_path, normalized_file_path))
+
+    if os.path.commonpath([resource_path, target_path]) != resource_path:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Access to this file path is not allowed."
+        )
+
+    if not os.path.isfile(target_path):
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Resource file '{normalized_file_path}' not found."
+        )
+
+    return FileResponse(target_path)
+
+
 @RESOURCE_ROUTE.get('/cache/all')
 async def api_get_all_cache_files(user: dict = Depends(AuthorizedHandler.get_current_user)):
     """
@@ -164,6 +196,38 @@ async def api_download_cache_file(request: CacheDataRequest, user: dict = Depend
         )
 
     return FileResponse(file_path, media_type='application/octet-stream', filename=filename)
+
+
+@RESOURCE_ROUTE.get('/cache/raw/{filename:path}')
+async def api_get_raw_cache_file(filename: str):
+    """
+    获取缓存目录下的原始文件内容
+    :param filename: 缓存文件名
+    :return: 原始文件响应
+    """
+    normalized_filename = filename.strip().lstrip('/\\')
+    if not normalized_filename:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Filename must be provided."
+        )
+
+    cache_path = os.path.abspath(ProjectConfig.get_cache_path())
+    target_path = os.path.abspath(os.path.join(cache_path, normalized_filename))
+
+    if os.path.commonpath([cache_path, target_path]) != cache_path:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Access to this file path is not allowed."
+        )
+
+    if not os.path.isfile(target_path):
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Cache file '{normalized_filename}' not found."
+        )
+
+    return FileResponse(target_path)
 
 
 @RESOURCE_ROUTE.post('/cache/delete')

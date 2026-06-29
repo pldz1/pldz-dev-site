@@ -30,6 +30,10 @@
             <span class="field-label">管理员:</span>
             <span class="field-value">{{ user.isadmin ? "是" : "否" }}</span>
           </div>
+          <div class="field">
+            <span class="field-label">两步验证:</span>
+            <span class="field-value">{{ user.two_factor_enabled ? "已开启" : "未开启" }}</span>
+          </div>
           <div class="field field-grow">
             <span class="field-label">头像</span>
             <span class="field-value field-value--truncate" :title="user.avatar || '-'">{{ user.avatar || "-" }}</span>

@@ -44,6 +44,7 @@
 
           <AnalyticsMgt v-if="activeMenuKey === 'analytics'"></AnalyticsMgt>
           <UserMgt v-if="activeMenuKey === 'usermgt'"></UserMgt>
+          <SecurityMgt v-if="activeMenuKey === 'security'"></SecurityMgt>
           <ImageMgt v-if="activeMenuKey === 'imagemgt'" :all-categories="allCategories" :is-loading="isCategoriesLoading"></ImageMgt>
           <CacheMgt v-if="activeMenuKey === 'cachemgt'"></CacheMgt>
         </section>
@@ -68,6 +69,7 @@ import AnalyticsMgt from "../components/admin-page/AnalyticsMgt.vue";
 import UserMgt from "../components/admin-page/UserMgt.vue";
 import ImageMgt from "../components/admin-page/ImageMgt.vue";
 import CacheMgt from "../components/admin-page/CacheMgt.vue";
+import SecurityMgt from "../components/admin-page/SecurityMgt.vue";
 
 import { useRoute, useRouter } from "vue-router";
 import { useStore } from "vuex";
@@ -99,6 +101,14 @@ const menuItems = [
     icon: "users",
     caption: "管理后台用户权限与基础资料",
     gradient: "linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)",
+    requiresCategories: false,
+  },
+  {
+    key: "security",
+    name: "账号安全",
+    icon: "shield",
+    caption: "配置登录保护与两步验证",
+    gradient: "linear-gradient(135deg, #0f766e 0%, #2563eb 100%)",
     requiresCategories: false,
   },
   {

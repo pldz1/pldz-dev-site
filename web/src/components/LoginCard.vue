@@ -8,49 +8,26 @@
           <span></span>
           <span></span>
         </div>
-        <!-- 头像 -->
-        <div class="info-avatar">
-          <img :src="avatar" alt="头像" />
-          <div class="avatar-overlay" @click="onUploadAvatar($event)">+</div>
+        <div class="profile-panel">
+          <div class="info-avatar">
+            <img :src="avatar" alt="头像" />
+            <button class="avatar-overlay" type="button" aria-label="上传头像" @click="onUploadAvatar($event)">+</button>
+          </div>
+
+          <div class="profile-copy">
+            <div class="profile-title-row">
+              <h2>{{ nickname || username }}</h2>
+              <span class="role-badge">{{ isadmin ? "管理员" : "普通用户" }}</span>
+            </div>
+            <p>{{ username }}</p>
+            <span class="security-pill">两步验证：{{ twoFactorEnabled ? "已开启" : "未开启" }}</span>
+          </div>
         </div>
 
-        <!-- 其他信息 -->
-        <p class="info-item">
-          昵称：<span>{{ nickname }}</span>
-        </p>
-        <p class="info-item">
-          用户名：<span>{{ username }}</span>
-        </p>
-        <!-- 用户角色 -->
-        <p class="info-admin" @click="onAdminClick">{{ isadmin ? "管理员" : "普通用户" }}</p>
-        <div class="two-factor-panel">
-          <div class="two-factor-heading">
-            <span>两步验证</span>
-            <strong>{{ twoFactorEnabled ? "已开启" : "未开启" }}</strong>
-          </div>
-          <template v-if="twoFactorEnabled">
-            <input type="text" inputmode="numeric" autocomplete="one-time-code" placeholder="输入验证码后关闭" v-model="disableCode" />
-            <button type="button" class="btn-secondary-action" :disabled="twoFactorBusy" @click="onDisableTwoFactor">关闭两步验证</button>
-          </template>
-          <template v-else>
-            <button v-if="!twoFactorSetup" type="button" class="btn-secondary-action" :disabled="twoFactorBusy" @click="onSetupTwoFactor">开启两步验证</button>
-            <div v-else class="two-factor-setup">
-              <div v-if="twoFactorSetup.qr_code" class="two-factor-qr">
-                <img :src="twoFactorSetup.qr_code" alt="两步验证二维码" />
-              </div>
-              <p>扫码绑定，或手动输入密钥：</p>
-              <code>{{ twoFactorSetup.secret }}</code>
-              <input type="text" inputmode="numeric" autocomplete="one-time-code" placeholder="输入应用中的 6 位验证码" v-model="setupCode" />
-              <div class="two-factor-actions">
-                <button type="button" class="btn-secondary-action" :disabled="twoFactorBusy" @click="onCancelTwoFactorSetup">取消</button>
-                <button type="button" class="btn-primary-action" :disabled="twoFactorBusy" @click="onConfirmTwoFactor">确认开启</button>
-              </div>
-            </div>
-          </template>
-        </div>
-        <!-- 退出登录 -->
-        <div class="btn-logout">
-          <button @click="onLogout" class="btn-logout">退出</button>
+        <div class="profile-actions">
+          <button v-if="isadmin" type="button" class="btn-profile-primary" @click="onOpenAdmin">进入后台</button>
+          <button v-if="isadmin" type="button" class="btn-profile-secondary" @click="onOpenSecurity">账号安全</button>
+          <button type="button" class="btn-profile-danger" @click="onLogout">退出登录</button>
         </div>
       </div>
 
@@ -100,7 +77,7 @@ import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 
 import { ref, computed, onMounted, onBeforeUnmount } from "vue";
-import { login, register, logout, updateAvatar, setupTwoFactor, confirmTwoFactor, disableTwoFactor } from "../utils/apis";
+import { login, register, logout, updateAvatar } from "../utils/apis";
 import { uploadAvatar } from "../utils/file-upload.js";
 import Toast from "../utils/toast.js";
 
@@ -126,10 +103,6 @@ const ava = ref("");
 const otpCode = ref("");
 const error = ref("");
 const requiresTwoFactor = ref(false);
-const twoFactorSetup = ref(null);
-const setupCode = ref("");
-const disableCode = ref("");
-const twoFactorBusy = ref(false);
 
 // 显示是注册界面的状态
 const showRegister = ref(false);
@@ -201,7 +174,7 @@ async function onLoginOrRegister() {
     error.value = res.log || "请输入两步验证码";
     Toast.error(error.value);
   } else {
-    error.value = res.log || "操作失败，请稍后再试";
+    error.value = res?.log || "操作失败，请稍后再试";
     Toast.error(`登录失败: ${error.value}`);
   }
   showLoginCss.value = false;
@@ -223,63 +196,6 @@ async function onLogout() {
   Toast.success("退出成功!");
 }
 
-async function onSetupTwoFactor() {
-  twoFactorBusy.value = true;
-  error.value = "";
-  const res = await setupTwoFactor();
-  if (res?.flag) {
-    twoFactorSetup.value = res;
-    setupCode.value = "";
-    Toast.success("两步验证密钥已生成");
-  } else {
-    error.value = res?.log || "生成两步验证密钥失败";
-    Toast.error(error.value);
-  }
-  twoFactorBusy.value = false;
-}
-
-function onCancelTwoFactorSetup() {
-  twoFactorSetup.value = null;
-  setupCode.value = "";
-}
-
-async function onConfirmTwoFactor() {
-  if (!setupCode.value) {
-    error.value = "请输入验证码";
-    return;
-  }
-  twoFactorBusy.value = true;
-  const res = await confirmTwoFactor(setupCode.value);
-  if (res?.flag) {
-    await updateAuthState(res);
-    twoFactorSetup.value = null;
-    setupCode.value = "";
-    Toast.success("两步验证已开启");
-  } else {
-    error.value = res?.log || "开启两步验证失败";
-    Toast.error(error.value);
-  }
-  twoFactorBusy.value = false;
-}
-
-async function onDisableTwoFactor() {
-  if (!disableCode.value) {
-    error.value = "请输入验证码";
-    return;
-  }
-  twoFactorBusy.value = true;
-  const res = await disableTwoFactor(disableCode.value);
-  if (res?.flag) {
-    await updateAuthState(res);
-    disableCode.value = "";
-    Toast.success("两步验证已关闭");
-  } else {
-    error.value = res?.log || "关闭两步验证失败";
-    Toast.error(error.value);
-  }
-  twoFactorBusy.value = false;
-}
-
 /**
  * 关闭登录表单
  */
@@ -298,13 +214,17 @@ function onClickOverlay(event) {
   }
 }
 
-/**
- * 如果是管理员，点击管理员信息时跳转到管理页面
- */
-function onAdminClick() {
-  // 如果是管理员，则跳转到管理页面
+function onOpenAdmin() {
   if (isadmin.value) {
     router.push({ path: "/admin" });
+    onCloseLoginForm();
+  }
+}
+
+function onOpenSecurity() {
+  if (isadmin.value) {
+    router.push({ path: "/admin/security" });
+    onCloseLoginForm();
   }
 }
 
@@ -359,13 +279,13 @@ onBeforeUnmount(() => {
 .auth-container,
 .info-card {
   position: relative;
-  width: min(420px, 100%);
+  width: min(430px, 100%);
   margin: auto;
   overflow: hidden;
-  border: 2px solid #111827;
-  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  border-radius: 18px;
   background: #ffffff;
-  box-shadow: 8px 8px 0 #111827;
+  box-shadow: 0 24px 70px rgba(15, 23, 42, 0.24);
   z-index: 10031;
 }
 
@@ -386,17 +306,17 @@ onBeforeUnmount(() => {
 .auth-window-bar {
   display: flex;
   align-items: center;
-  gap: 7px;
-  height: 32px;
-  padding: 0 12px;
-  border-bottom: 2px solid #111827;
-  background: #e2e8f0;
+  gap: 6px;
+  height: 30px;
+  padding: 0 14px;
+  border-bottom: 1px solid #e5edf6;
+  background: #ffffff;
 }
 
 .auth-window-bar span {
-  width: 10px;
-  height: 10px;
-  border: 2px solid #111827;
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
   background: #ffffff;
 }
 
@@ -424,18 +344,16 @@ onBeforeUnmount(() => {
   flex: 0 0 auto;
   height: 34px;
   width: 34px;
-  border: 2px solid #111827;
-  border-radius: 6px;
+  border: 1px solid #dbe5f0;
+  border-radius: 10px;
   background: #ffffff url("../assets/svgs/close-24.svg") no-repeat center;
   background-size: 18px;
-  box-shadow: 3px 3px 0 #111827;
   cursor: pointer;
 }
 
 .auth-close:hover {
   background-color: #f8fafc;
-  transform: translate(-1px, -1px);
-  box-shadow: 4px 4px 0 #111827;
+  border-color: #bfd4ff;
 }
 
 .auth-container h2 {
@@ -455,40 +373,37 @@ onBeforeUnmount(() => {
   height: 44px;
   padding: 0 12px;
   margin: 10px 0 0;
-  border: 2px solid #111827;
-  border-radius: 6px;
+  border: 1px solid #dbe5f0;
+  border-radius: 12px;
   background: #f8fafc;
   color: #111827;
   font: inherit;
-  box-shadow: inset 3px 3px 0 rgba(15, 23, 42, 0.08);
+  box-shadow: none;
 }
 
 .auth-container input:focus {
   outline: none;
   background: #ffffff;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.22), inset 3px 3px 0 rgba(15, 23, 42, 0.08);
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.08);
 }
 
 .auth-container button {
   min-height: 42px;
   padding: 0 14px;
   margin-top: 0;
-  border: 2px solid #111827;
-  border-radius: 6px;
-  font-weight: 800;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  font-weight: 700;
   cursor: pointer;
-  box-shadow: 3px 3px 0 #111827;
   transition: transform 120ms ease, box-shadow 120ms ease, background-color 120ms ease;
 }
 
 .auth-container button:hover {
-  transform: translate(-1px, -1px);
-  box-shadow: 4px 4px 0 #111827;
+  transform: translateY(-1px);
 }
 
 .auth-container button:active {
-  transform: translate(2px, 2px);
-  box-shadow: 1px 1px 0 #111827;
+  transform: translateY(0);
 }
 
 .action-buttons {
@@ -500,12 +415,14 @@ onBeforeUnmount(() => {
 
 .auth-container .btn-register {
   background: #fff;
-  color: #111827;
+  border-color: #dbe5f0;
+  color: #334155;
 }
 
 .auth-container .btn-login {
-  background: #93c5fd;
-  color: #111827;
+  background: #2563eb;
+  color: #ffffff;
+  box-shadow: 0 10px 22px rgba(37, 99, 235, 0.16);
 }
 
 .auth-container .error {
@@ -532,22 +449,27 @@ onBeforeUnmount(() => {
 .info-card {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 12px;
+  gap: 18px;
   padding: 0 22px 22px;
+}
+
+.profile-panel {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-width: 0;
+  padding-top: 22px;
 }
 
 .info-avatar {
   position: relative;
-  width: 96px;
-  height: 96px;
-  margin-top: 24px;
-  border: 3px solid #111827;
-  border-radius: 8px;
+  width: 72px;
+  height: 72px;
+  border: 1px solid #dbe5f0;
+  border-radius: 18px;
   overflow: hidden;
   flex-shrink: 0;
   background: #f8fafc;
-  box-shadow: 5px 5px 0 #111827;
 }
 
 .info-avatar img {
@@ -568,6 +490,7 @@ onBeforeUnmount(() => {
   font-size: 2rem;
   background: rgba(0, 0, 0, 0.4);
   color: #ffffff;
+  border: none;
   opacity: 0;
   transition: opacity 0.2s ease;
   font-weight: 700;
@@ -579,181 +502,99 @@ onBeforeUnmount(() => {
   opacity: 1;
 }
 
-.info-content {
-  text-align: center;
-  width: 100%;
+.profile-copy {
+  display: grid;
+  gap: 7px;
+  min-width: 0;
 }
 
-.info-item {
-  width: 100%;
-  min-height: 38px;
-  padding: 0 10px;
-  border: 2px solid #111827;
-  border-radius: 6px;
-  background: #f8fafc;
-  color: #475569;
-  font-size: 0.9rem;
+.profile-title-row {
   display: flex;
-  flex-direction: row;
   align-items: center;
-  justify-content: space-between;
-  gap: 8px;
+  gap: 10px;
+  min-width: 0;
 }
 
-.info-item span {
+.profile-title-row h2 {
+  margin: 0;
   min-width: 0;
   overflow: hidden;
-  color: #111827;
-  font-weight: 800;
+  color: #0f172a;
+  font-size: 18px;
+  font-weight: 750;
+  line-height: 1.2;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.info-admin {
-  display: inline-block;
-  min-height: 32px;
-  padding: 5px 12px;
-  border: 2px solid #111827;
-  border-radius: 6px;
-  color: #111827;
-  background: #facc15;
-  box-shadow: 3px 3px 0 #111827;
-  font-size: 0.78rem;
-  font-weight: 800;
-  cursor: pointer;
-  width: 100%;
+.profile-copy p {
+  margin: 0;
+  overflow: hidden;
+  color: #64748b;
+  font-size: 13px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.two-factor-panel {
-  width: 100%;
-  padding: 12px;
-  border: 2px solid #111827;
-  border-radius: 6px;
-  background: #f8fafc;
-}
-
-.two-factor-heading {
-  display: flex;
-  justify-content: space-between;
+.role-badge,
+.security-pill {
+  display: inline-flex;
   align-items: center;
-  gap: 10px;
-  color: #475569;
-  font-size: 0.9rem;
-  font-weight: 700;
-}
-
-.two-factor-heading strong {
-  color: #111827;
-  font-size: 0.82rem;
-}
-
-.two-factor-panel input {
-  width: 100%;
-  height: 40px;
+  width: fit-content;
+  min-height: 26px;
   padding: 0 10px;
-  margin-top: 10px;
-  border: 2px solid #111827;
-  border-radius: 6px;
-  background: #ffffff;
-  color: #111827;
-  font: inherit;
-  box-shadow: inset 3px 3px 0 rgba(15, 23, 42, 0.08);
-}
-
-.two-factor-panel button {
-  min-height: 38px;
-  padding: 0 12px;
-  border: 2px solid #111827;
-  border-radius: 6px;
-  color: #111827;
-  font-weight: 800;
-  cursor: pointer;
-  box-shadow: 3px 3px 0 #111827;
-}
-
-.two-factor-panel button:disabled {
-  cursor: not-allowed;
-  opacity: 0.62;
-}
-
-.btn-secondary-action {
-  width: 100%;
-  margin-top: 10px;
-  background: #ffffff;
-}
-
-.btn-primary-action {
-  background: #93c5fd;
-}
-
-.two-factor-setup {
-  margin-top: 10px;
-}
-
-.two-factor-setup p {
-  margin: 0 0 8px;
-  color: #475569;
-  font-size: 0.82rem;
+  border-radius: 999px;
+  background: #eff6ff;
+  color: #1d4ed8;
+  font-size: 12px;
   font-weight: 700;
-  line-height: 1.45;
+  white-space: nowrap;
 }
 
-.two-factor-qr {
-  display: grid;
-  place-items: center;
-  width: 160px;
-  height: 160px;
-  margin: 0 auto 12px;
-  padding: 10px;
-  border: 2px solid #111827;
-  border-radius: 6px;
-  background: #ffffff;
+.security-pill {
+  background: #f8fafc;
+  color: #475569;
+  border: 1px solid #e2e8f0;
 }
 
-.two-factor-qr img {
-  display: block;
-  width: 100%;
-  height: 100%;
-}
-
-.two-factor-setup code {
-  display: block;
-  width: 100%;
-  padding: 10px;
-  overflow-wrap: anywhere;
-  border: 2px solid #111827;
-  border-radius: 6px;
-  background: #ffffff;
-  color: #111827;
-  font-size: 0.78rem;
-  font-weight: 800;
-  line-height: 1.45;
-}
-
-.two-factor-actions {
+.profile-actions {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 10px;
 }
 
-.btn-logout {
-  display: flex;
-  justify-content: center;
-  width: 100%;
-  background: transparent;
+.profile-actions button {
+  min-height: 40px;
+  padding: 0 13px;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
 }
 
-.btn-logout button,
-button.btn-logout {
-  min-height: 40px;
-  width: 100%;
-  border: 2px solid #111827;
-  border-radius: 6px;
-  background: #fecaca;
-  color: #111827;
-  font-weight: 800;
-  cursor: pointer;
-  box-shadow: 3px 3px 0 #111827;
+.profile-actions button:hover {
+  transform: translateY(-1px);
+}
+
+.btn-profile-primary {
+  background: #2563eb;
+  color: #ffffff;
+  box-shadow: 0 10px 22px rgba(37, 99, 235, 0.16);
+}
+
+.btn-profile-secondary {
+  background: #ffffff;
+  border-color: #dbe5f0;
+  color: #334155;
+}
+
+.btn-profile-danger {
+  grid-column: 1 / -1;
+  background: #fff1f2;
+  border-color: #fecdd3;
+  color: #be123c;
 }
 
 @media (max-width: 480px) {
@@ -779,6 +620,19 @@ button.btn-logout {
 
   .auth-container button {
     width: 100%;
+  }
+
+  .profile-panel {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .profile-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .btn-profile-danger {
+    grid-column: auto;
   }
 }
 </style>

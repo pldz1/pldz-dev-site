@@ -28,6 +28,7 @@ async def api_privacy_get():
 class LoginData(BaseModel):
     username: str
     password: str
+    otp_code: str = ''
 
 
 @AUTH_ROUTER.post('/login')
@@ -49,6 +50,12 @@ async def login(data: LoginData):
     password = AuthorizedHandler.get_user_password(data.username)
     if not password or not AuthorizedHandler.verify_password(data.password, password):
         return {'data': {"flag": False, 'log': '用户名或密码错误'}}
+
+    if AuthorizedHandler.is_two_factor_enabled(data.username):
+        if not data.otp_code:
+            return {'data': {"flag": False, "requires_2fa": True, 'log': '请输入两步验证码'}}
+        if not AuthorizedHandler.verify_two_factor_code(data.username, data.otp_code):
+            return {'data': {"flag": False, "requires_2fa": True, 'log': '两步验证码错误或已过期'}}
 
     # 生成访问令牌和刷新令牌
     access = AuthorizedHandler.create_access_token(data.username)
@@ -80,8 +87,7 @@ async def register(data: RegisterData):
         time.sleep(random.uniform(0.1, 0.3))
         return {'data': {'flag': False, 'log': '用户名已存在'}}
     # 存储新用户
-    AuthorizedHandler.add_user(
-        data.username, AuthorizedHandler.hash_password(data.password), data.nickname)
+    AuthorizedHandler.add_user(data.username, data.password, data.nickname)
     access = AuthorizedHandler.create_access_token(data.username)
     refresh = AuthorizedHandler.create_refresh_token(data.username)
 
@@ -92,6 +98,55 @@ async def register(data: RegisterData):
     resp.set_cookie('refresh_token', refresh, httponly=True, samesite='lax', max_age=int(ACCESS_EXPIRE.total_seconds()))
     time.sleep(random.uniform(0.1, 0.3))
     return resp
+
+
+class TwoFactorCodeData(BaseModel):
+    code: str = ''
+
+
+@AUTH_ROUTER.post('/2fa/setup')
+async def api_setup_two_factor(user: dict = Depends(AuthorizedHandler.get_current_user)):
+    """
+    创建两步验证绑定密钥。
+    """
+    username = user.get('username')
+    if AuthorizedHandler.is_two_factor_enabled(username):
+        return JSONResponse({'data': {'flag': False, 'log': '两步验证已开启'}})
+
+    setup = AuthorizedHandler.start_two_factor_setup(username)
+    if not setup:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, detail="User not found")
+
+    return JSONResponse({'data': {'flag': True, **setup, 'log': '请在验证器应用中添加密钥，并输入验证码完成绑定'}})
+
+
+@AUTH_ROUTER.post('/2fa/confirm')
+async def api_confirm_two_factor(data: TwoFactorCodeData, user: dict = Depends(AuthorizedHandler.get_current_user)):
+    """
+    确认两步验证绑定。
+    """
+    username = user.get('username')
+    if not AuthorizedHandler.confirm_two_factor_setup(username, data.code):
+        return JSONResponse({'data': {'flag': False, 'log': '验证码错误或已过期'}})
+
+    current_user = AuthorizedHandler.get_user_by_username(username)
+    return JSONResponse({'data': {'flag': True, **current_user, 'log': '两步验证已开启'}})
+
+
+@AUTH_ROUTER.post('/2fa/disable')
+async def api_disable_two_factor(data: TwoFactorCodeData, user: dict = Depends(AuthorizedHandler.get_current_user)):
+    """
+    关闭两步验证。
+    """
+    username = user.get('username')
+    if not AuthorizedHandler.is_two_factor_enabled(username):
+        current_user = AuthorizedHandler.get_user_by_username(username)
+        return JSONResponse({'data': {'flag': True, **current_user, 'log': '两步验证未开启'}})
+    if not AuthorizedHandler.disable_two_factor(username, data.code):
+        return JSONResponse({'data': {'flag': False, 'log': '验证码错误或已过期'}})
+
+    current_user = AuthorizedHandler.get_user_by_username(username)
+    return JSONResponse({'data': {'flag': True, **current_user, 'log': '两步验证已关闭'}})
 
 
 @AUTH_ROUTER.get('/logout')

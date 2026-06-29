@@ -16,6 +16,7 @@ const refreshAuthState = async () => {
       avatar: res?.avatar || "",
       nickname: res?.nickname || "",
       isadmin: res?.isadmin || false,
+      two_factor_enabled: res?.two_factor_enabled || false,
     });
   } catch (error) {
     console.error("refreshAuthState error:", error);

@@ -9,5 +9,7 @@ PyJWT
 python-dotenv
 passlib
 bcrypt<4.1.0
+pyotp
+qrcode
 autopep8
 Pillow

@@ -23,6 +23,31 @@
         </p>
         <!-- 用户角色 -->
         <p class="info-admin" @click="onAdminClick">{{ isadmin ? "管理员" : "普通用户" }}</p>
+        <div class="two-factor-panel">
+          <div class="two-factor-heading">
+            <span>两步验证</span>
+            <strong>{{ twoFactorEnabled ? "已开启" : "未开启" }}</strong>
+          </div>
+          <template v-if="twoFactorEnabled">
+            <input type="text" inputmode="numeric" autocomplete="one-time-code" placeholder="输入验证码后关闭" v-model="disableCode" />
+            <button type="button" class="btn-secondary-action" :disabled="twoFactorBusy" @click="onDisableTwoFactor">关闭两步验证</button>
+          </template>
+          <template v-else>
+            <button v-if="!twoFactorSetup" type="button" class="btn-secondary-action" :disabled="twoFactorBusy" @click="onSetupTwoFactor">开启两步验证</button>
+            <div v-else class="two-factor-setup">
+              <div v-if="twoFactorSetup.qr_code" class="two-factor-qr">
+                <img :src="twoFactorSetup.qr_code" alt="两步验证二维码" />
+              </div>
+              <p>扫码绑定，或手动输入密钥：</p>
+              <code>{{ twoFactorSetup.secret }}</code>
+              <input type="text" inputmode="numeric" autocomplete="one-time-code" placeholder="输入应用中的 6 位验证码" v-model="setupCode" />
+              <div class="two-factor-actions">
+                <button type="button" class="btn-secondary-action" :disabled="twoFactorBusy" @click="onCancelTwoFactorSetup">取消</button>
+                <button type="button" class="btn-primary-action" :disabled="twoFactorBusy" @click="onConfirmTwoFactor">确认开启</button>
+              </div>
+            </div>
+          </template>
+        </div>
         <!-- 退出登录 -->
         <div class="btn-logout">
           <button @click="onLogout" class="btn-logout">退出</button>
@@ -49,6 +74,7 @@
           <input type="text" placeholder="邮箱地址(示例:user@example.com)" required v-model="name" @change="onCheckName" />
           <!-- 密码 -->
           <input type="password" placeholder="请输入密码" required v-model="pwd" />
+          <input v-if="requiresTwoFactor && !showRegister" type="text" inputmode="numeric" autocomplete="one-time-code" placeholder="请输入 6 位两步验证码" required v-model="otpCode" />
           <!-- 昵称，仅在注册时显示 -->
           <input v-if="showRegister" type="text" placeholder="昵称" required v-model="nick" />
           <div class="action-buttons">
@@ -74,7 +100,7 @@ import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 
 import { ref, computed, onMounted, onBeforeUnmount } from "vue";
-import { login, register, logout, updateAvatar } from "../utils/apis";
+import { login, register, logout, updateAvatar, setupTwoFactor, confirmTwoFactor, disableTwoFactor } from "../utils/apis";
 import { uploadAvatar } from "../utils/file-upload.js";
 import Toast from "../utils/toast.js";
 
@@ -90,13 +116,20 @@ const avatar = computed(() => store.state.authState.avatar);
 const username = computed(() => store.state.authState.username);
 const nickname = computed(() => store.state.authState.nickname);
 const isadmin = computed(() => store.state.authState.isadmin);
+const twoFactorEnabled = computed(() => store.state.authState.twoFactorEnabled);
 
 // 用户名和密码的响应式引用
 const name = ref("");
 const pwd = ref("");
 const nick = ref("");
 const ava = ref("");
+const otpCode = ref("");
 const error = ref("");
+const requiresTwoFactor = ref(false);
+const twoFactorSetup = ref(null);
+const setupCode = ref("");
+const disableCode = ref("");
+const twoFactorBusy = ref(false);
 
 // 显示是注册界面的状态
 const showRegister = ref(false);
@@ -126,6 +159,18 @@ function onCheckName() {
  */
 function onSwitchRegister() {
   showRegister.value = !showRegister.value;
+  requiresTwoFactor.value = false;
+  otpCode.value = "";
+}
+
+async function updateAuthState(res) {
+  await store.dispatch("authState/update", {
+    username: res.username || "",
+    isadmin: res.isadmin || false,
+    avatar: res.avatar || "",
+    nickname: res.nickname || "",
+    two_factor_enabled: res.two_factor_enabled || false,
+  });
 }
 
 /**
@@ -144,18 +189,17 @@ async function onLoginOrRegister() {
   if (showRegister.value) {
     res = await register(name.value, pwd.value, nick.value);
   } else {
-    res = await login(name.value, pwd.value);
+    res = await login(name.value, pwd.value, otpCode.value);
   }
 
-  if (res.flag) {
-    await store.dispatch("authState/update", {
-      username: res.username || "",
-      isadmin: res.isadmin || false,
-      avatar: res.avatar || "",
-      nickname: res.nickname || "",
-    });
+  if (res?.flag) {
+    await updateAuthState(res);
     onCloseLoginForm();
     Toast.success("登录成功!");
+  } else if (res?.requires_2fa) {
+    requiresTwoFactor.value = true;
+    error.value = res.log || "请输入两步验证码";
+    Toast.error(error.value);
   } else {
     error.value = res.log || "操作失败，请稍后再试";
     Toast.error(`登录失败: ${error.value}`);
@@ -173,9 +217,67 @@ async function onLogout() {
     avatar: "",
     nickname: "",
     isadmin: false,
+    twoFactorEnabled: false,
   });
   onCloseLoginForm();
   Toast.success("退出成功!");
+}
+
+async function onSetupTwoFactor() {
+  twoFactorBusy.value = true;
+  error.value = "";
+  const res = await setupTwoFactor();
+  if (res?.flag) {
+    twoFactorSetup.value = res;
+    setupCode.value = "";
+    Toast.success("两步验证密钥已生成");
+  } else {
+    error.value = res?.log || "生成两步验证密钥失败";
+    Toast.error(error.value);
+  }
+  twoFactorBusy.value = false;
+}
+
+function onCancelTwoFactorSetup() {
+  twoFactorSetup.value = null;
+  setupCode.value = "";
+}
+
+async function onConfirmTwoFactor() {
+  if (!setupCode.value) {
+    error.value = "请输入验证码";
+    return;
+  }
+  twoFactorBusy.value = true;
+  const res = await confirmTwoFactor(setupCode.value);
+  if (res?.flag) {
+    await updateAuthState(res);
+    twoFactorSetup.value = null;
+    setupCode.value = "";
+    Toast.success("两步验证已开启");
+  } else {
+    error.value = res?.log || "开启两步验证失败";
+    Toast.error(error.value);
+  }
+  twoFactorBusy.value = false;
+}
+
+async function onDisableTwoFactor() {
+  if (!disableCode.value) {
+    error.value = "请输入验证码";
+    return;
+  }
+  twoFactorBusy.value = true;
+  const res = await disableTwoFactor(disableCode.value);
+  if (res?.flag) {
+    await updateAuthState(res);
+    disableCode.value = "";
+    Toast.success("两步验证已关闭");
+  } else {
+    error.value = res?.log || "关闭两步验证失败";
+    Toast.error(error.value);
+  }
+  twoFactorBusy.value = false;
 }
 
 /**
@@ -520,6 +622,118 @@ onBeforeUnmount(() => {
   font-weight: 800;
   cursor: pointer;
   width: 100%;
+}
+
+.two-factor-panel {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid #111827;
+  border-radius: 6px;
+  background: #f8fafc;
+}
+
+.two-factor-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  color: #475569;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.two-factor-heading strong {
+  color: #111827;
+  font-size: 0.82rem;
+}
+
+.two-factor-panel input {
+  width: 100%;
+  height: 40px;
+  padding: 0 10px;
+  margin-top: 10px;
+  border: 2px solid #111827;
+  border-radius: 6px;
+  background: #ffffff;
+  color: #111827;
+  font: inherit;
+  box-shadow: inset 3px 3px 0 rgba(15, 23, 42, 0.08);
+}
+
+.two-factor-panel button {
+  min-height: 38px;
+  padding: 0 12px;
+  border: 2px solid #111827;
+  border-radius: 6px;
+  color: #111827;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 3px 3px 0 #111827;
+}
+
+.two-factor-panel button:disabled {
+  cursor: not-allowed;
+  opacity: 0.62;
+}
+
+.btn-secondary-action {
+  width: 100%;
+  margin-top: 10px;
+  background: #ffffff;
+}
+
+.btn-primary-action {
+  background: #93c5fd;
+}
+
+.two-factor-setup {
+  margin-top: 10px;
+}
+
+.two-factor-setup p {
+  margin: 0 0 8px;
+  color: #475569;
+  font-size: 0.82rem;
+  font-weight: 700;
+  line-height: 1.45;
+}
+
+.two-factor-qr {
+  display: grid;
+  place-items: center;
+  width: 160px;
+  height: 160px;
+  margin: 0 auto 12px;
+  padding: 10px;
+  border: 2px solid #111827;
+  border-radius: 6px;
+  background: #ffffff;
+}
+
+.two-factor-qr img {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.two-factor-setup code {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  overflow-wrap: anywhere;
+  border: 2px solid #111827;
+  border-radius: 6px;
+  background: #ffffff;
+  color: #111827;
+  font-size: 0.78rem;
+  font-weight: 800;
+  line-height: 1.45;
+}
+
+.two-factor-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
 }
 
 .btn-logout {

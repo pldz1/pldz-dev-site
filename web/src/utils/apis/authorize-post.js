@@ -3,8 +3,8 @@ import { apiGet, apiPost, hostPrefix } from "./request.js";
 /***
  * 用户登录
  */
-export async function login(username, password) {
-  return apiPost(`${hostPrefix}/authorization/login`, { username, password });
+export async function login(username, password, otp_code = "") {
+  return apiPost(`${hostPrefix}/authorization/login`, { username, password, otp_code });
 }
 
 /**
@@ -36,6 +36,27 @@ export async function logout() {
  */
 export async function updateAvatar(avatar) {
   return apiPost(`${hostPrefix}/authorization/update/avatar`, { avatar });
+}
+
+/**
+ * 创建两步验证绑定密钥
+ */
+export async function setupTwoFactor() {
+  return apiPost(`${hostPrefix}/authorization/2fa/setup`);
+}
+
+/**
+ * 确认开启两步验证
+ */
+export async function confirmTwoFactor(code) {
+  return apiPost(`${hostPrefix}/authorization/2fa/confirm`, { code });
+}
+
+/**
+ * 关闭两步验证
+ */
+export async function disableTwoFactor(code) {
+  return apiPost(`${hostPrefix}/authorization/2fa/disable`, { code });
 }
 
 /**

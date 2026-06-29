@@ -1,6 +1,11 @@
+import base64
+import io
 import os
 import uuid
 import jwt
+import pyotp
+import qrcode
+import qrcode.image.svg
 from jwt import PyJWTError
 from datetime import datetime, timedelta
 from fastapi import Request, HTTPException
@@ -16,6 +21,7 @@ ALGORITHM = "HS256"
 SECRET_KEY = os.getenv("SECRET_KEY")
 ADMIN_USERNAME = os.getenv("ADMIN_USERNAME", "admin@pldz1.com")
 ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD", "123")
+TWO_FACTOR_ISSUER = os.getenv("TWO_FACTOR_ISSUER", "pldz-dev-site")
 
 ACCESS_EXPIRE = timedelta(minutes=int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 30)))
 REFRESH_EXPIRE = timedelta(days=int(os.getenv("REFRESH_TOKEN_EXPIRE_DAYS", 7)))
@@ -33,6 +39,9 @@ class UserItem(TypedDict):
     role: str
     token: str
     blacklisted: bool
+    two_factor_enabled: bool
+    two_factor_secret: str
+    two_factor_pending_secret: str
 
 
 class AuthorizedHandler:
@@ -57,6 +66,17 @@ class AuthorizedHandler:
     @classmethod
     def verify_password(cls, password: str, hashed: str) -> bool:
         return pwd_context.verify(password, hashed)
+
+    @classmethod
+    def _clean_user(cls, user: dict) -> dict:
+        result = dict(user)
+        result.pop('password', None)
+        result.pop('token', None)
+        result.pop('blacklisted', None)
+        result.pop('two_factor_secret', None)
+        result.pop('two_factor_pending_secret', None)
+        result['two_factor_enabled'] = bool(user.get('two_factor_enabled'))
+        return result
 
     @classmethod
     def get_current_user(cls, request: Request):
@@ -115,7 +135,7 @@ class AuthorizedHandler:
     def add_user(cls, username: str, password: str, nickname: str, avatar: str = "/api/v1/website/image/avatar/default.jpg") -> bool:
         db = get_users_db_path()
         isadmin = cls.check_admin(username)
-        hash_password = cls.hash_password(ADMIN_PASSWORD)
+        hash_password = cls.hash_password(password)
         with _lock:
             data = _read_json(db)
             if username in data:
@@ -138,6 +158,9 @@ class AuthorizedHandler:
                     'isadmin': isadmin,
                     'blacklisted': False,
                     'token': '',
+                    'two_factor_enabled': False,
+                    'two_factor_secret': '',
+                    'two_factor_pending_secret': '',
                 }
             _write_json(db, data)
         return True
@@ -170,11 +193,7 @@ class AuthorizedHandler:
         user = data.get(username)
         if not user:
             return None
-        result = dict(user)
-        result.pop('password', None)
-        result.pop('token', None)
-        result.pop('blacklisted', None)
-        return result
+        return cls._clean_user(user)
 
     @classmethod
     def get_user_password(cls, username: str) -> str:
@@ -184,6 +203,74 @@ class AuthorizedHandler:
         if not user:
             return None
         return user.get('password', None)
+
+    @classmethod
+    def is_two_factor_enabled(cls, username: str) -> bool:
+        with _lock:
+            data = _read_json(get_users_db_path())
+        user = data.get(username)
+        return bool(user and user.get('two_factor_enabled') and user.get('two_factor_secret'))
+
+    @classmethod
+    def verify_two_factor_code(cls, username: str, code: str) -> bool:
+        normalized_code = str(code or '').replace(' ', '').strip()
+        if not normalized_code:
+            return False
+        with _lock:
+            data = _read_json(get_users_db_path())
+        user = data.get(username)
+        secret = user.get('two_factor_secret') if user else None
+        if not secret:
+            return False
+        return pyotp.TOTP(secret).verify(normalized_code, valid_window=1)
+
+    @classmethod
+    def start_two_factor_setup(cls, username: str) -> dict:
+        secret = pyotp.random_base32()
+        provisioning_uri = pyotp.TOTP(secret).provisioning_uri(name=username, issuer_name=TWO_FACTOR_ISSUER)
+        svg_buffer = io.BytesIO()
+        qr_image = qrcode.make(provisioning_uri, image_factory=qrcode.image.svg.SvgPathImage)
+        qr_image.save(svg_buffer)
+        qr_code_data_url = f"data:image/svg+xml;base64,{base64.b64encode(svg_buffer.getvalue()).decode('ascii')}"
+        db = get_users_db_path()
+        with _lock:
+            data = _read_json(db)
+            if username not in data:
+                return None
+            data[username]['two_factor_pending_secret'] = secret
+            _write_json(db, data)
+        return {'secret': secret, 'provisioning_uri': provisioning_uri, 'qr_code': qr_code_data_url, 'issuer': TWO_FACTOR_ISSUER}
+
+    @classmethod
+    def confirm_two_factor_setup(cls, username: str, code: str) -> bool:
+        normalized_code = str(code or '').replace(' ', '').strip()
+        db = get_users_db_path()
+        with _lock:
+            data = _read_json(db)
+            user = data.get(username)
+            secret = user.get('two_factor_pending_secret') if user else None
+            if not secret or not pyotp.TOTP(secret).verify(normalized_code, valid_window=1):
+                return False
+            user['two_factor_enabled'] = True
+            user['two_factor_secret'] = secret
+            user['two_factor_pending_secret'] = ''
+            _write_json(db, data)
+        return True
+
+    @classmethod
+    def disable_two_factor(cls, username: str, code: str) -> bool:
+        if not cls.verify_two_factor_code(username, code):
+            return False
+        db = get_users_db_path()
+        with _lock:
+            data = _read_json(db)
+            if username not in data:
+                return False
+            data[username]['two_factor_enabled'] = False
+            data[username]['two_factor_secret'] = ''
+            data[username]['two_factor_pending_secret'] = ''
+            _write_json(db, data)
+        return True
 
     @classmethod
     def update_user_avatar(cls, username: str, avatar: str) -> bool:
@@ -202,11 +289,7 @@ class AuthorizedHandler:
             data = _read_json(get_users_db_path())
         result = []
         for user in data.values():
-            u = dict(user)
-            u.pop('password', None)
-            u.pop('token', None)
-            u.pop('blacklisted', None)
-            result.append(u)
+            result.append(cls._clean_user(user))
         return result
 
     @classmethod

@@ -9,6 +9,7 @@ const authState = {
     username: "",
     avatar: "",
     isadmin: false,
+    twoFactorEnabled: false,
     ready: false,
   }),
   actions: {
@@ -34,6 +35,7 @@ const authState = {
         state.isadmin = data?.isadmin || false;
         state.nickname = data?.nickname || "";
         state.avatar = data?.avatar || "";
+        state.twoFactorEnabled = Boolean(data?.two_factor_enabled ?? data?.twoFactorEnabled);
       }
     },
     ready(state, value) {
@@ -49,6 +51,7 @@ const authState = {
       state.username = "";
       state.avatar = "";
       state.isadmin = false;
+      state.twoFactorEnabled = false;
       state.ready = true;
     },
   },

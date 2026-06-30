@@ -15,12 +15,6 @@
       <section class="home-content" aria-label="项目列表">
         <!-- 卡片 -->
         <article v-for="c in mockData" :key="c.title || c.url || c.previewgif" class="live-demo-card">
-          <div class="card-window-bar" aria-hidden="true">
-            <span></span>
-            <span></span>
-            <span></span>
-          </div>
-
           <!-- 标题 -->
           <header class="preview-title" :title="c.title">
             <span>{{ c.title || "未命名" }}</span>
@@ -180,7 +174,7 @@ onMounted(async () => {
 
 .page-kicker {
   margin: 0 0 12px;
-  color: #2563eb;
+  color: var(--app-blue);
   font-size: 12px;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -188,7 +182,7 @@ onMounted(async () => {
 
 .page-description {
   margin: 0;
-  color: #0f172a;
+  color: var(--app-text);
   font-size: 18px;
   line-height: 1.45;
   font-weight: 600;
@@ -199,10 +193,10 @@ onMounted(async () => {
   align-items: center;
   height: 38px;
   padding: 0 14px;
-  border: 1px solid #d9e4f0;
+  border: 1px solid var(--app-border);
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.75);
-  color: #475569;
+  background: rgba(255, 255, 255, 0.7);
+  color: var(--app-text-muted);
   font-size: 13px;
   font-weight: 600;
   white-space: nowrap;
@@ -221,55 +215,27 @@ onMounted(async () => {
   min-height: 100%;
   padding: 0;
   overflow: hidden;
-  border: 2px solid #111827;
-  border-radius: 8px;
-  background: #ffffff;
-  box-shadow: 6px 6px 0 #111827;
-  transition: transform 140ms ease, box-shadow 140ms ease;
+  border: 1px solid var(--app-border);
+  border-radius: 22px;
+  background: var(--app-surface);
+  box-shadow: var(--app-shadow-sm);
+  transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
 }
 
 .live-demo-card:hover {
-  transform: translate(-2px, -2px);
-  box-shadow: 8px 8px 0 #111827;
-}
-
-.card-window-bar {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  height: 30px;
-  padding: 0 10px;
-  border-bottom: 2px solid #111827;
-  background: #e2e8f0;
-}
-
-.card-window-bar span {
-  width: 9px;
-  height: 9px;
-  border: 2px solid #111827;
-  background: #ffffff;
-}
-
-.card-window-bar span:nth-child(1) {
-  background: #ef4444;
-}
-
-.card-window-bar span:nth-child(2) {
-  background: #facc15;
-}
-
-.card-window-bar span:nth-child(3) {
-  background: #22c55e;
+  transform: translateY(-3px);
+  border-color: var(--app-border-strong);
+  box-shadow: var(--app-shadow-md);
 }
 
 .preview-title {
   min-height: 70px;
   padding: 16px 16px 12px;
-  color: #111827;
+  color: var(--app-text);
   font-size: 18px;
-  font-weight: 850;
+  font-weight: 760;
   line-height: 1.24;
-  border-bottom: 1px solid #cbd5e1;
+  border-bottom: 1px solid var(--app-border);
 }
 
 .preview-title span {
@@ -285,12 +251,8 @@ onMounted(async () => {
   padding: 12px;
   aspect-ratio: 16 / 10;
   overflow: hidden;
-  border-bottom: 2px solid #111827;
-  background: linear-gradient(45deg, #e2e8f0 25%, transparent 25%), linear-gradient(-45deg, #e2e8f0 25%, transparent 25%),
-    linear-gradient(45deg, transparent 75%, #e2e8f0 75%), linear-gradient(-45deg, transparent 75%, #e2e8f0 75%);
-  background-color: #f8fafc;
-  background-position: 0 0, 0 8px, 8px -8px, -8px 0;
-  background-size: 16px 16px;
+  border-bottom: 1px solid var(--app-border);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.45), rgba(245, 245, 247, 0.8));
 }
 
 .preview-gif img {
@@ -298,8 +260,8 @@ onMounted(async () => {
   height: 100%;
   object-fit: cover;
   display: block;
-  border: 2px solid #111827;
-  border-radius: 4px;
+  border: 1px solid var(--app-border);
+  border-radius: 14px;
   background: #ffffff;
 }
 
@@ -318,10 +280,10 @@ onMounted(async () => {
   min-height: 24px;
   padding: 0 8px;
   overflow: hidden;
-  border: 1px solid #111827;
-  border-radius: 4px;
-  background: #dbeafe;
-  color: #111827;
+  border: 1px solid rgba(0, 113, 227, 0.16);
+  border-radius: 999px;
+  background: rgba(0, 113, 227, 0.1);
+  color: var(--app-blue);
   font-size: 12px;
   font-weight: 750;
   line-height: 1.2;
@@ -330,15 +292,15 @@ onMounted(async () => {
 }
 
 .chip-muted {
-  background: #f1f5f9;
-  color: #475569;
+  background: rgba(0, 0, 0, 0.045);
+  color: var(--app-text-muted);
 }
 
 .preview-description {
   min-height: 78px;
   margin: 0;
   padding: 12px 16px 0;
-  color: #475569;
+  color: var(--app-text-muted);
   font-size: 14px;
   line-height: 1.55;
   text-align: left;
@@ -365,50 +327,54 @@ onMounted(async () => {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border: 2px solid #111827;
-  border-radius: 6px;
-  color: #111827;
+  border: 1px solid transparent;
+  border-radius: 14px;
+  color: #ffffff;
   font-size: 13px;
-  font-weight: 850;
+  font-weight: 720;
   text-decoration: none;
   cursor: pointer;
-  box-shadow: 3px 3px 0 #111827;
-  transition: transform 120ms ease, box-shadow 120ms ease, background-color 120ms ease, opacity 120ms ease;
+  box-shadow: 0 8px 20px rgba(0, 113, 227, 0.16);
+  transition: transform 140ms ease, box-shadow 140ms ease, background-color 140ms ease, opacity 140ms ease;
 }
 
 .btn {
-  background: #93c5fd;
+  background: var(--app-blue);
 }
 
 .btn:hover {
-  background: #bfdbfe;
-  transform: translate(-1px, -1px);
-  box-shadow: 4px 4px 0 #111827;
+  background: var(--app-blue-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 10px 24px rgba(0, 113, 227, 0.2);
 }
 
 .btn:active {
-  transform: translate(2px, 2px);
-  box-shadow: 1px 1px 0 #111827;
+  transform: translateY(0);
+  box-shadow: 0 6px 16px rgba(0, 113, 227, 0.14);
 }
 
 .btn:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.28), 3px 3px 0 #111827;
+  box-shadow: 0 0 0 4px rgba(0, 113, 227, 0.14), 0 8px 20px rgba(0, 113, 227, 0.16);
 }
 
 .btn[disabled] {
   cursor: not-allowed;
   opacity: 0.55;
   transform: none;
-  box-shadow: 3px 3px 0 #111827;
+  box-shadow: none;
 }
 
 .btn-secondary {
-  background: #ffffff;
+  background: rgba(255, 255, 255, 0.74);
+  border-color: var(--app-border);
+  color: var(--app-text);
+  box-shadow: none;
 }
 
 .btn-secondary:hover {
-  background: #f8fafc;
+  background: #ffffff;
+  box-shadow: var(--app-shadow-sm);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -442,12 +408,12 @@ onMounted(async () => {
   }
 
   .live-demo-card {
-    box-shadow: 5px 5px 0 #111827;
+    box-shadow: var(--app-shadow-sm);
   }
 
   .live-demo-card:hover {
     transform: none;
-    box-shadow: 5px 5px 0 #111827;
+    box-shadow: var(--app-shadow-sm);
   }
 
   .preview-title {
@@ -471,7 +437,7 @@ onMounted(async () => {
   }
 
   .live-demo-card {
-    border-radius: 6px;
+    border-radius: 18px;
   }
 
   .preview-title {

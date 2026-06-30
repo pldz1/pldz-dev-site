@@ -203,8 +203,8 @@ watch(
 @import url("../assets/views/main-container.css");
 
 :global(body) {
-  background: #f8fafc;
-  color: #0f172a;
+  background: var(--app-bg);
+  color: var(--app-text);
 }
 
 .article-layout {
@@ -231,7 +231,7 @@ watch(
   background: transparent;
   border-radius: 0;
   padding: 8px 30px 0 0;
-  border-right: 1px solid #e2e8f0;
+  border-right: 1px solid var(--app-border);
 }
 
 .sidebar-sticky {
@@ -272,7 +272,7 @@ watch(
 .article-title {
   font-size: clamp(30px, 4.2vw, 44px);
   font-weight: 800;
-  color: #0f172a;
+  color: var(--app-text);
   margin: 0 0 14px;
   line-height: 1.08;
   letter-spacing: -0.04em;
@@ -299,7 +299,7 @@ watch(
 }
 
 .article-meta-item {
-  color: #334155;
+  color: var(--app-text-muted);
 }
 
 .article-content {
@@ -313,7 +313,7 @@ watch(
   padding: 22px 0 0;
   background: transparent;
   border: none;
-  border-top: 1px solid #e2e8f0;
+  border-top: 1px solid var(--app-border);
   border-radius: 0;
   max-width: 760px;
 }
@@ -323,7 +323,7 @@ watch(
   min-height: 600px;
   background: transparent;
   border: none;
-  border-top: 1px solid #e2e8f0;
+  border-top: 1px solid var(--app-border);
   border-radius: 0;
   max-width: 760px;
 }
@@ -336,7 +336,7 @@ watch(
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #0f172a;
+  color: var(--app-text);
 }
 
 .sidebar-card {
@@ -344,7 +344,7 @@ watch(
 }
 
 .markdown-body {
-  color: #334155;
+  color: var(--app-text);
   font-size: 16px;
   line-height: 1.25;
   word-break: break-word;
@@ -369,7 +369,7 @@ watch(
 .markdown-body :deep(h4),
 .markdown-body :deep(h5),
 .markdown-body :deep(h6) {
-  color: #0f172a;
+  color: var(--app-text);
   line-height: 1.12;
   letter-spacing: -0.04em;
   margin-top: 2.1em;
@@ -414,7 +414,7 @@ watch(
 }
 
 .markdown-body :deep(a) {
-  color: #2563eb;
+  color: var(--app-blue);
   text-decoration: none;
 }
 
@@ -512,7 +512,7 @@ watch(
   border-left: 3px solid #60a5fa;
   border-radius: 0 18px 18px 0;
   background: linear-gradient(90deg, rgba(241, 245, 249, 0.92), rgba(248, 250, 252, 0.98));
-  color: #475569;
+  color: var(--app-text-muted);
 }
 
 .markdown-body :deep(hr) {
@@ -536,17 +536,17 @@ watch(
   border-collapse: collapse;
   overflow: hidden;
   border-radius: 16px;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--app-border);
 }
 
 .markdown-body :deep(thead) {
-  background: #f8fafc;
+  background: rgba(255, 255, 255, 0.64);
 }
 
 .markdown-body :deep(th),
 .markdown-body :deep(td) {
   padding: 12px 14px;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid var(--app-border);
   text-align: left;
 }
 
@@ -607,8 +607,9 @@ watch(
   width: 44px;
   height: 44px;
   border-radius: 50%;
-  background-color: #fff;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  background-color: rgba(255, 255, 255, 0.82);
+  border: 1px solid var(--app-border);
+  box-shadow: var(--app-shadow-sm);
   background-size: 60% !important;
   background-position: center !important;
   background-repeat: no-repeat !important;
@@ -639,7 +640,7 @@ watch(
     width: 100%;
     padding: 0 0 12px;
     border-right: none;
-    border-bottom: 1px solid #e2e8f0;
+    border-bottom: 1px solid var(--app-border);
   }
 
   .article-title {

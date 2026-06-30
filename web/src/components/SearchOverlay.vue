@@ -108,7 +108,7 @@ onMounted(() => {
 .backdrop {
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.45);
+  background: rgba(15, 23, 42, 0.42);
 }
 .panel {
   position: absolute;
@@ -117,10 +117,11 @@ onMounted(() => {
   transform: translateX(-50%);
   width: min(920px, calc(100vw - 2rem));
   max-height: 80vh;
-  background: var(--panel-bg, #fff);
-  color: var(--panel-fg, #111);
-  border-radius: 12px;
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+  background: var(--panel-bg, #ffffff);
+  color: var(--panel-fg, var(--app-text));
+  border: 1px solid var(--app-border);
+  border-radius: var(--app-radius-xl);
+  box-shadow: var(--app-shadow-popover);
   display: flex;
   flex-direction: column;
 }
@@ -128,14 +129,21 @@ onMounted(() => {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.75rem 0.75rem 0.25rem;
+  padding: 0.9rem 0.9rem 0.35rem;
 }
 .input {
   flex: 1;
-  padding: 0.65rem 0.85rem;
+  padding: 0.75rem 0.95rem;
   font-size: 16px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
+  border: 1px solid var(--app-border);
+  border-radius: 16px;
+  background: #ffffff;
+  color: var(--app-text);
+  outline: none;
+}
+.input:focus {
+  border-color: rgba(0, 113, 227, 0.34);
+  box-shadow: 0 0 0 4px rgba(0, 113, 227, 0.1);
 }
 .close {
   appearance: none;
@@ -145,21 +153,31 @@ onMounted(() => {
   line-height: 1;
   padding: 0.25rem 0.5rem;
   cursor: pointer;
-  color: #666;
+  width: 38px;
+  height: 38px;
+  border-radius: 999px;
+  color: var(--app-text-muted);
   background: url("../assets/svgs/close-24.svg") no-repeat center;
 }
 .body {
-  padding: 0.5rem 0.75rem 1rem;
+  padding: 0.5rem 0.9rem 1rem;
   overflow: auto;
 }
 .result {
   display: block;
-  padding: 0.7rem 0.6rem;
-  border-radius: 8px;
-  border: 1px solid #eee;
-  margin: 0.4rem 0;
+  padding: 0.85rem;
+  border-radius: 18px;
+  border: 1px solid rgba(0, 0, 0, 0.07);
+  margin: 0.5rem 0;
   text-decoration: none;
   color: inherit;
+  background: #ffffff;
+  transition: transform 0.18s ease, border-color 0.18s ease, background-color 0.18s ease;
+}
+.result:hover {
+  transform: translateY(-1px);
+  border-color: rgba(0, 113, 227, 0.2);
+  background: #f8fafc;
 }
 .title {
   font-weight: 600;
@@ -167,7 +185,7 @@ onMounted(() => {
   margin-bottom: 0.25rem;
 }
 .desc {
-  color: #333;
+  color: var(--app-text-muted);
   margin-bottom: 0.25rem;
 }
 .tags {
@@ -177,24 +195,25 @@ onMounted(() => {
 }
 .tag {
   font-size: 12px;
-  background: #f5f5f5;
+  background: rgba(0, 0, 0, 0.045);
   border-radius: 999px;
   padding: 0.1rem 0.5rem;
-  color: #555;
+  color: var(--app-text-muted);
 }
 .tag--cat {
-  background: #e6f4ff;
-  color: #1677ff;
+  background: rgba(0, 113, 227, 0.12);
+  color: var(--app-blue);
 }
 .meta {
-  color: #666;
+  color: var(--app-text-soft);
   font-size: 12px;
 }
 .meta.small {
   color: #888;
 }
 mark {
-  background: #ffe58f;
+  background: rgba(255, 214, 10, 0.36);
+  border-radius: 4px;
 }
 @media (prefers-color-scheme: dark) {
   .panel {

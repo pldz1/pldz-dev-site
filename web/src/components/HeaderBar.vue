@@ -65,7 +65,7 @@ const props = defineProps({
   scroll: {
     type: Boolean,
     required: false,
-    default: true,
+    default: false,
   },
 });
 
@@ -184,13 +184,9 @@ function onToggleLoginForm() {
   if (username.value) return;
 
   Toast.info("登录后可以注册aigc账号, 评论文章, 缓存白板内容");
-  const app = document.getElementById("app");
-  if (app) app.style.opacity = "0.04";
 }
 
 function onCloseLoginForm() {
-  const app = document.getElementById("app");
-  if (app) app.style.cssText = "";
   showLoginForm.value = false;
 }
 
@@ -237,14 +233,14 @@ onBeforeUnmount(() => {
   left: 0;
   right: 0;
   z-index: 10005;
-  background: #f8fafc;
-  border-bottom: 1px solid #e9eef5;
-  transition: transform 0.25s ease, opacity 0.25s ease, border-color 0.25s ease;
+  background: rgba(255, 255, 255, 0.96);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  transition: border-color var(--app-motion-duration) ease-out, background-color var(--app-motion-duration) ease-out;
 }
 
 .header--hidden {
-  transform: translateY(-100%);
-  pointer-events: none;
+  transform: none;
+  pointer-events: auto;
 }
 
 .header-inner {
@@ -275,11 +271,9 @@ onBeforeUnmount(() => {
 .app-logo {
   width: 34px;
   height: 34px;
-  border-radius: 10px;
-  background: #ffffff url("../assets/svgs/logo-32.svg") no-repeat center;
+  border-radius: 11px;
+  background: transparent url("../assets/svgs/logo-32.svg") no-repeat center;
   background-size: 22px;
-  border: 1px solid #dbe3ef;
-  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.06);
   flex-shrink: 0;
 }
 
@@ -292,14 +286,14 @@ onBeforeUnmount(() => {
 
 .brand-name {
   font-size: 16px;
-  font-weight: 700;
-  color: #0f172a;
+  font-weight: 720;
+  color: var(--app-text);
   line-height: 1.1;
 }
 
 .brand-subtitle {
   font-size: 12px;
-  color: #94a3b8;
+  color: var(--app-text-soft);
   line-height: 1;
   white-space: nowrap;
 }
@@ -328,32 +322,32 @@ onBeforeUnmount(() => {
   gap: 6px;
   height: 38px;
   padding: 0 12px;
-  border-radius: 10px;
-  color: #475569;
+  border-radius: 999px;
+  color: var(--app-text-muted);
   text-decoration: none;
   font-size: 14px;
   transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 .nav-item a:hover {
-  color: #0f172a;
-  background: #f8fafc;
+  color: var(--app-text);
+  background: rgba(255, 255, 255, 0.68);
 }
 
 .nav-item.active a {
-  color: #2563eb;
-  background: #eff6ff;
+  color: var(--app-blue);
+  background: rgba(0, 113, 227, 0.1);
 }
 
 .nav-item--external a {
-  color: #64748b;
+  color: var(--app-text-muted);
 }
 
 .nav-badge {
   font-size: 10px;
   line-height: 1;
-  color: #2563eb;
-  background: #dbeafe;
+  color: var(--app-blue);
+  background: rgba(0, 113, 227, 0.12);
   border-radius: 999px;
   padding: 3px 6px;
 }
@@ -368,10 +362,10 @@ onBeforeUnmount(() => {
 .search-trigger {
   height: 38px;
   padding: 0 12px;
-  border-radius: 10px;
-  border: 1px solid #e5e7eb;
-  background: #ffffff;
-  color: #475569;
+  border-radius: 999px;
+  border: 1px solid var(--app-border);
+  background: rgba(255, 255, 255, 0.72);
+  color: var(--app-text-muted);
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -380,9 +374,9 @@ onBeforeUnmount(() => {
 }
 
 .search-trigger:hover {
-  border-color: #cbd5e1;
-  color: #0f172a;
-  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
+  border-color: var(--app-border-strong);
+  color: var(--app-text);
+  box-shadow: var(--app-shadow-sm);
 }
 
 .search-trigger__icon {
@@ -399,18 +393,18 @@ onBeforeUnmount(() => {
 .login-register-btn {
   height: 38px;
   padding: 0 14px;
-  border-radius: 10px;
-  border: 1px solid #dbe3ef;
-  background: #ffffff;
-  color: #2563eb;
+  border-radius: 999px;
+  border: 1px solid rgba(0, 113, 227, 0.16);
+  background: rgba(0, 113, 227, 0.1);
+  color: var(--app-blue);
   font-size: 14px;
   cursor: pointer;
   transition: border-color 0.2s ease, background-color 0.2s ease, transform 0.2s ease;
 }
 
 .login-register-btn:hover {
-  border-color: #bfdbfe;
-  background: #eff6ff;
+  border-color: rgba(0, 113, 227, 0.24);
+  background: rgba(0, 113, 227, 0.14);
   transform: translateY(-1px);
 }
 
@@ -420,8 +414,8 @@ onBeforeUnmount(() => {
   border-radius: 50%;
   overflow: hidden;
   cursor: pointer;
-  border: 1px solid #dbe3ef;
-  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.06);
+  border: 1px solid var(--app-border);
+  box-shadow: var(--app-shadow-sm);
 }
 
 .user-avatar img {
@@ -435,10 +429,9 @@ onBeforeUnmount(() => {
   width: 38px;
   height: 38px;
   margin-right: 10px;
-  border: 1px solid #e5e7eb;
-  border-radius: 10px;
-  background: #ffffff url("../assets/svgs/menu-32.svg") no-repeat center;
+  background: transparent url("../assets/svgs/menu-32.svg") no-repeat center;
   cursor: pointer;
+  border: none;
 }
 
 @media (max-width: 1080px) {

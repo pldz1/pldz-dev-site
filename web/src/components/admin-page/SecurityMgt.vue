@@ -173,7 +173,7 @@ async function onDisableTwoFactor() {
   justify-content: space-between;
   gap: 18px;
   padding: 18px 0;
-  border-bottom: 1px solid #e8eef5;
+  border-bottom: 1px solid var(--app-border);
 }
 
 .security-section--stack {
@@ -193,8 +193,8 @@ async function onDisableTwoFactor() {
   height: 52px;
   border-radius: 14px;
   object-fit: cover;
-  border: 1px solid #dbe5f0;
-  background: #ffffff;
+  border: 1px solid var(--app-border);
+  background: rgba(255, 255, 255, 0.68);
 }
 
 .security-user-copy {
@@ -205,13 +205,13 @@ async function onDisableTwoFactor() {
 }
 
 .security-user-copy strong {
-  color: #0f172a;
+  color: var(--app-text);
   font-size: 16px;
   font-weight: 700;
 }
 
 .security-user-copy span {
-  color: #64748b;
+  color: var(--app-text-muted);
   font-size: 14px;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -224,16 +224,16 @@ async function onDisableTwoFactor() {
   gap: 10px;
   padding: 9px 12px;
   border-radius: 999px;
-  border: 1px solid #dbe5f0;
-  background: #ffffff;
-  color: #64748b;
+  border: 1px solid var(--app-border);
+  background: rgba(255, 255, 255, 0.68);
+  color: var(--app-text-muted);
   white-space: nowrap;
 }
 
 .security-status.active {
-  border-color: rgba(16, 185, 129, 0.28);
-  background: rgba(16, 185, 129, 0.08);
-  color: #047857;
+  border-color: rgba(52, 199, 89, 0.28);
+  background: rgba(52, 199, 89, 0.1);
+  color: #228f3e;
 }
 
 .security-status span,
@@ -252,14 +252,14 @@ async function onDisableTwoFactor() {
 
 .section-heading h2 {
   margin: 0;
-  color: #0f172a;
+  color: var(--app-text);
   font-size: 17px;
   font-weight: 700;
 }
 
 .section-heading p {
   margin: 0;
-  color: #64748b;
+  color: var(--app-text-muted);
   font-size: 14px;
   line-height: 1.7;
 }
@@ -289,9 +289,9 @@ async function onDisableTwoFactor() {
   width: 180px;
   height: 180px;
   padding: 12px;
-  border: 1px solid #dbe5f0;
+  border: 1px solid var(--app-border);
   border-radius: 16px;
-  background: #ffffff;
+  background: rgba(255, 255, 255, 0.7);
 }
 
 .qr-frame img {
@@ -310,10 +310,10 @@ async function onDisableTwoFactor() {
   width: 100%;
   padding: 12px;
   overflow-wrap: anywhere;
-  border: 1px solid #dbe5f0;
+  border: 1px solid var(--app-border);
   border-radius: 12px;
-  background: #ffffff;
-  color: #0f172a;
+  background: rgba(255, 255, 255, 0.7);
+  color: var(--app-text);
   font-size: 13px;
   line-height: 1.6;
 }

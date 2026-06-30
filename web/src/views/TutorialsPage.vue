@@ -244,7 +244,7 @@ watch(activeCategory, loadArticles);
 <style scoped>
 .tutorials-page {
   min-height: 100vh;
-  background: #f8fafc;
+  background: var(--app-bg);
 }
 
 .tutorials-main {
@@ -259,7 +259,7 @@ watch(activeCategory, loadArticles);
   justify-content: space-between;
   gap: 24px;
   padding-bottom: 18px;
-  border-bottom: 1px solid #e7edf5;
+  border-bottom: 1px solid var(--app-border);
 }
 
 .hero-copy {
@@ -272,12 +272,12 @@ watch(activeCategory, loadArticles);
   font-size: 12px;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: #2563eb;
+  color: var(--app-blue);
 }
 
 .page-description {
   margin: 0;
-  color: #0f172a;
+  color: var(--app-text);
   font-size: 18px;
   line-height: 1.45;
   font-weight: 600;
@@ -295,10 +295,10 @@ watch(activeCategory, loadArticles);
   align-items: center;
   height: 38px;
   padding: 0 14px;
-  border: 1px solid #d9e4f0;
+  border: 1px solid var(--app-border);
   border-radius: 999px;
-  background: #ffffff;
-  color: #0f172a;
+  background: rgba(255, 255, 255, 0.7);
+  color: var(--app-text);
   font-size: 13px;
   font-weight: 600;
   text-decoration: none;
@@ -306,32 +306,32 @@ watch(activeCategory, loadArticles);
 
 .back-link:hover {
   border-color: #bfd4ff;
-  color: #1d4ed8;
+  color: var(--app-blue);
 }
 
 .sort-chip {
   height: 38px;
   padding: 0 16px;
-  border: 1px solid #d9e4f0;
+  border: 1px solid var(--app-border);
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.75);
-  color: #475569;
+  color: var(--app-text-muted);
   font-size: 13px;
   cursor: pointer;
   transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
 }
 
 .sort-chip:hover {
-  background: #ffffff;
+  background: rgba(255, 255, 255, 0.84);
   border-color: #cbd8e6;
-  color: #0f172a;
+  color: var(--app-text);
   transform: translateY(-1px);
 }
 
 .sort-chip.active {
-  background: #eff6ff;
+  background: rgba(0, 113, 227, 0.1);
   border-color: #bfd4ff;
-  color: #1d4ed8;
+  color: var(--app-blue);
 }
 
 .tutorials-summary {
@@ -340,7 +340,7 @@ watch(activeCategory, loadArticles);
   justify-content: space-between;
   gap: 16px;
   padding: 18px 0 8px;
-  color: #94a3b8;
+  color: var(--app-text-soft);
   font-size: 14px;
 }
 
@@ -367,23 +367,23 @@ watch(activeCategory, loadArticles);
   bottom: 26px;
   left: 118px;
   width: 1px;
-  background: #cbd5e1;
+  background: rgba(0, 0, 0, 0.12);
 }
 
 .category-card {
   display: grid;
   grid-template-rows: auto 1fr;
   overflow: hidden;
-  border: 1px solid #dce6f2;
-  border-radius: 8px;
-  background: #ffffff;
-  box-shadow: 0 14px 36px rgba(15, 23, 42, 0.06);
+  border: 1px solid var(--app-border);
+  border-radius: 20px;
+  background: var(--app-surface);
+  box-shadow: var(--app-shadow-sm);
   transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
 }
 
 .category-card:hover {
-  border-color: #bfdbfe;
-  box-shadow: 0 18px 42px rgba(37, 99, 235, 0.11);
+  border-color: var(--app-border-strong);
+  box-shadow: var(--app-shadow-md);
   transform: translateY(-2px);
 }
 
@@ -401,13 +401,13 @@ watch(activeCategory, loadArticles);
   justify-items: end;
   gap: 2px;
   padding-top: 4px;
-  color: #64748b;
+  color: var(--app-text-muted);
   font-size: 12px;
   line-height: 1.1;
 }
 
 .timeline-date strong {
-  color: #0f172a;
+  color: var(--app-text);
   font-size: 18px;
   line-height: 1.1;
 }
@@ -419,7 +419,7 @@ watch(activeCategory, loadArticles);
   width: 13px;
   height: 13px;
   margin-top: 10px;
-  border: 3px solid #2563eb;
+  border: 3px solid var(--app-blue);
   border-radius: 999px;
   background: #ffffff;
 }
@@ -430,9 +430,9 @@ watch(activeCategory, loadArticles);
   overflow: hidden;
   align-self: start;
   padding: 10px;
-  border: 1px solid #e2eaf3;
+  border: 1px solid var(--app-border);
   border-radius: 8px;
-  background: #f8fafc;
+  background: rgba(255, 255, 255, 0.54);
   aspect-ratio: 16 / 10;
 }
 
@@ -451,7 +451,7 @@ watch(activeCategory, loadArticles);
 .article-cover {
   display: block;
   overflow: hidden;
-  border-bottom: 1px solid #e7edf5;
+  border-bottom: 1px solid var(--app-border);
   background: #eef4f9;
   aspect-ratio: 16 / 10;
 }
@@ -476,7 +476,7 @@ watch(activeCategory, loadArticles);
 
 .timeline-item .article-copy {
   padding: 0 0 22px;
-  border-bottom: 1px solid #e7edf5;
+  border-bottom: 1px solid var(--app-border);
 }
 
 .article-meta {
@@ -484,7 +484,7 @@ watch(activeCategory, loadArticles);
   flex-wrap: wrap;
   align-items: center;
   gap: 10px 14px;
-  color: #94a3b8;
+  color: var(--app-text-soft);
   font-size: 12px;
 }
 
@@ -495,9 +495,9 @@ watch(activeCategory, loadArticles);
   height: 26px;
   padding: 0 10px;
   border-radius: 999px;
-  border: 1px solid #e2eaf3;
+  border: 1px solid var(--app-border);
   background: rgba(255, 255, 255, 0.7);
-  color: #475569;
+  color: var(--app-text-muted);
   font-size: 12px;
 }
 
@@ -508,17 +508,17 @@ watch(activeCategory, loadArticles);
 }
 
 .article-copy h2 a {
-  color: #0f172a;
+  color: var(--app-text);
   text-decoration: none;
 }
 
 .article-copy h2 a:hover {
-  color: #1d4ed8;
+  color: var(--app-blue);
 }
 
 .article-copy p {
   margin: 10px 0 0;
-  color: #475569;
+  color: var(--app-text-muted);
   font-size: 14px;
   line-height: 1.72;
   display: -webkit-box;
@@ -542,7 +542,7 @@ watch(activeCategory, loadArticles);
 }
 
 .article-link {
-  color: #2563eb;
+  color: var(--app-blue);
   text-decoration: none;
   font-weight: 600;
   white-space: nowrap;
@@ -550,7 +550,7 @@ watch(activeCategory, loadArticles);
 }
 
 .article-link:hover {
-  color: #1d4ed8;
+  color: var(--app-blue-hover);
 }
 
 .pagination {
@@ -560,7 +560,7 @@ watch(activeCategory, loadArticles);
   flex-wrap: wrap;
   gap: 10px;
   padding-top: 28px;
-  border-top: 1px solid #e7edf5;
+  border-top: 1px solid var(--app-border);
 }
 
 .page-button,
@@ -568,10 +568,10 @@ watch(activeCategory, loadArticles);
   height: 40px;
   min-width: 40px;
   padding: 0 14px;
-  border: 1px solid #d9e4f0;
+  border: 1px solid var(--app-border);
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.75);
-  color: #475569;
+  color: var(--app-text-muted);
   font-size: 14px;
   cursor: pointer;
   transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
@@ -579,9 +579,9 @@ watch(activeCategory, loadArticles);
 
 .page-button:hover,
 .page-number:hover {
-  background: #ffffff;
+  background: rgba(255, 255, 255, 0.84);
   border-color: #cbd8e6;
-  color: #0f172a;
+  color: var(--app-text);
 }
 
 .page-button:disabled {
@@ -590,9 +590,9 @@ watch(activeCategory, loadArticles);
 }
 
 .page-number.active {
-  background: #eff6ff;
+  background: rgba(0, 113, 227, 0.1);
   border-color: #bfd4ff;
-  color: #1d4ed8;
+  color: var(--app-blue);
 }
 
 @media (max-width: 900px) {

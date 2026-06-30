@@ -3,11 +3,6 @@
     <div class="auth-overlay" @click="onClickOverlay">
       <!-- 已经登录的卡片信息 -->
       <div v-if="!!username" class="info-card">
-        <div class="auth-window-bar" aria-hidden="true">
-          <span></span>
-          <span></span>
-          <span></span>
-        </div>
         <div class="profile-panel">
           <div class="info-avatar">
             <img :src="avatar" alt="头像" />
@@ -33,11 +28,6 @@
 
       <!-- 登录/注册 表单 -->
       <div v-else class="auth-container">
-        <div class="auth-window-bar" aria-hidden="true">
-          <span></span>
-          <span></span>
-          <span></span>
-        </div>
         <div class="auth-header">
           <h2>{{ showRegister ? "注册" : "登录" }}</h2>
           <div class="auth-close" @click="onCloseLoginForm"></div>
@@ -269,9 +259,7 @@ onBeforeUnmount(() => {
   display: flex;
   justify-content: center;
   align-items: center;
-  background: linear-gradient(rgba(15, 23, 42, 0.62), rgba(15, 23, 42, 0.62)), linear-gradient(45deg, rgba(255, 255, 255, 0.08) 25%, transparent 25%),
-    linear-gradient(-45deg, rgba(255, 255, 255, 0.08) 25%, transparent 25%);
-  background-size: auto, 18px 18px, 18px 18px;
+  background: rgba(15, 23, 42, 0.42);
   overflow: auto;
   padding: 32px 18px;
 }
@@ -282,10 +270,10 @@ onBeforeUnmount(() => {
   width: min(430px, 100%);
   margin: auto;
   overflow: hidden;
-  border: 1px solid #e2e8f0;
-  border-radius: 18px;
-  background: #ffffff;
-  box-shadow: 0 24px 70px rgba(15, 23, 42, 0.24);
+  border: 1px solid var(--app-border);
+  border-radius: var(--app-radius-xl);
+  background: var(--app-surface);
+  box-shadow: var(--app-shadow-popover);
   z-index: 10031;
 }
 
@@ -300,36 +288,7 @@ onBeforeUnmount(() => {
   inset: auto;
   min-height: 330px;
   z-index: 10032;
-  background: rgba(255, 255, 255, 0.9);
-}
-
-.auth-window-bar {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  height: 30px;
-  padding: 0 14px;
-  border-bottom: 1px solid #e5edf6;
-  background: #ffffff;
-}
-
-.auth-window-bar span {
-  width: 8px;
-  height: 8px;
-  border-radius: 999px;
-  background: #ffffff;
-}
-
-.auth-window-bar span:nth-child(1) {
-  background: #ef4444;
-}
-
-.auth-window-bar span:nth-child(2) {
-  background: #facc15;
-}
-
-.auth-window-bar span:nth-child(3) {
-  background: #22c55e;
+  background: rgba(255, 255, 255, 0.92);
 }
 
 .auth-header {
@@ -337,28 +296,28 @@ onBeforeUnmount(() => {
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  padding: 20px 22px 8px;
+  padding: 24px 22px 8px;
 }
 
 .auth-close {
   flex: 0 0 auto;
   height: 34px;
   width: 34px;
-  border: 1px solid #dbe5f0;
-  border-radius: 10px;
+  border: 1px solid var(--app-border);
+  border-radius: 999px;
   background: #ffffff url("../assets/svgs/close-24.svg") no-repeat center;
   background-size: 18px;
   cursor: pointer;
 }
 
 .auth-close:hover {
-  background-color: #f8fafc;
-  border-color: #bfd4ff;
+  background-color: #ffffff;
+  border-color: rgba(0, 113, 227, 0.24);
 }
 
 .auth-container h2 {
   margin: 0;
-  color: #111827;
+  color: var(--app-text);
   font-size: 24px;
   line-height: 1.1;
   letter-spacing: 0;
@@ -373,18 +332,19 @@ onBeforeUnmount(() => {
   height: 44px;
   padding: 0 12px;
   margin: 10px 0 0;
-  border: 1px solid #dbe5f0;
-  border-radius: 12px;
-  background: #f8fafc;
-  color: #111827;
+  border: 1px solid var(--app-border);
+  border-radius: 14px;
+  background: #ffffff;
+  color: var(--app-text);
   font: inherit;
   box-shadow: none;
 }
 
 .auth-container input:focus {
   outline: none;
+  border-color: rgba(0, 113, 227, 0.34);
   background: #ffffff;
-  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.08);
+  box-shadow: 0 0 0 4px rgba(0, 113, 227, 0.1);
 }
 
 .auth-container button {
@@ -392,7 +352,7 @@ onBeforeUnmount(() => {
   padding: 0 14px;
   margin-top: 0;
   border: 1px solid transparent;
-  border-radius: 12px;
+  border-radius: 14px;
   font-weight: 700;
   cursor: pointer;
   transition: transform 120ms ease, box-shadow 120ms ease, background-color 120ms ease;
@@ -414,34 +374,34 @@ onBeforeUnmount(() => {
 }
 
 .auth-container .btn-register {
-  background: #fff;
-  border-color: #dbe5f0;
-  color: #334155;
+  background: #ffffff;
+  border-color: var(--app-border);
+  color: var(--app-text);
 }
 
 .auth-container .btn-login {
-  background: #2563eb;
+  background: var(--app-blue);
   color: #ffffff;
-  box-shadow: 0 10px 22px rgba(37, 99, 235, 0.16);
+  box-shadow: 0 10px 24px rgba(0, 113, 227, 0.2);
 }
 
 .auth-container .error {
   min-height: 22px;
   padding: 0 22px;
-  color: #dc2626;
+  color: var(--app-red);
   font-size: 13px;
   font-weight: 700;
 }
 
 .auth-container .agreement {
   font-size: 12px;
-  color: #475569;
+  color: var(--app-text-muted);
   margin-top: 16px;
   line-height: 1.6;
 }
 
 .auth-container .agreement a {
-  color: #2563eb;
+  color: var(--app-blue);
   font-weight: 700;
   text-decoration: none;
 }
@@ -458,18 +418,18 @@ onBeforeUnmount(() => {
   align-items: center;
   gap: 16px;
   min-width: 0;
-  padding-top: 22px;
+  padding-top: 24px;
 }
 
 .info-avatar {
   position: relative;
   width: 72px;
   height: 72px;
-  border: 1px solid #dbe5f0;
-  border-radius: 18px;
+  border: 1px solid var(--app-border);
+  border-radius: 20px;
   overflow: hidden;
   flex-shrink: 0;
-  background: #f8fafc;
+  background: #ffffff;
 }
 
 .info-avatar img {
@@ -519,7 +479,7 @@ onBeforeUnmount(() => {
   margin: 0;
   min-width: 0;
   overflow: hidden;
-  color: #0f172a;
+  color: var(--app-text);
   font-size: 18px;
   font-weight: 750;
   line-height: 1.2;
@@ -530,7 +490,7 @@ onBeforeUnmount(() => {
 .profile-copy p {
   margin: 0;
   overflow: hidden;
-  color: #64748b;
+  color: var(--app-text-muted);
   font-size: 13px;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -544,17 +504,17 @@ onBeforeUnmount(() => {
   min-height: 26px;
   padding: 0 10px;
   border-radius: 999px;
-  background: #eff6ff;
-  color: #1d4ed8;
+  background: rgba(0, 113, 227, 0.11);
+  color: var(--app-blue);
   font-size: 12px;
   font-weight: 700;
   white-space: nowrap;
 }
 
 .security-pill {
-  background: #f8fafc;
-  color: #475569;
-  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  color: var(--app-text-muted);
+  border: 1px solid var(--app-border);
 }
 
 .profile-actions {
@@ -567,7 +527,7 @@ onBeforeUnmount(() => {
   min-height: 40px;
   padding: 0 13px;
   border: 1px solid transparent;
-  border-radius: 12px;
+  border-radius: 14px;
   font-size: 14px;
   font-weight: 700;
   cursor: pointer;
@@ -579,22 +539,22 @@ onBeforeUnmount(() => {
 }
 
 .btn-profile-primary {
-  background: #2563eb;
+  background: var(--app-blue);
   color: #ffffff;
-  box-shadow: 0 10px 22px rgba(37, 99, 235, 0.16);
+  box-shadow: 0 10px 24px rgba(0, 113, 227, 0.2);
 }
 
 .btn-profile-secondary {
   background: #ffffff;
-  border-color: #dbe5f0;
-  color: #334155;
+  border-color: var(--app-border);
+  color: var(--app-text);
 }
 
 .btn-profile-danger {
   grid-column: 1 / -1;
-  background: #fff1f2;
-  border-color: #fecdd3;
-  color: #be123c;
+  background: rgba(255, 59, 48, 0.1);
+  border-color: rgba(255, 59, 48, 0.2);
+  color: #c01f18;
 }
 
 @media (max-width: 480px) {

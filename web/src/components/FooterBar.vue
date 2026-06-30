@@ -38,12 +38,12 @@ onMounted(async () => {
   width: min(1180px, calc(100% - 32px));
   margin: 0 auto;
   padding: 20px 0 0;
-  border-top: 1px solid #e5e7eb;
+  border-top: 1px solid var(--app-border);
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  color: #94a3b8;
+  color: var(--app-text-soft);
   font-size: 13px;
 }
 
@@ -59,16 +59,16 @@ onMounted(async () => {
   width: 4px;
   height: 4px;
   border-radius: 50%;
-  background: #cbd5e1;
+  background: rgba(0, 0, 0, 0.18);
 }
 
 .footer-links a {
-  color: #64748b;
+  color: var(--app-text-muted);
   text-decoration: none;
 }
 
 .footer-links a:hover {
-  color: #2563eb;
+  color: var(--app-blue);
 }
 
 @media (max-width: 840px) {

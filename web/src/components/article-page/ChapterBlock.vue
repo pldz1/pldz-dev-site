@@ -95,13 +95,13 @@ onUnmounted(() => {
 
 .catalog-card-header div > span {
   font-size: 13px;
-  color: #64748b;
+  color: var(--app-text-muted);
   letter-spacing: 0.12em;
   text-transform: uppercase;
 }
 
 .progress {
-  color: #94a3b8;
+  color: var(--app-text-soft);
   font-size: 13px;
   letter-spacing: 0.08em;
 }
@@ -123,9 +123,9 @@ onUnmounted(() => {
   border: none;
   background: transparent;
   text-align: left;
-  color: #6b7280;
+  color: var(--app-text-muted);
   border-radius: 0;
-  border-left: 1px solid #e2e8f0;
+  border-left: 1px solid var(--app-border);
   padding: 4px 0 8px 8px;
   cursor: pointer;
   transition: color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
@@ -134,15 +134,15 @@ onUnmounted(() => {
 }
 
 .catalog-link:hover {
-  color: #0f172a;
+  color: var(--app-text);
   transform: none;
-  border-left-color: #94a3b8;
+  border-left-color: var(--app-text-soft);
 }
 
 .catalog-link.is-active {
-  color: #0f172a;
+  color: var(--app-text);
   font-weight: 600;
-  border-left-color: #0f172a;
+  border-left-color: var(--app-text);
 }
 
 .catalog-link--depth-1 {
@@ -164,7 +164,7 @@ onUnmounted(() => {
 }
 
 .catalog-empty {
-  color: #94a3b8;
+  color: var(--app-text-soft);
   padding: 8px 0;
 }
 
@@ -173,7 +173,7 @@ onUnmounted(() => {
 }
 
 .catalog-content::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: rgba(0, 0, 0, 0.24);
   border-radius: 999px;
 }
 

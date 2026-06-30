@@ -58,17 +58,17 @@ const statusText = computed(() => statusTextMap[props.demo.status] || props.demo
   justify-content: space-between;
   gap: 20px;
   padding: 16px 18px;
-  background: rgba(255, 255, 255, 0.76);
-  border: 1px solid #eef3f8;
+  background: var(--app-surface);
+  border: 1px solid var(--app-border);
   border-radius: 18px;
-  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.016);
+  box-shadow: var(--app-shadow-sm);
   transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
 }
 
 .demo-card:hover {
   transform: translateY(-1px);
-  box-shadow: 0 8px 16px rgba(15, 23, 42, 0.026);
-  border-color: #e2e8f0;
+  box-shadow: var(--app-shadow-md);
+  border-color: var(--app-border-strong);
   background: rgba(255, 255, 255, 0.88);
 }
 
@@ -88,16 +88,16 @@ const statusText = computed(() => statusTextMap[props.demo.status] || props.demo
   justify-content: center;
   border-radius: 16px;
   background: linear-gradient(135deg, #f5f9ff, #fbfcfd);
-  border: 1px solid #e6edf5;
-  color: #2563eb;
+  border: 1px solid var(--app-border);
+  color: var(--app-blue);
   font-size: 13px;
   font-weight: 700;
   overflow: hidden;
 }
 
 .demo-thumb--image {
-  background: #f8fafc;
-  border-color: #e2e8f0;
+  background: rgba(255, 255, 255, 0.58);
+  border-color: var(--app-border);
 }
 
 .demo-thumb--image img {
@@ -122,14 +122,14 @@ const statusText = computed(() => statusTextMap[props.demo.status] || props.demo
 
 .demo-title-row h3 {
   margin: 0;
-  color: #0f172a;
+  color: var(--app-text);
   font-size: 17px;
   line-height: 1.3;
 }
 
 .demo-copy p {
   margin: 0;
-  color: #64748b;
+  color: var(--app-text-muted);
   line-height: 1.6;
   white-space: nowrap;
   overflow: hidden;
@@ -144,7 +144,7 @@ const statusText = computed(() => statusTextMap[props.demo.status] || props.demo
   padding: 0 10px;
   border-radius: 999px;
   font-size: 12px;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--app-border);
 }
 
 .status-pill--done {
@@ -184,25 +184,25 @@ const statusText = computed(() => statusTextMap[props.demo.status] || props.demo
 }
 
 .button-primary {
-  background: #2563eb;
+  background: var(--app-blue);
   color: #ffffff;
-  border: 1px solid #2563eb;
+  border: 1px solid var(--app-blue);
 }
 
 .button-primary:hover {
-  background: #1d4ed8;
-  border-color: #1d4ed8;
+  background: var(--app-blue-hover);
+  border-color: var(--app-blue-hover);
   transform: translateY(-1px);
 }
 
 .button-ghost {
-  background: #ffffff;
-  color: #334155;
-  border: 1px solid #e5e7eb;
+  background: rgba(255, 255, 255, 0.7);
+  color: var(--app-text);
+  border: 1px solid var(--app-border);
 }
 
 .button-ghost:hover {
-  background: #f8fafc;
+  background: #ffffff;
   transform: translateY(-1px);
 }
 

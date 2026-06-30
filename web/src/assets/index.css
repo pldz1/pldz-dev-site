@@ -2,10 +2,32 @@
 
 :root {
   --app-bg: #f8fafc;
+  --app-bg-elevated: #ffffff;
+  --app-surface: #ffffff;
+  --app-surface-solid: #ffffff;
+  --app-border: #e2e8f0;
+  --app-border-strong: #cbd5e1;
+  --app-text: #020817;
+  --app-text-muted: #64748b;
+  --app-text-soft: #94a3b8;
+  --app-blue: #0f172a;
+  --app-blue-hover: #1e293b;
+  --app-green: #16a34a;
+  --app-orange: #f59e0b;
+  --app-red: #ef4444;
+  --app-radius-sm: 6px;
+  --app-radius-md: 8px;
+  --app-radius-lg: 10px;
+  --app-radius-xl: 12px;
+  --app-shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.04);
+  --app-shadow-md: 0 2px 8px rgba(15, 23, 42, 0.06);
+  --app-shadow-popover: 0 8px 24px rgba(15, 23, 42, 0.1);
+  --app-blur-bg: none;
+  --app-motion-duration: 80ms;
   --scrollbar-size: 10px;
   --scrollbar-track: transparent;
-  --scrollbar-thumb: rgba(148, 163, 184, 0.52);
-  --scrollbar-thumb-hover: rgba(100, 116, 139, 0.7);
+  --scrollbar-thumb: rgba(100, 116, 139, 0.42);
+  --scrollbar-thumb-hover: rgba(71, 85, 105, 0.62);
 }
 
 * {
@@ -22,11 +44,213 @@ html {
 }
 
 body {
-  font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Segoe UI", "Roboto", "Helvetica Neue", "PingFang SC", "Microsoft YaHei", sans-serif;
   font-size: 16px;
   line-height: 1.5;
-  color: #171717;
+  color: var(--app-text);
   background-color: var(--app-bg);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+a,
+button,
+input,
+select,
+textarea,
+.btn,
+.button-primary,
+.button-secondary,
+.button-ghost,
+.card-surface,
+.project-card,
+.demo-card,
+.live-demo-card,
+.user-card,
+.preview-card,
+.category-card,
+.search-trigger,
+.login-register-btn,
+.sort-chip,
+.back-link,
+.page-button,
+.page-number {
+  transition-duration: var(--app-motion-duration) !important;
+  transition-timing-function: ease-out !important;
+}
+
+::selection {
+  background: rgba(15, 23, 42, 0.16);
+}
+
+.card-surface,
+.project-card,
+.demo-card,
+.live-demo-card,
+.user-card,
+.stat-card,
+.stats-panel,
+.category-card,
+.auth-container,
+.info-card,
+.panel,
+.mobile-drawer,
+.app-toast {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+.card-surface:hover,
+.project-card:hover,
+.demo-card:hover,
+.live-demo-card:hover,
+.user-card:hover,
+.preview-card:hover,
+.category-card:hover,
+.btn:hover:not(:disabled),
+.button-primary:hover,
+.button-secondary:hover,
+.button-ghost:hover,
+.search-trigger:hover,
+.login-register-btn:hover,
+.sort-chip:hover,
+.back-link:hover,
+.page-button:hover,
+.page-number:hover {
+  transform: none !important;
+}
+
+.card-surface:hover,
+.project-card:hover,
+.demo-card:hover,
+.live-demo-card:hover,
+.user-card:hover,
+.preview-card:hover,
+.category-card:hover {
+  box-shadow: var(--app-shadow-sm) !important;
+}
+
+.app-toast {
+  display: inline-flex !important;
+  align-items: flex-start;
+  gap: 12px;
+  min-height: 52px;
+  max-width: min(390px, calc(100vw - 28px));
+  padding: 12px 14px !important;
+  border: 1px solid var(--app-border);
+  border-radius: var(--app-radius-lg) !important;
+  background: #ffffff !important;
+  color: var(--app-text) !important;
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.1) !important;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.45;
+  letter-spacing: 0;
+}
+
+.app-toast::before {
+  content: "i";
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  flex: 0 0 22px;
+  margin-top: 1px;
+  border-radius: 999px;
+  background: var(--toast-bg, #f1f5f9);
+  color: var(--toast-accent, var(--app-text-muted));
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.app-toast.toastify {
+  right: 18px;
+  transition: opacity 120ms ease-out !important;
+}
+
+.app-toast.toast-info {
+  --toast-accent: var(--app-blue);
+  --toast-bg: #f1f5f9;
+}
+
+.app-toast.toast-success {
+  --toast-accent: var(--app-green);
+  --toast-bg: #dcfce7;
+}
+
+.app-toast.toast-success::before {
+  content: "✓";
+}
+
+.app-toast.toast-warning {
+  --toast-accent: var(--app-orange);
+  --toast-bg: #fef3c7;
+}
+
+.app-toast.toast-warning::before {
+  content: "!";
+}
+
+.app-toast.toast-error {
+  --toast-accent: var(--app-red);
+  --toast-bg: #fee2e2;
+}
+
+.app-toast.toast-error::before {
+  content: "!";
+}
+
+.app-toast .toast-close {
+  width: 24px;
+  height: 24px;
+  margin: -2px -4px 0 auto;
+  border-radius: var(--app-radius-sm);
+  color: var(--app-text-soft);
+  opacity: 0.9;
+  text-align: center;
+  line-height: 22px;
+}
+
+.app-toast .toast-close:hover {
+  background: #f1f5f9;
+  color: var(--app-text);
+}
+
+@media (max-width: 768px) {
+  .app-toast.toastify {
+    left: 14px !important;
+    right: 14px !important;
+    width: auto !important;
+    max-width: none;
+    transform: none !important;
+  }
+
+  .app-toast {
+    align-items: flex-start;
+    padding: 12px 13px !important;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  .app-toast .toast-close {
+    flex: 0 0 auto;
+    margin-left: auto;
+    padding-left: 8px;
+  }
 }
 
 *::-webkit-scrollbar {
@@ -54,3 +278,4 @@ body {
 *::-webkit-scrollbar-corner {
   background: transparent;
 }
+

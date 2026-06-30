@@ -271,7 +271,7 @@ watch(
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background: #f8fafc;
+  background: var(--app-bg);
 }
 
 .admin-main {
@@ -295,7 +295,7 @@ watch(
   align-items: center;
   justify-content: center;
   gap: 12px;
-  color: #475569;
+  color: var(--app-text-muted);
 }
 
 .admin-sidebar {
@@ -332,19 +332,20 @@ watch(
   border-radius: 0;
   background: transparent;
   font-size: 15px;
-  color: #475569;
+  color: var(--app-text-muted);
   cursor: pointer;
   transition: color 0.2s ease, background-color 0.2s ease, transform 0.2s ease;
 }
 
 .sidebar-link:hover {
-  color: #0f172a;
-  background: rgba(255, 255, 255, 0.35);
+  color: var(--app-text);
+  background: rgba(255, 255, 255, 0.54);
   transform: none;
 }
 
 .sidebar-link.active {
-  background: linear-gradient(90deg, rgba(255, 255, 255, 0.62), rgba(255, 255, 255, 0));
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: 12px;
 }
 
 .sidebar-link.active::before {
@@ -355,12 +356,12 @@ watch(
   width: 3px;
   height: 24px;
   border-radius: 999px;
-  background: #2563eb;
+  background: var(--app-blue);
   transform: translateY(-50%);
 }
 
 .sidebar-link.active > span {
-  color: #2563eb;
+  color: var(--app-blue);
   font-weight: 700;
 }
 
@@ -385,19 +386,18 @@ watch(
   min-height: 0;
   overflow-y: auto;
   padding: 0 0 32px;
-  transition: filter 0.25s ease, opacity 0.25s ease;
+  transition: opacity 0.15s ease;
 }
 
 .admin-content-body.is-dimmed {
   pointer-events: none;
-  filter: blur(1px);
   opacity: 0.6;
 }
 
 .loading-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(248, 250, 252, 0.82);
+  background: rgba(245, 245, 247, 0.82);
   z-index: 4;
   display: flex;
   flex-direction: column;
@@ -405,15 +405,15 @@ watch(
   align-items: center;
   text-align: center;
   gap: 12px;
-  color: #475569;
+  color: var(--app-text-muted);
 }
 
 .loading-spinner {
   width: 46px;
   height: 46px;
   border-radius: 50%;
-  border: 4px solid rgba(99, 102, 241, 0.16);
-  border-top-color: #6366f1;
+  border: 4px solid rgba(0, 113, 227, 0.14);
+  border-top-color: var(--app-blue);
   animation: spin 0.8s linear infinite;
 }
 
@@ -476,9 +476,8 @@ watch(
   }
 
   .admin-main.mobile-menu-open {
-    filter: blur(2px) brightness(0.92);
-    transform: scale(0.995);
-    transition: filter 0.3s ease, transform 0.3s ease;
+    opacity: 0.72;
+    transition: opacity 0.15s ease;
   }
 }
 
@@ -488,8 +487,7 @@ watch(
   }
 
   .admin-main.mobile-menu-open {
-    filter: blur(2.4px) brightness(0.88);
-    transform: scale(0.99);
+    opacity: 0.72;
   }
 }
 </style>

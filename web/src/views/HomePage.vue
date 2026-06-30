@@ -11,7 +11,7 @@
       <section class="hero-section">
         <div class="hero-copy card-surface">
           <p class="hero-kicker">Dev Space</p>
-          <h1>🎉 欢迎来到 <span class="hero-brand-pixel">爬楼的猪 Dev</span></h1>
+          <h1>欢迎来到 <span class="hero-brand-pixel">爬楼的猪 Dev</span></h1>
           <p class="hero-description">
             项目教程 & Live Demo<br />
             分享和记录一些我个人在做的, 感兴趣的工具和内容 😁
@@ -300,8 +300,8 @@ onBeforeUnmount(() => {
 
 <style scoped>
 :global(body) {
-  background: #f8fafc;
-  color: #0f172a;
+  background: var(--app-bg);
+  color: var(--app-text);
 }
 
 .home-page {
@@ -315,17 +315,17 @@ onBeforeUnmount(() => {
 }
 
 .card-surface {
-  background: rgba(255, 255, 255, 0.9);
-  border: 1px solid #edf2f7;
+  background: var(--app-surface);
+  border: 1px solid var(--app-border);
   border-radius: 24px;
-  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.025);
+  box-shadow: var(--app-shadow-sm);
   transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
 }
 
 .card-surface:hover {
   transform: translateY(-1px);
-  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.04);
-  border-color: #e2e8f0;
+  box-shadow: var(--app-shadow-md);
+  border-color: var(--app-border-strong);
   background: rgba(255, 255, 255, 0.95);
 }
 
@@ -362,28 +362,24 @@ onBeforeUnmount(() => {
   font-size: 12px;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: #2563eb;
+  color: var(--app-blue);
 }
 
 .hero-copy h1 {
   margin: 0;
   font-size: clamp(32px, 4vw, 46px);
   line-height: 1.1;
-  letter-spacing: -0.03em;
+  letter-spacing: 0;
 }
 
 .hero-brand-pixel {
   display: inline-block;
   margin-left: 0.12em;
   padding: 0.08em 0.26em 0.14em;
-  border: 2px solid #0f172a;
-  border-radius: 8px;
-  background: linear-gradient(180deg, #fefefe 0%, #eef5ff 100%);
-  box-shadow: 4px 4px 0 #93c5fd;
-  font-family: "Press Start 2P", "Microsoft YaHei", monospace;
-  font-size: 0.92em;
-  letter-spacing: 0.02em;
-  text-shadow: 1px 0 0 currentColor, 0 1px 0 currentColor;
+  border-radius: 12px;
+  background: rgba(0, 113, 227, 0.09);
+  color: var(--app-blue);
+  font-size: 0.94em;
   vertical-align: 0.06em;
   white-space: nowrap;
 }
@@ -392,7 +388,7 @@ onBeforeUnmount(() => {
   margin: 18px 0 0;
   font-size: 16px;
   line-height: 1.8;
-  color: #475569;
+  color: var(--app-text-muted);
 }
 
 .hero-actions,
@@ -417,7 +413,7 @@ onBeforeUnmount(() => {
 .hero-points li {
   position: relative;
   padding-left: 18px;
-  color: #64748b;
+  color: var(--app-text-muted);
   line-height: 1.7;
 }
 
@@ -429,7 +425,7 @@ onBeforeUnmount(() => {
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: #93c5fd;
+  background: var(--app-blue);
 }
 
 .hero-preview {
@@ -439,10 +435,10 @@ onBeforeUnmount(() => {
 
 .preview-card {
   padding: 24px;
-  border: 1px solid #e7edf5;
+  border: 1px solid var(--app-border);
   border-radius: 26px;
-  background: linear-gradient(180deg, #ffffff, #f8fafc);
-  box-shadow: 0 14px 32px rgba(15, 23, 42, 0.06);
+  background: var(--app-surface);
+  box-shadow: var(--app-shadow-sm);
   transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease, background-color 0.22s ease;
 }
 
@@ -452,16 +448,16 @@ onBeforeUnmount(() => {
 
 .preview-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 20px 40px rgba(15, 23, 42, 0.09);
-  border-color: #d7e3f1;
-  background: linear-gradient(180deg, #ffffff, #f8fafc);
+  box-shadow: var(--app-shadow-md);
+  border-color: var(--app-border-strong);
+  background: rgba(255, 255, 255, 0.94);
 }
 
 .preview-card--demo {
   position: relative;
   overflow: hidden;
-  border-color: #d8e7ff;
-  background: linear-gradient(135deg, rgba(37, 99, 235, 0.075), transparent 34%), linear-gradient(180deg, #ffffff, #f8fafc);
+  border-color: rgba(0, 113, 227, 0.16);
+  background: linear-gradient(135deg, rgba(0, 113, 227, 0.075), transparent 34%), var(--app-surface);
 }
 
 .preview-card--demo::before {
@@ -489,22 +485,22 @@ onBeforeUnmount(() => {
 }
 
 .preview-card--demo:hover {
-  border-color: #bfd4ff;
-  background: linear-gradient(135deg, rgba(37, 99, 235, 0.095), transparent 36%), linear-gradient(180deg, #ffffff, #f8fafc);
+  border-color: rgba(0, 113, 227, 0.24);
+  background: linear-gradient(135deg, rgba(0, 113, 227, 0.095), transparent 36%), rgba(255, 255, 255, 0.94);
 }
 
 .preview-card--demo .preview-card__eyebrow,
 .preview-card--demo h3 {
   position: relative;
-  color: #0f172a;
+  color: var(--app-text);
 }
 
 .preview-card--demo .preview-status {
   position: relative;
-  border: 1px solid #d8e7ff;
+  border: 1px solid rgba(0, 113, 227, 0.16);
   border-radius: 999px;
-  background: #eff6ff;
-  color: #2563eb;
+  background: rgba(0, 113, 227, 0.1);
+  color: var(--app-blue);
 }
 
 .preview-card--demo .preview-card__description,
@@ -522,7 +518,7 @@ onBeforeUnmount(() => {
 
 .preview-card__eyebrow {
   font-size: 12px;
-  color: #64748b;
+  color: var(--app-text-muted);
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
@@ -538,16 +534,16 @@ onBeforeUnmount(() => {
 .preview-status {
   padding: 6px 10px;
   border-radius: 999px;
-  background: #f4f8ff;
-  color: #2563eb;
-  border: 1px solid #d8e7ff;
+  background: rgba(0, 113, 227, 0.1);
+  color: var(--app-blue);
+  border: 1px solid rgba(0, 113, 227, 0.16);
   font-size: 12px;
 }
 
 .preview-status--muted {
-  background: #fbfcfd;
-  color: #475569;
-  border-color: #e8edf3;
+  background: rgba(255, 255, 255, 0.64);
+  color: var(--app-text-muted);
+  border-color: var(--app-border);
 }
 
 .preview-card h2,
@@ -557,7 +553,7 @@ onBeforeUnmount(() => {
 .about-copy h2,
 .section-heading h2 {
   margin: 0;
-  color: #0f172a;
+  color: var(--app-text);
 }
 
 .preview-card h2 {
@@ -583,7 +579,7 @@ onBeforeUnmount(() => {
 .demo-card p,
 .about-copy p,
 .section-intro {
-  color: #475569;
+  color: var(--app-text-muted);
   line-height: 1.75;
 }
 
@@ -612,9 +608,9 @@ onBeforeUnmount(() => {
   height: 30px;
   padding: 0 12px;
   border-radius: 999px;
-  border: 1px solid #e6edf5;
-  background: #fbfcfd;
-  color: #475569;
+  border: 1px solid var(--app-border);
+  background: rgba(255, 255, 255, 0.58);
+  color: var(--app-text-muted);
   font-size: 12px;
 }
 
@@ -630,7 +626,7 @@ onBeforeUnmount(() => {
 .text-link {
   display: inline-flex;
   align-items: center;
-  color: #2563eb;
+  color: var(--app-blue);
   text-decoration: none;
   font-weight: 600;
 }
@@ -645,7 +641,7 @@ onBeforeUnmount(() => {
   height: 152px;
   margin-bottom: 18px;
   border-radius: 18px;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--app-border);
   overflow: hidden;
   position: relative;
   background: #f8fafc;
@@ -703,7 +699,7 @@ onBeforeUnmount(() => {
 }
 
 .section-link {
-  color: #2563eb;
+  color: var(--app-blue);
   text-decoration: none;
   font-size: 14px;
   font-weight: 600;
@@ -760,7 +756,7 @@ onBeforeUnmount(() => {
   padding: 0;
   margin: 0;
   display: grid;
-  border-top: 1px solid #e5e7eb;
+  border-top: 1px solid var(--app-border);
 }
 
 .about-panel {
@@ -774,7 +770,7 @@ onBeforeUnmount(() => {
   height: 88px;
   overflow: hidden;
   border-radius: 24px;
-  background: #e2e8f0;
+  background: rgba(0, 0, 0, 0.08);
 }
 
 .about-copy {
@@ -803,32 +799,32 @@ onBeforeUnmount(() => {
 }
 
 .button-primary {
-  background: #2563eb;
+  background: var(--app-blue);
   color: #ffffff;
-  border: 1px solid #2563eb;
+  border: 1px solid var(--app-blue);
 }
 
 .button-primary:hover {
-  background: #1d4ed8;
-  border-color: #1d4ed8;
+  background: var(--app-blue-hover);
+  border-color: var(--app-blue-hover);
   transform: translateY(-1px);
 }
 
 .button-secondary {
-  background: #eff6ff;
-  color: #2563eb;
-  border: 1px solid #bfdbfe;
+  background: rgba(0, 113, 227, 0.1);
+  color: var(--app-blue);
+  border: 1px solid rgba(0, 113, 227, 0.16);
 }
 
 .button-secondary:hover {
-  background: #dbeafe;
+  background: rgba(0, 113, 227, 0.14);
   transform: translateY(-1px);
 }
 
 .button-ghost {
   background: #ffffff;
-  color: #334155;
-  border: 1px solid #e5e7eb;
+  color: var(--app-text);
+  border: 1px solid var(--app-border);
 }
 
 .button-ghost:hover {

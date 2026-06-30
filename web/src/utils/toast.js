@@ -1,25 +1,34 @@
 import Toastify from "toastify-js";
 import "toastify-js/src/toastify.css";
 
+function showToast(messages, type = "info") {
+  Toastify({
+    text: messages,
+    duration: 2800,
+    newWindow: true,
+    close: true,
+    gravity: "top",
+    position: "right",
+    stopOnFocus: true,
+    className: `app-toast toast-${type}`,
+    offset: {
+      x: 16,
+      y: 72,
+    },
+    style: {
+      background: "#ffffff",
+    },
+    onClick: function () {},
+  }).showToast();
+}
+
 export default class Toast {
   /**
    * Display an informational toast message.
    * @param {*} messages
    */
   static info(messages) {
-    Toastify({
-      text: messages,
-      duration: 3000,
-      newWindow: true,
-      close: true,
-      gravity: "top",
-      position: "right",
-      stopOnFocus: true,
-      style: {
-        background: "#17a2b8",
-      },
-      onClick: function () {},
-    }).showToast();
+    showToast(messages, "info");
   }
 
   /**
@@ -27,19 +36,7 @@ export default class Toast {
    * @param {*} messages
    */
   static success(messages) {
-    Toastify({
-      text: messages,
-      duration: 3000,
-      newWindow: true,
-      close: true,
-      gravity: "top",
-      position: "right",
-      stopOnFocus: true,
-      style: {
-        background: "#28a745",
-      },
-      onClick: function () {},
-    }).showToast();
+    showToast(messages, "success");
   }
 
   /**
@@ -47,19 +44,7 @@ export default class Toast {
    * @param {*} messages
    */
   static warning(messages) {
-    Toastify({
-      text: messages,
-      duration: 3000,
-      newWindow: true,
-      close: true,
-      gravity: "top",
-      position: "right",
-      stopOnFocus: true,
-      style: {
-        background: "#ffb347",
-      },
-      onClick: function () {},
-    }).showToast();
+    showToast(messages, "warning");
   }
 
   /**
@@ -67,18 +52,7 @@ export default class Toast {
    * @param {*} messages
    */
   static error(messages) {
-    Toastify({
-      text: messages,
-      duration: 3000,
-      newWindow: true,
-      close: true,
-      gravity: "top",
-      position: "right",
-      stopOnFocus: true,
-      style: {
-        background: "#ff5f6d",
-      },
-      onClick: function () {},
-    }).showToast();
+    showToast(messages, "error");
   }
 }
+

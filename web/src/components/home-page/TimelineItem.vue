@@ -24,7 +24,7 @@ const formattedDate = computed(() => (props.item.date || "").replaceAll("-", "."
 
 <style scoped>
 .timeline-item + .timeline-item {
-  border-top: 1px solid #eef2f7;
+  border-top: 1px solid var(--app-border);
 }
 
 .timeline-link {
@@ -45,24 +45,24 @@ const formattedDate = computed(() => (props.item.date || "").replaceAll("-", "."
   height: 28px;
   padding: 0 10px;
   border-radius: 999px;
-  background: #f1f5f9;
-  color: #475569;
+  background: rgba(0, 0, 0, 0.045);
+  color: var(--app-text-muted);
   font-size: 12px;
   text-transform: lowercase;
 }
 
 .timeline-title {
-  color: #0f172a;
+  color: var(--app-text);
   line-height: 1.5;
 }
 
 .timeline-date {
-  color: #94a3b8;
+  color: var(--app-text-soft);
   font-size: 14px;
 }
 
 .timeline-action {
-  color: #2563eb;
+  color: var(--app-blue);
   font-size: 14px;
   font-weight: 600;
 }

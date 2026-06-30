@@ -359,7 +359,7 @@ onBeforeUnmount(() => {
 
 .whiteboard-page {
   min-height: 100vh;
-  background: #f8fafc;
+  background: var(--app-bg);
 }
 
 .main-container {
@@ -382,7 +382,7 @@ onBeforeUnmount(() => {
   justify-content: space-between;
   gap: 24px;
   padding-bottom: 18px;
-  border-bottom: 1px solid #e7edf5;
+  border-bottom: 1px solid var(--app-border);
 }
 
 .hero-copy {
@@ -392,7 +392,7 @@ onBeforeUnmount(() => {
 
 .page-kicker {
   margin: 0 0 12px;
-  color: #2563eb;
+  color: var(--app-blue);
   font-size: 12px;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -400,7 +400,7 @@ onBeforeUnmount(() => {
 
 .page-description {
   margin: 0;
-  color: #0f172a;
+  color: var(--app-text);
   font-size: 18px;
   line-height: 1.45;
   font-weight: 600;
@@ -411,10 +411,10 @@ onBeforeUnmount(() => {
   align-items: center;
   height: 38px;
   padding: 0 14px;
-  border: 1px solid #d9e4f0;
+  border: 1px solid var(--app-border);
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.75);
-  color: #475569;
+  background: rgba(255, 255, 255, 0.7);
+  color: var(--app-text-muted);
   font-size: 13px;
   font-weight: 600;
   white-space: nowrap;
@@ -425,10 +425,10 @@ onBeforeUnmount(() => {
   gap: 10px;
   align-items: center;
   padding: 18px;
-  border: 1px solid #dce6f2;
-  border-radius: 8px;
-  background: #ffffff;
-  box-shadow: 0 14px 36px rgba(15, 23, 42, 0.06);
+  border: 1px solid var(--app-border);
+  border-radius: 20px;
+  background: var(--app-surface);
+  box-shadow: var(--app-shadow-sm);
 }
 
 .input-wrapper {
@@ -444,17 +444,17 @@ onBeforeUnmount(() => {
   min-width: 0;
   padding: 0 42px 0 14px;
   font-size: 14px;
-  border: 1px solid #d9e4f0;
-  border-radius: 8px;
-  background: #f8fafc;
-  color: #0f172a;
+  border: 1px solid var(--app-border);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.62);
+  color: var(--app-text);
   transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .input-area input:focus {
   background: #ffffff;
-  border-color: #bfd4ff;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+  border-color: rgba(0, 113, 227, 0.3);
+  box-shadow: 0 0 0 4px rgba(0, 113, 227, 0.1);
   outline: none;
 }
 
@@ -463,9 +463,9 @@ onBeforeUnmount(() => {
   padding: 0 18px;
   font-size: 14px;
   font-weight: 600;
-  background-color: #2563eb;
+  background-color: var(--app-blue);
   color: #ffffff;
-  border: 1px solid #2563eb;
+  border: 1px solid var(--app-blue);
   border-radius: 999px;
   cursor: pointer;
   white-space: nowrap;
@@ -473,8 +473,8 @@ onBeforeUnmount(() => {
 }
 
 .input-area > button:hover {
-  background-color: #1d4ed8;
-  border-color: #1d4ed8;
+  background-color: var(--app-blue-hover);
+  border-color: var(--app-blue-hover);
   transform: translateY(-1px);
 }
 
@@ -488,7 +488,7 @@ onBeforeUnmount(() => {
   border: 1px solid transparent;
   border-radius: 999px;
   background: transparent;
-  color: #94a3b8;
+  color: var(--app-text-soft);
   font-size: 18px;
   line-height: 1;
   cursor: pointer;
@@ -498,8 +498,8 @@ onBeforeUnmount(() => {
   justify-content: center;
 }
 .clear-btn:hover {
-  background: #eef4f9;
-  color: #475569;
+  background: rgba(0, 0, 0, 0.045);
+  color: var(--app-text-muted);
 }
 
 .board-selector {
@@ -511,7 +511,7 @@ onBeforeUnmount(() => {
 .selector-label {
   font-size: 13px;
   font-weight: 600;
-  color: #64748b;
+  color: var(--app-text-muted);
 }
 
 .key-list {
@@ -525,23 +525,23 @@ onBeforeUnmount(() => {
   padding: 0 13px;
   font-size: 13px;
   border-radius: 999px;
-  border: 1px solid #d9e4f0;
-  background: rgba(255, 255, 255, 0.75);
-  color: #475569;
+  border: 1px solid var(--app-border);
+  background: rgba(255, 255, 255, 0.7);
+  color: var(--app-text-muted);
   cursor: pointer;
   transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
 }
 
 .key-chip:hover {
   background: #ffffff;
-  border-color: #bfd4ff;
-  color: #1d4ed8;
+  border-color: rgba(0, 113, 227, 0.24);
+  color: var(--app-blue);
 }
 
 .key-chip.active {
-  background: #eff6ff;
-  border-color: #bfd4ff;
-  color: #1d4ed8;
+  background: rgba(0, 113, 227, 0.1);
+  border-color: rgba(0, 113, 227, 0.24);
+  color: var(--app-blue);
 }
 
 .board {
@@ -553,11 +553,11 @@ onBeforeUnmount(() => {
   display: flex;
   flex-direction: column;
   min-height: 540px;
-  border: 1px solid #dce6f2;
-  border-radius: 8px;
+  border: 1px solid var(--app-border);
+  border-radius: 20px;
   overflow: hidden;
-  background: #ffffff;
-  box-shadow: 0 14px 36px rgba(15, 23, 42, 0.06);
+  background: var(--app-surface);
+  box-shadow: var(--app-shadow-sm);
 }
 
 .card-header {
@@ -566,22 +566,22 @@ onBeforeUnmount(() => {
   justify-content: space-between;
   gap: 16px;
   padding: 16px 18px;
-  background-color: #ffffff;
-  border-bottom: 1px solid #e7edf5;
+  background-color: rgba(255, 255, 255, 0.56);
+  border-bottom: 1px solid var(--app-border);
 }
 
 .card-meta {
   display: flex;
   flex-direction: column;
   gap: 4px;
-  color: #94a3b8;
+  color: var(--app-text-soft);
   font-size: 13px;
   min-width: 0;
 }
 
 .card-key {
   font-weight: 600;
-  color: #0f172a;
+  color: var(--app-text);
 }
 
 .card-actions {
@@ -601,9 +601,9 @@ onBeforeUnmount(() => {
 }
 
 .card-actions .primary {
-  background-color: #2563eb;
+  background-color: var(--app-blue);
   color: #ffffff;
-  border: 1px solid #2563eb;
+  border: 1px solid var(--app-blue);
 }
 
 .card-actions .primary:disabled {
@@ -613,24 +613,24 @@ onBeforeUnmount(() => {
 }
 
 .card-actions .primary:not(:disabled):hover {
-  background-color: #1d4ed8;
+  background-color: var(--app-blue-hover);
 }
 
 .card-actions .secondary {
-  background-color: #ffffff;
-  color: #475569;
-  border: 1px solid #d9e4f0;
+  background-color: rgba(255, 255, 255, 0.7);
+  color: var(--app-text-muted);
+  border: 1px solid var(--app-border);
 }
 
 .card-actions .secondary:disabled {
-  color: #94a3b8;
-  border-color: #e7edf5;
+  color: var(--app-text-soft);
+  border-color: var(--app-border);
   cursor: not-allowed;
 }
 
 .card-actions .secondary:not(:disabled):hover {
-  border-color: #bfd4ff;
-  color: #1d4ed8;
+  border-color: rgba(0, 113, 227, 0.24);
+  color: var(--app-blue);
 }
 
 .card textarea {
@@ -643,12 +643,12 @@ onBeforeUnmount(() => {
   resize: none;
   outline: none;
   background-color: #ffffff;
-  color: #0f172a;
+  color: var(--app-text);
 }
 
 .card textarea:disabled {
-  background-color: #f8fafc;
-  color: #94a3b8;
+  background-color: rgba(255, 255, 255, 0.54);
+  color: var(--app-text-soft);
 }
 
 .content-preview {
@@ -656,15 +656,15 @@ onBeforeUnmount(() => {
   min-height: 420px;
   padding: 18px;
   overflow: auto;
-  background: #fbfdff;
-  color: #0f172a;
+  background: rgba(255, 255, 255, 0.5);
+  color: var(--app-text);
 }
 
 .content-preview.empty {
   display: grid;
   place-items: center;
-  color: #94a3b8;
-  background: #f8fafc;
+  color: var(--app-text-soft);
+  background: rgba(255, 255, 255, 0.54);
 }
 
 .preview-text {
@@ -674,7 +674,7 @@ onBeforeUnmount(() => {
   font-family: "SFMono-Regular", Menlo, Consolas, "Liberation Mono", Courier, monospace;
   font-size: 14px;
   line-height: 1.7;
-  color: #0f172a;
+  color: var(--app-text);
 }
 
 .preview-image {
@@ -682,8 +682,8 @@ onBeforeUnmount(() => {
   max-width: min(100%, 860px);
   max-height: 70vh;
   margin: 10px 0;
-  border: 1px solid #e2eaf3;
-  border-radius: 8px;
+  border: 1px solid var(--app-border);
+  border-radius: 14px;
   background: #ffffff;
   object-fit: contain;
 }
@@ -691,16 +691,16 @@ onBeforeUnmount(() => {
 .timestamp {
   padding: 10px 18px;
   font-size: 13px;
-  color: #94a3b8;
-  background-color: #fbfdff;
+  color: var(--app-text-soft);
+  background-color: rgba(255, 255, 255, 0.5);
   text-align: right;
-  border-top: 1px solid #e7edf5;
+  border-top: 1px solid var(--app-border);
 }
 
 .fullscreen-overlay {
   position: fixed;
   inset: 0;
-  background-color: rgba(15, 23, 42, 0.58);
+  background-color: rgba(15, 23, 42, 0.42);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -711,8 +711,9 @@ onBeforeUnmount(() => {
   width: min(1200px, 100%);
   max-height: 100%;
   background-color: #ffffff;
-  border-radius: 8px;
-  box-shadow: 0 24px 48px rgba(15, 23, 42, 0.25);
+  border: 1px solid var(--app-border);
+  border-radius: var(--app-radius-xl);
+  box-shadow: var(--app-shadow-popover);
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -722,47 +723,47 @@ onBeforeUnmount(() => {
   justify-content: space-between;
   align-items: center;
   padding: 16px 20px;
-  border-bottom: 1px solid #e7edf5;
+  border-bottom: 1px solid var(--app-border);
   position: sticky;
   top: 0;
-  background-color: #ffffff;
+  background-color: rgba(255, 255, 255, 0.68);
   z-index: 5;
 }
 .fullscreen-title {
   font-size: 16px;
   font-weight: 600;
-  color: #0f172a;
+  color: var(--app-text);
 }
 
 .close-btn {
   line-height: 1;
   width: 36px;
   height: 36px;
-  border: 1px solid #d9e4f0;
+  border: 1px solid var(--app-border);
   border-radius: 999px;
-  background: #ffffff;
+  background: rgba(255, 255, 255, 0.72);
   font-size: 22px;
   cursor: pointer;
-  color: #475569;
+  color: var(--app-text-muted);
   padding: 0;
 }
 
 .close-btn:hover {
-  border-color: #bfd4ff;
-  color: #1d4ed8;
+  border-color: rgba(0, 113, 227, 0.24);
+  color: var(--app-blue);
 }
 
 .fullscreen-body {
   padding: 20px;
   overflow: auto;
   flex: 1;
-  background-color: #f8fafc;
+  background-color: rgba(245, 245, 247, 0.72);
 }
 
 .fullscreen-footer {
   padding: 16px 20px;
-  border-top: 1px solid #e7edf5;
-  background-color: #ffffff;
+  border-top: 1px solid var(--app-border);
+  background-color: rgba(255, 255, 255, 0.68);
   display: flex;
   justify-content: flex-end;
 }
@@ -770,9 +771,9 @@ onBeforeUnmount(() => {
 .exit-btn {
   height: 38px;
   padding: 0 18px;
-  background-color: #2563eb;
+  background-color: var(--app-blue);
   color: #ffffff;
-  border: 1px solid #2563eb;
+  border: 1px solid var(--app-blue);
   border-radius: 999px;
   cursor: pointer;
   font-size: 14px;
@@ -781,7 +782,7 @@ onBeforeUnmount(() => {
 }
 
 .exit-btn:hover {
-  background-color: #1d4ed8;
+  background-color: var(--app-blue-hover);
 }
 
 @media (max-width: 900px) {

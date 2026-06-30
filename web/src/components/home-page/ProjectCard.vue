@@ -34,17 +34,17 @@ defineProps({
   display: grid;
   gap: 20px;
   padding: 18px;
-  background: rgba(255, 255, 255, 0.78);
-  border: 1px solid #eef3f8;
+  background: var(--app-surface);
+  border: 1px solid var(--app-border);
   border-radius: 24px;
-  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.018);
+  box-shadow: var(--app-shadow-sm);
   transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
 }
 
 .project-card:hover {
   transform: translateY(-1px);
-  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.028);
-  border-color: #e2e8f0;
+  box-shadow: var(--app-shadow-md);
+  border-color: var(--app-border-strong);
   background: rgba(255, 255, 255, 0.9);
 }
 
@@ -52,7 +52,7 @@ defineProps({
   border-radius: 18px;
   overflow: hidden;
   aspect-ratio: 16 / 9;
-  background: #f8fafc;
+  background: rgba(255, 255, 255, 0.58);
 }
 
 .project-cover img {
@@ -68,14 +68,14 @@ defineProps({
 
 .project-body h3 {
   margin: 0;
-  color: #0f172a;
+  color: var(--app-text);
   font-size: 20px;
   line-height: 1.35;
 }
 
 .project-body p {
   margin: 0;
-  color: #475569;
+  color: var(--app-text-muted);
   line-height: 1.75;
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -95,9 +95,9 @@ defineProps({
   height: 30px;
   padding: 0 12px;
   border-radius: 999px;
-  border: 1px solid #e6edf5;
-  background: #fbfcfd;
-  color: #475569;
+  border: 1px solid var(--app-border);
+  background: rgba(255, 255, 255, 0.58);
+  color: var(--app-text-muted);
   font-size: 12px;
 }
 
@@ -111,7 +111,7 @@ defineProps({
 .button-ghost {
   height: 42px;
   padding: 0 16px;
-  border-radius: 12px;
+  border-radius: 14px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -127,25 +127,25 @@ defineProps({
 }
 
 .button-primary {
-  background: #2563eb;
+  background: var(--app-blue);
   color: #ffffff;
-  border: 1px solid #2563eb;
+  border: 1px solid var(--app-blue);
 }
 
 .button-primary:hover {
-  background: #1d4ed8;
-  border-color: #1d4ed8;
+  background: var(--app-blue-hover);
+  border-color: var(--app-blue-hover);
   transform: translateY(-1px);
 }
 
 .button-ghost {
-  background: #ffffff;
-  color: #334155;
-  border: 1px solid #e5e7eb;
+  background: rgba(255, 255, 255, 0.7);
+  color: var(--app-text);
+  border: 1px solid var(--app-border);
 }
 
 .button-ghost:hover {
-  background: #f8fafc;
+  background: #ffffff;
   transform: translateY(-1px);
 }
 

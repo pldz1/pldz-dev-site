@@ -9,7 +9,7 @@
 }
 
 .footer a {
-  color: #171717;
+  color: var(--app-text-muted);
   text-decoration: none;
 }
 

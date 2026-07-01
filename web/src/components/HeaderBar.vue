@@ -7,7 +7,7 @@
           <span class="app-logo"></span>
           <span class="brand-copy">
             <span class="brand-name">爬楼的猪 Dev</span>
-            <span class="brand-subtitle">Projects, tutorials, demos</span>
+            <span class="brand-subtitle">项目 · 教程 · Demo</span>
           </span>
         </a>
       </div>
@@ -233,8 +233,8 @@ onBeforeUnmount(() => {
   left: 0;
   right: 0;
   z-index: 10005;
-  background: rgba(255, 255, 255, 0.96);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  background: rgba(247, 244, 238, 0.9);
+  border-bottom: 1px solid var(--app-border);
   transition: border-color var(--app-motion-duration) ease-out, background-color var(--app-motion-duration) ease-out;
 }
 
@@ -286,7 +286,7 @@ onBeforeUnmount(() => {
 
 .brand-name {
   font-size: 16px;
-  font-weight: 720;
+  font-weight: 700;
   color: var(--app-text);
   line-height: 1.1;
 }
@@ -331,12 +331,12 @@ onBeforeUnmount(() => {
 
 .nav-item a:hover {
   color: var(--app-text);
-  background: rgba(255, 255, 255, 0.68);
+  background: rgba(120, 105, 85, 0.08);
 }
 
 .nav-item.active a {
   color: var(--app-blue);
-  background: rgba(0, 113, 227, 0.1);
+  background: var(--accent-weak);
 }
 
 .nav-item--external a {
@@ -347,7 +347,7 @@ onBeforeUnmount(() => {
   font-size: 10px;
   line-height: 1;
   color: var(--app-blue);
-  background: rgba(0, 113, 227, 0.12);
+  background: var(--accent-weak);
   border-radius: 999px;
   padding: 3px 6px;
 }
@@ -364,7 +364,7 @@ onBeforeUnmount(() => {
   padding: 0 12px;
   border-radius: 999px;
   border: 1px solid var(--app-border);
-  background: rgba(255, 255, 255, 0.72);
+  background: var(--app-surface);
   color: var(--app-text-muted);
   display: inline-flex;
   align-items: center;
@@ -382,7 +382,7 @@ onBeforeUnmount(() => {
 .search-trigger__icon {
   width: 16px;
   height: 16px;
-  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23475569' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'/%3E%3C/svg%3E")
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236b6359' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'/%3E%3C/svg%3E")
     no-repeat center / contain;
 }
 
@@ -394,8 +394,8 @@ onBeforeUnmount(() => {
   height: 38px;
   padding: 0 14px;
   border-radius: 999px;
-  border: 1px solid rgba(0, 113, 227, 0.16);
-  background: rgba(0, 113, 227, 0.1);
+  border: 1px solid var(--accent-line);
+  background: var(--accent-weak);
   color: var(--app-blue);
   font-size: 14px;
   cursor: pointer;
@@ -403,8 +403,8 @@ onBeforeUnmount(() => {
 }
 
 .login-register-btn:hover {
-  border-color: rgba(0, 113, 227, 0.24);
-  background: rgba(0, 113, 227, 0.14);
+  border-color: var(--accent-line);
+  background: rgba(189, 88, 54, 0.16);
   transform: translateY(-1px);
 }
 

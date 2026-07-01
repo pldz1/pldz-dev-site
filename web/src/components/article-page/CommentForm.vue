@@ -371,21 +371,21 @@ watch(
 .comment-submit-container {
   margin-bottom: 24px;
   padding: 16px;
-  border: 1px solid #eaeaea;
-  border-radius: 12px;
-  background-color: #fff;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  border: 1px solid var(--app-border);
+  border-radius: var(--app-radius-md);
+  background-color: var(--app-surface);
+  box-shadow: var(--app-shadow-sm);
 }
 
 textarea {
   width: 100%;
   min-height: 120px;
   padding: 12px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
+  border: 1px solid var(--app-border);
+  border-radius: var(--app-radius-sm);
   font-size: 14px;
   line-height: 1.5;
-  transition: border-color 0.2s;
+  transition: border-color var(--app-motion-duration) var(--app-ease);
   resize: vertical;
   box-sizing: border-box;
   font-family: inherit;
@@ -393,12 +393,12 @@ textarea {
 
 textarea:focus {
   outline: none;
-  border-color: #48a9fe;
-  box-shadow: 0 0 0 3px rgba(72, 169, 254, 0.2);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(189, 88, 54, 0.2);
 }
 
 textarea:disabled {
-  background-color: #f5f5f5;
+  background-color: var(--app-surface-sunken);
   cursor: not-allowed;
 }
 
@@ -417,10 +417,10 @@ textarea:disabled {
 
 .reply-info {
   font-size: 12px;
-  color: #48a9fe;
-  background: #f0f9ff;
+  color: var(--accent);
+  background: var(--accent-weak);
   padding: 4px 8px;
-  border-radius: 4px;
+  border-radius: var(--app-radius-sm);
   display: flex;
   align-items: center;
   gap: 6px;
@@ -429,24 +429,24 @@ textarea:disabled {
 .cancel-reply {
   background: none;
   border: none;
-  color: #999;
+  color: var(--app-text-soft);
   cursor: pointer;
   padding: 0;
   font-size: 12px;
 }
 
 .cancel-reply:hover {
-  color: #666;
+  color: var(--app-text-muted);
 }
 
 .char-count {
   font-size: 12px;
-  color: #888;
-  transition: color 0.2s;
+  color: var(--app-text-soft);
+  transition: color var(--app-motion-duration) var(--app-ease);
 }
 
 .char-count.over-limit {
-  color: #ff4757;
+  color: var(--app-red);
   font-weight: 500;
 }
 
@@ -454,12 +454,12 @@ textarea:disabled {
   padding: 8px 20px;
   font-size: 14px;
   font-weight: 500;
-  color: #fff;
-  background: linear-gradient(135deg, #48a9fe 0%, #6d5dfc 100%);
+  color: var(--app-surface);
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-hover) 100%);
   border: none;
-  border-radius: 8px;
+  border-radius: var(--app-radius-sm);
   cursor: pointer;
-  transition: all 0.3s;
+  transition: background var(--app-motion-duration) var(--app-ease), transform var(--app-motion-duration) var(--app-ease);
   min-width: 80px;
 }
 
@@ -469,9 +469,9 @@ textarea:disabled {
 }
 
 .submit-btn:hover:not(:disabled) {
-  background: linear-gradient(135deg, #6d5dfc 0%, #48a9fe 100%);
+  background: linear-gradient(135deg, var(--accent-hover) 0%, var(--accent) 100%);
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(72, 169, 254, 0.3);
+  box-shadow: 0 4px 12px rgba(189, 88, 54, 0.28);
 }
 
 .comments-list {
@@ -488,7 +488,7 @@ textarea:disabled {
 .comments-header h3 {
   margin: 0;
   font-size: 18px;
-  color: #333;
+  color: var(--app-text);
 }
 
 .sort-options {
@@ -499,26 +499,26 @@ textarea:disabled {
 .sort-options button {
   padding: 6px 12px;
   font-size: 12px;
-  border: 1px solid #ddd;
-  background: #fff;
-  border-radius: 6px;
+  border: 1px solid var(--app-border);
+  background: var(--app-surface);
+  border-radius: var(--app-radius-sm);
   cursor: pointer;
-  transition: all 0.2s;
+  transition: background var(--app-motion-duration) var(--app-ease), color var(--app-motion-duration) var(--app-ease), border-color var(--app-motion-duration) var(--app-ease);
 }
 
 .sort-options button.active {
-  background: #48a9fe;
-  color: #fff;
-  border-color: #48a9fe;
+  background: var(--accent);
+  color: var(--app-surface);
+  border-color: var(--accent);
 }
 
 .comment-item {
   display: flex;
   gap: 12px;
   padding: 16px;
-  border: 1px solid #eaeaea;
-  border-radius: 12px;
-  background: #fff;
+  border: 1px solid var(--app-border);
+  border-radius: var(--app-radius-md);
+  background: var(--app-surface);
   margin-bottom: 16px;
 }
 
@@ -558,24 +558,24 @@ textarea:disabled {
 
 .username {
   font-weight: 500;
-  color: #333;
+  color: var(--app-text);
 }
 
 .time {
   font-size: 12px;
-  color: #888;
+  color: var(--app-text-soft);
 }
 
 .comment-text,
 .reply-text {
   line-height: 1.6;
-  color: #333;
+  color: var(--app-text);
   margin-bottom: 12px;
   word-break: break-word;
 }
 
 .reply-to {
-  color: #48a9fe;
+  color: var(--accent);
   font-weight: 500;
 }
 
@@ -591,17 +591,17 @@ textarea:disabled {
   gap: 4px;
   padding: 4px 8px;
   font-size: 12px;
-  color: #666;
+  color: var(--app-text-muted);
   background: none;
   border: none;
-  border-radius: 4px;
+  border-radius: var(--app-radius-sm);
   cursor: pointer;
-  transition: all 0.2s;
+  transition: background var(--app-motion-duration) var(--app-ease), color var(--app-motion-duration) var(--app-ease);
 }
 
 .action-btn:hover {
-  background: #f5f5f5;
-  color: #333;
+  background: var(--app-surface-sunken);
+  color: var(--app-text);
 }
 
 .action-btn:disabled {
@@ -610,8 +610,8 @@ textarea:disabled {
 }
 
 .delete-btn:hover {
-  background: #ffebee;
-  color: #f44336;
+  background: rgba(180, 71, 47, 0.12);
+  color: var(--app-red);
 }
 
 .icon {
@@ -621,14 +621,14 @@ textarea:disabled {
 .replies {
   margin-top: 16px;
   padding-left: 16px;
-  border-left: 2px solid #f0f0f0;
+  border-left: 2px solid var(--app-border);
 }
 
 .reply-item {
   display: flex;
   gap: 8px;
   padding: 12px 0;
-  border-bottom: 1px solid #f5f5f5;
+  border-bottom: 1px solid var(--app-border);
 }
 
 .reply-item:last-child {
@@ -642,7 +642,7 @@ textarea:disabled {
 .empty-comments {
   text-align: center;
   padding: 48px 16px;
-  color: #999;
+  color: var(--app-text-soft);
 }
 
 .empty-icon {

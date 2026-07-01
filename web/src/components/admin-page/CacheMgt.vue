@@ -389,12 +389,12 @@ function formatFileSize(bytes) {
 .progress-toast {
   min-width: 220px;
   max-width: 280px;
-  background: #0f172a;
-  color: #f8fafc;
+  background: #2a2420;
+  color: #ece4d8;
   box-shadow: var(--app-shadow-md);
   border-radius: var(--app-radius-lg);
   padding: 14px 16px;
-  border: 1px solid rgba(148, 163, 184, 0.24);
+  border: 1px solid rgba(120, 105, 85, 0.22);
 }
 
 .progress-toast-title {
@@ -408,14 +408,14 @@ function formatFileSize(bytes) {
   position: relative;
   width: 100%;
   height: 6px;
-  background: rgba(255, 255, 255, 0.16);
+  background: rgba(236, 228, 216, 0.16);
   border-radius: 4px;
   overflow: hidden;
 }
 
 .progress-toast-bar-inner {
   height: 100%;
-  background: linear-gradient(135deg, #38bdf8 0%, #6366f1 100%);
+  background: linear-gradient(135deg, #b57652 0%, #7b5e4e 100%);
   transition: width 0.2s ease;
 }
 
@@ -423,24 +423,24 @@ function formatFileSize(bytes) {
   margin-top: 8px;
   text-align: right;
   font-size: 12px;
-  color: rgba(248, 250, 252, 0.8);
+  color: rgba(236, 228, 216, 0.8);
   font-weight: 500;
 }
 
 .progress-toast--done {
-  border-color: rgba(52, 211, 153, 0.45);
+  border-color: rgba(93, 122, 74, 0.4);
 }
 
 .progress-toast--done .progress-toast-bar-inner {
-  background: linear-gradient(135deg, #10b981 0%, #22d3ee 100%);
+  background: linear-gradient(135deg, #5d7a4a 0%, #8b9e6b 100%);
 }
 
 .progress-toast--error {
-  border-color: rgba(248, 113, 113, 0.6);
+  border-color: rgba(180, 71, 47, 0.5);
 }
 
 .progress-toast--error .progress-toast-bar-inner {
-  background: linear-gradient(135deg, #f87171 0%, #ef4444 100%);
+  background: linear-gradient(135deg, #b4472f 0%, #c96342 100%);
 }
 
 .file-title {

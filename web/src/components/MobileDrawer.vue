@@ -78,7 +78,7 @@ onBeforeUnmount(() => {
   position: fixed;
   inset: 0;
   z-index: 70;
-  background: rgba(15, 23, 42, 0.42);
+  background: rgba(42, 36, 32, 0.45);
 }
 
 .mobile-drawer {
@@ -86,7 +86,7 @@ onBeforeUnmount(() => {
   inset: 0 auto 0 0;
   z-index: 80;
   width: min(312px, calc(100vw - 32px));
-  background: #ffffff;
+  background: var(--app-surface);
   border-right: 1px solid var(--app-border);
   box-shadow: var(--app-shadow-popover);
   overflow-y: auto;
@@ -116,7 +116,7 @@ onBeforeUnmount(() => {
   height: 34px;
   flex: 0 0 34px;
   border-radius: 11px;
-  background: #ffffff url("../assets/svgs/logo-32.svg") no-repeat center / 22px;
+  background: var(--app-surface) url("../assets/svgs/logo-32.svg") no-repeat center / 22px;
   border: 1px solid var(--app-border);
 }
 
@@ -137,7 +137,7 @@ onBeforeUnmount(() => {
   height: 36px;
   border: 1px solid var(--app-border);
   border-radius: 999px;
-  background: #ffffff;
+  background: var(--app-surface);
   color: var(--app-text-muted);
   font-size: 22px;
   line-height: 1;

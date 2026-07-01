@@ -25,7 +25,7 @@
         :data-analytics-source="`home.demo_card.${demo.id || demo.title || 'unknown'}`"
         :data-analytics-label="demo.title || '在线体验'"
       >
-        在线体验
+        在线打开
       </a>
       <a class="button-ghost button-compact" :href="demo.repoLink" target="_blank" rel="noopener noreferrer">GitHub</a>
     </div>
@@ -60,7 +60,7 @@ const statusText = computed(() => statusTextMap[props.demo.status] || props.demo
   padding: 16px 18px;
   background: var(--app-surface);
   border: 1px solid var(--app-border);
-  border-radius: 18px;
+  border-radius: var(--app-radius-lg);
   box-shadow: var(--app-shadow-sm);
   transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
 }
@@ -69,7 +69,7 @@ const statusText = computed(() => statusTextMap[props.demo.status] || props.demo
   transform: translateY(-1px);
   box-shadow: var(--app-shadow-md);
   border-color: var(--app-border-strong);
-  background: rgba(255, 255, 255, 0.88);
+  background: var(--app-surface);
 }
 
 .demo-main {
@@ -86,8 +86,8 @@ const statusText = computed(() => statusTextMap[props.demo.status] || props.demo
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border-radius: 16px;
-  background: linear-gradient(135deg, #f5f9ff, #fbfcfd);
+  border-radius: var(--app-radius-md);
+  background: linear-gradient(135deg, #f3ece0, #fbf8f2);
   border: 1px solid var(--app-border);
   color: var(--app-blue);
   font-size: 13px;
@@ -96,7 +96,7 @@ const statusText = computed(() => statusTextMap[props.demo.status] || props.demo
 }
 
 .demo-thumb--image {
-  background: rgba(255, 255, 255, 0.58);
+  background: var(--app-surface);
   border-color: var(--app-border);
 }
 
@@ -148,18 +148,18 @@ const statusText = computed(() => statusTextMap[props.demo.status] || props.demo
 }
 
 .status-pill--done {
-  color: #0f766e;
-  background: #ecfeff;
+  color: var(--app-green);
+  background: rgba(93, 122, 74, 0.12);
 }
 
 .status-pill--building {
-  color: #b45309;
-  background: #fffbeb;
+  color: var(--app-orange);
+  background: rgba(185, 130, 47, 0.14);
 }
 
 .status-pill--experimental {
-  color: #7c3aed;
-  background: #f5f3ff;
+  color: var(--accent);
+  background: var(--accent-weak);
 }
 
 .demo-actions {
@@ -167,43 +167,6 @@ const statusText = computed(() => statusTextMap[props.demo.status] || props.demo
   align-items: center;
   gap: 10px;
   flex-shrink: 0;
-}
-
-.button-primary,
-.button-ghost {
-  height: 36px;
-  padding: 0 13px;
-  border-radius: 10px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  text-decoration: none;
-  font-size: 14px;
-  font-weight: 600;
-  transition: transform 0.2s ease, background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
-}
-
-.button-primary {
-  background: var(--app-blue);
-  color: #ffffff;
-  border: 1px solid var(--app-blue);
-}
-
-.button-primary:hover {
-  background: var(--app-blue-hover);
-  border-color: var(--app-blue-hover);
-  transform: translateY(-1px);
-}
-
-.button-ghost {
-  background: rgba(255, 255, 255, 0.7);
-  color: var(--app-text);
-  border: 1px solid var(--app-border);
-}
-
-.button-ghost:hover {
-  background: #ffffff;
-  transform: translateY(-1px);
 }
 
 @media (max-width: 840px) {

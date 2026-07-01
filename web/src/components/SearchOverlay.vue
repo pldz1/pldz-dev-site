@@ -108,7 +108,7 @@ onMounted(() => {
 .backdrop {
   position: absolute;
   inset: 0;
-  background: rgba(15, 23, 42, 0.42);
+  background: rgba(42, 36, 32, 0.45);
 }
 .panel {
   position: absolute;
@@ -117,7 +117,7 @@ onMounted(() => {
   transform: translateX(-50%);
   width: min(920px, calc(100vw - 2rem));
   max-height: 80vh;
-  background: var(--panel-bg, #ffffff);
+  background: var(--panel-bg, var(--app-surface));
   color: var(--panel-fg, var(--app-text));
   border: 1px solid var(--app-border);
   border-radius: var(--app-radius-xl);
@@ -137,13 +137,13 @@ onMounted(() => {
   font-size: 16px;
   border: 1px solid var(--app-border);
   border-radius: 16px;
-  background: #ffffff;
+  background: var(--app-surface);
   color: var(--app-text);
   outline: none;
 }
 .input:focus {
-  border-color: rgba(0, 113, 227, 0.34);
-  box-shadow: 0 0 0 4px rgba(0, 113, 227, 0.1);
+  border-color: var(--accent-line);
+  box-shadow: 0 0 0 4px var(--accent-weak);
 }
 .close {
   appearance: none;
@@ -167,17 +167,17 @@ onMounted(() => {
   display: block;
   padding: 0.85rem;
   border-radius: 18px;
-  border: 1px solid rgba(0, 0, 0, 0.07);
+  border: 1px solid var(--app-border);
   margin: 0.5rem 0;
   text-decoration: none;
   color: inherit;
-  background: #ffffff;
+  background: var(--app-surface);
   transition: transform 0.18s ease, border-color 0.18s ease, background-color 0.18s ease;
 }
 .result:hover {
   transform: translateY(-1px);
-  border-color: rgba(0, 113, 227, 0.2);
-  background: #f8fafc;
+  border-color: var(--accent-line);
+  background: var(--app-surface-sunken);
 }
 .title {
   font-weight: 600;
@@ -195,13 +195,13 @@ onMounted(() => {
 }
 .tag {
   font-size: 12px;
-  background: rgba(0, 0, 0, 0.045);
+  background: rgba(120, 105, 85, 0.08);
   border-radius: 999px;
   padding: 0.1rem 0.5rem;
   color: var(--app-text-muted);
 }
 .tag--cat {
-  background: rgba(0, 113, 227, 0.12);
+  background: var(--accent-weak);
   color: var(--app-blue);
 }
 .meta {
@@ -209,7 +209,7 @@ onMounted(() => {
   font-size: 12px;
 }
 .meta.small {
-  color: #888;
+  color: var(--app-text-soft);
 }
 mark {
   background: rgba(255, 214, 10, 0.36);

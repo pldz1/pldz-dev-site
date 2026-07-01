@@ -1,33 +1,66 @@
 @import url("./components/loader.css");
 
+/* ============================================================
+   设计令牌 · 暖纸温润（warm paper / editorial）
+   ============================================================ */
 :root {
-  --app-bg: #f8fafc;
-  --app-bg-elevated: #ffffff;
-  --app-surface: #ffffff;
-  --app-surface-solid: #ffffff;
-  --app-border: #e2e8f0;
-  --app-border-strong: #cbd5e1;
-  --app-text: #020817;
-  --app-text-muted: #64748b;
-  --app-text-soft: #94a3b8;
-  --app-blue: #0f172a;
-  --app-blue-hover: #1e293b;
-  --app-green: #16a34a;
-  --app-orange: #f59e0b;
-  --app-red: #ef4444;
-  --app-radius-sm: 6px;
-  --app-radius-md: 8px;
-  --app-radius-lg: 10px;
-  --app-radius-xl: 12px;
-  --app-shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.04);
-  --app-shadow-md: 0 2px 8px rgba(15, 23, 42, 0.06);
-  --app-shadow-popover: 0 8px 24px rgba(15, 23, 42, 0.1);
+  /* 暖纸表面 */
+  --app-bg: #f7f4ee;
+  --app-bg-elevated: #fffdf8;
+  --app-surface: #fffdf8;
+  --app-surface-solid: #fffdf8;
+  --app-surface-sunken: #f1ece2;
+
+  /* 暖发丝描边 */
+  --app-border: #e8e1d4;
+  --app-border-strong: #d8cfbd;
+
+  /* 暖墨文字 */
+  --app-text: #2a2420;
+  --app-text-muted: #6b6359;
+  --app-text-soft: #9a9286;
+
+  /* 陶土点缀色（沿用 --app-blue 变量名以一键换肤全站链接/按钮/激活态） */
+  --app-blue: #bd5836;
+  --app-blue-hover: #a44b2b;
+  --accent: #bd5836;
+  --accent-hover: #a44b2b;
+  --accent-weak: rgba(189, 88, 54, 0.1);
+  --accent-line: rgba(189, 88, 54, 0.22);
+
+  /* 语义色（暖化、降饱和） */
+  --app-green: #5d7a4a;
+  --app-orange: #b9822f;
+  --app-red: #b4472f;
+
+  /* 统一圆角刻度 8 / 12 / 16 / 20 */
+  --app-radius-sm: 8px;
+  --app-radius-md: 12px;
+  --app-radius-lg: 16px;
+  --app-radius-xl: 20px;
+  --app-radius-pill: 999px;
+
+  /* 暖调柔和阴影 */
+  --app-shadow-sm: 0 1px 2px rgba(60, 45, 30, 0.05);
+  --app-shadow-md: 0 6px 20px rgba(60, 45, 30, 0.07);
+  --app-shadow-popover: 0 16px 40px rgba(60, 45, 30, 0.12);
   --app-blur-bg: none;
-  --app-motion-duration: 80ms;
+
+  /* 动效 */
+  --app-motion-duration: 180ms;
+  --app-ease: cubic-bezier(0.2, 0, 0, 1);
+
+  /* 字体 */
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Segoe UI", "Roboto", "Helvetica Neue", "PingFang SC",
+    "Microsoft YaHei", sans-serif;
+  --font-display: "Georgia", "Times New Roman", "Songti SC", "Noto Serif CJK SC", "Source Han Serif SC", "PingFang SC", serif;
+  --font-mono: "JetBrains Mono", "SFMono-Regular", "Cascadia Code", Menlo, Consolas, "Liberation Mono", monospace;
+
+  /* 滚动条 */
   --scrollbar-size: 10px;
   --scrollbar-track: transparent;
-  --scrollbar-thumb: rgba(100, 116, 139, 0.42);
-  --scrollbar-thumb-hover: rgba(71, 85, 105, 0.62);
+  --scrollbar-thumb: rgba(120, 105, 85, 0.38);
+  --scrollbar-thumb-hover: rgba(120, 105, 85, 0.58);
 }
 
 * {
@@ -44,9 +77,9 @@ html {
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Segoe UI", "Roboto", "Helvetica Neue", "PingFang SC", "Microsoft YaHei", sans-serif;
+  font-family: var(--font-sans);
   font-size: 16px;
-  line-height: 1.5;
+  line-height: 1.6;
   color: var(--app-text);
   background-color: var(--app-bg);
   -webkit-font-smoothing: antialiased;
@@ -65,11 +98,15 @@ a {
   -webkit-tap-highlight-color: transparent;
 }
 
+::selection {
+  background: rgba(189, 88, 54, 0.18);
+}
+
+/* ============================================================
+   克制、统一的交互动效（只动便宜属性，绝不互相打架）
+   ============================================================ */
 a,
 button,
-input,
-select,
-textarea,
 .btn,
 .button-primary,
 .button-secondary,
@@ -84,64 +121,132 @@ textarea,
 .search-trigger,
 .login-register-btn,
 .sort-chip,
+.tag-chip,
 .back-link,
 .page-button,
-.page-number {
-  transition-duration: var(--app-motion-duration) !important;
-  transition-timing-function: ease-out !important;
+.page-number,
+.text-link {
+  transition: background-color var(--app-motion-duration) var(--app-ease), border-color var(--app-motion-duration) var(--app-ease),
+    color var(--app-motion-duration) var(--app-ease), box-shadow var(--app-motion-duration) var(--app-ease),
+    transform var(--app-motion-duration) var(--app-ease), opacity var(--app-motion-duration) var(--app-ease);
 }
 
-::selection {
-  background: rgba(15, 23, 42, 0.16);
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
-.card-surface,
-.project-card,
-.demo-card,
-.live-demo-card,
-.user-card,
-.stat-card,
-.stats-panel,
-.category-card,
-.auth-container,
-.info-card,
-.panel,
-.mobile-drawer,
-.app-toast {
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
+/* ============================================================
+   全局 UI 基元（按钮 / 标签 / 文字链）——各组件复用，避免漂移
+   ============================================================ */
+.button-primary,
+.button-secondary,
+.button-ghost {
+  height: 42px;
+  padding: 0 18px;
+  border-radius: var(--app-radius-md);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  text-decoration: none;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  border: 1px solid transparent;
 }
 
-.card-surface:hover,
-.project-card:hover,
-.demo-card:hover,
-.live-demo-card:hover,
-.user-card:hover,
-.preview-card:hover,
-.category-card:hover,
-.btn:hover:not(:disabled),
-.button-primary:hover,
-.button-secondary:hover,
-.button-ghost:hover,
-.search-trigger:hover,
-.login-register-btn:hover,
-.sort-chip:hover,
-.back-link:hover,
-.page-button:hover,
-.page-number:hover {
-  transform: none !important;
+.button-primary {
+  background: var(--accent);
+  color: #fffdf8;
+  border-color: var(--accent);
 }
 
-.card-surface:hover,
-.project-card:hover,
-.demo-card:hover,
-.live-demo-card:hover,
-.user-card:hover,
-.preview-card:hover,
-.category-card:hover {
-  box-shadow: var(--app-shadow-sm) !important;
+.button-primary:hover:not(:disabled) {
+  background: var(--accent-hover);
+  border-color: var(--accent-hover);
+  transform: translateY(-1px);
 }
 
+.button-secondary {
+  background: var(--accent-weak);
+  color: var(--accent);
+  border-color: var(--accent-line);
+}
+
+.button-secondary:hover:not(:disabled) {
+  background: rgba(189, 88, 54, 0.16);
+  transform: translateY(-1px);
+}
+
+.button-ghost {
+  background: var(--app-surface);
+  color: var(--app-text);
+  border-color: var(--app-border);
+}
+
+.button-ghost:hover:not(:disabled) {
+  border-color: var(--app-border-strong);
+  background: var(--app-bg-elevated);
+  transform: translateY(-1px);
+}
+
+.button-primary:disabled,
+.button-secondary:disabled,
+.button-ghost:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.button-small {
+  height: 38px;
+  padding: 0 14px;
+  font-size: 14px;
+}
+
+.button-compact {
+  height: 36px;
+  padding: 0 13px;
+  font-size: 14px;
+  border-radius: var(--app-radius-sm);
+}
+
+.tag-chip {
+  display: inline-flex;
+  align-items: center;
+  height: 28px;
+  padding: 0 11px;
+  border-radius: var(--app-radius-pill, 999px);
+  border: 1px solid var(--app-border);
+  background: var(--app-surface);
+  color: var(--app-text-muted);
+  font-size: 12.5px;
+}
+
+.text-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.text-link:hover {
+  color: var(--accent-hover);
+}
+
+/* ============================================================
+   Toast（暖白卡片 + 暖语义色钩）
+   ============================================================ */
 .app-toast {
   display: inline-flex !important;
   align-items: flex-start;
@@ -150,10 +255,10 @@ textarea,
   max-width: min(390px, calc(100vw - 28px));
   padding: 12px 14px !important;
   border: 1px solid var(--app-border);
-  border-radius: var(--app-radius-lg) !important;
-  background: #ffffff !important;
+  border-radius: var(--app-radius-md) !important;
+  background: var(--app-surface) !important;
   color: var(--app-text) !important;
-  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.1) !important;
+  box-shadow: var(--app-shadow-md) !important;
   font-size: 14px;
   font-weight: 500;
   line-height: 1.45;
@@ -170,7 +275,7 @@ textarea,
   flex: 0 0 22px;
   margin-top: 1px;
   border-radius: 999px;
-  background: var(--toast-bg, #f1f5f9);
+  background: var(--toast-bg, var(--app-surface-sunken));
   color: var(--toast-accent, var(--app-text-muted));
   font-size: 13px;
   font-weight: 800;
@@ -179,17 +284,17 @@ textarea,
 
 .app-toast.toastify {
   right: 18px;
-  transition: opacity 120ms ease-out !important;
+  transition: opacity 160ms var(--app-ease) !important;
 }
 
 .app-toast.toast-info {
-  --toast-accent: var(--app-blue);
-  --toast-bg: #f1f5f9;
+  --toast-accent: var(--accent);
+  --toast-bg: var(--accent-weak);
 }
 
 .app-toast.toast-success {
   --toast-accent: var(--app-green);
-  --toast-bg: #dcfce7;
+  --toast-bg: rgba(93, 122, 74, 0.14);
 }
 
 .app-toast.toast-success::before {
@@ -198,7 +303,7 @@ textarea,
 
 .app-toast.toast-warning {
   --toast-accent: var(--app-orange);
-  --toast-bg: #fef3c7;
+  --toast-bg: rgba(185, 130, 47, 0.16);
 }
 
 .app-toast.toast-warning::before {
@@ -207,7 +312,7 @@ textarea,
 
 .app-toast.toast-error {
   --toast-accent: var(--app-red);
-  --toast-bg: #fee2e2;
+  --toast-bg: rgba(180, 71, 47, 0.14);
 }
 
 .app-toast.toast-error::before {
@@ -226,7 +331,7 @@ textarea,
 }
 
 .app-toast .toast-close:hover {
-  background: #f1f5f9;
+  background: var(--app-surface-sunken);
   color: var(--app-text);
 }
 
@@ -253,6 +358,9 @@ textarea,
   }
 }
 
+/* ============================================================
+   滚动条
+   ============================================================ */
 *::-webkit-scrollbar {
   width: var(--scrollbar-size);
   height: var(--scrollbar-size);
@@ -278,4 +386,3 @@ textarea,
 *::-webkit-scrollbar-corner {
   background: transparent;
 }
-

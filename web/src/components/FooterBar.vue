@@ -59,7 +59,7 @@ onMounted(async () => {
   width: 4px;
   height: 4px;
   border-radius: 50%;
-  background: rgba(0, 0, 0, 0.18);
+  background: rgba(120, 105, 85, 0.3);
 }
 
 .footer-links a {

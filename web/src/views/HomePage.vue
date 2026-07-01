@@ -9,51 +9,49 @@
   <div class="home-page">
     <main class="home-main">
       <section class="hero-section">
-        <div class="hero-copy card-surface">
-          <p class="hero-kicker">Dev Space</p>
-          <h1>欢迎来到 <span class="hero-brand-pixel">爬楼的猪 Dev</span></h1>
+        <div class="hero-copy">
+          <h1>随手做的小东西，<br />都丢在这儿了。</h1>
           <p class="hero-description">
-            项目教程 & Live Demo<br />
-            分享和记录一些我个人在做的, 感兴趣的工具和内容 😁
+            平时折腾的项目、写过的教程，还有能直接点开玩的小 demo。<br />
+            都是自己一点点攒下来的，想到什么就往里加。
           </p>
           <div class="hero-actions">
-            <a class="button-primary" href="/articles">查看项目教程</a>
+            <a class="button-primary" href="/articles">看教程</a>
             <a
-              class="button-secondary"
+              class="button-ghost"
               href="/livedemo"
               data-analytics-cta="live_demo"
               data-analytics-source="home.hero"
               data-analytics-label="查看 Demo / GitHub"
             >
-              查看 Demo / GitHub
+              翻翻 Demo
             </a>
           </div>
-          <!-- TODO 后续用接口换成热点内容... -->
           <ul class="hero-points">
-            <li>开发里的零散内容，慢慢放到这里</li>
-            <li>能复用的、能跑的、顺手能查的，会优先留下来</li>
+            <li>不太成体系，想到什么写什么</li>
+            <li>能复用、能跑、回头查着方便的，会留下来</li>
           </ul>
         </div>
 
         <div class="hero-preview">
-          <article class="preview-card preview-card--feature card-surface">
+          <article class="preview-card preview-card--feature">
             <div class="preview-card__header">
-              <span class="preview-card__eyebrow">Latest tutorial</span>
-              <span class="preview-status">持续维护</span>
+              <span class="preview-card__eyebrow">最新教程</span>
+              <span class="preview-status">还在写</span>
             </div>
             <h2>{{ featuredSeries.title }}</h2>
             <p class="preview-card__description">{{ featuredSeries.description }}</p>
             <div class="preview-tags">
               <span v-for="tag in featuredSeries.tags" :key="tag">{{ tag }}</span>
             </div>
-            <a class="text-link" :href="featuredSeries.tutorialLink">进入教程</a>
+            <a class="text-link" :href="featuredSeries.tutorialLink">去看看 →</a>
           </article>
 
           <div class="preview-grid">
-            <article class="preview-card preview-card--demo card-surface">
+            <article class="preview-card">
               <div class="preview-inline-meta">
-                <span class="preview-card__eyebrow">Live demo</span>
-                <span class="preview-status preview-status--muted">{{ featuredDemo.status === "done" ? "在线可用" : "查看详情" }}</span>
+                <span class="preview-card__eyebrow">在线 demo</span>
+                <span class="preview-status preview-status--muted">{{ featuredDemo.status === "done" ? "可以打开" : "看看" }}</span>
               </div>
               <h3>{{ featuredDemo.title }}</h3>
               <p class="preview-card__description">{{ featuredDemo.description }}</p>
@@ -66,18 +64,18 @@
                 data-analytics-source="home.featured_demo"
                 :data-analytics-label="featuredDemo.title || '在线体验'"
               >
-                在线体验
+                在线打开 →
               </a>
             </article>
 
-            <article class="preview-card card-surface">
+            <article class="preview-card">
               <div class="preview-inline-meta">
-                <span class="preview-card__eyebrow">More reading</span>
+                <span class="preview-card__eyebrow">还想看</span>
                 <span class="preview-status preview-status--muted">{{ secondarySeries.tags?.[0] || "文章" }}</span>
               </div>
               <h3>{{ secondarySeries.title }}</h3>
               <p class="preview-card__description">{{ secondarySeries.description }}</p>
-              <a class="text-link" :href="secondarySeries.tutorialLink">查看文章</a>
+              <a class="text-link" :href="secondarySeries.tutorialLink">去读读 →</a>
             </article>
           </div>
         </div>
@@ -86,12 +84,11 @@
       <section class="content-section">
         <div class="section-heading">
           <div>
-            <p class="section-kicker">Articles / Notes</p>
-            <h2>项目教程 / 开发记录</h2>
+            <h2>最近写的</h2>
           </div>
           <div class="section-heading-side">
-            <p class="section-intro">个人记录一些项目过程、配置折腾、工具记录，还有少量偏实验性的内容。</p>
-            <a class="section-link" href="/articles">查看全部项目</a>
+            <p class="section-intro">项目过程、配置折腾、工具记录，偶尔也有点偏实验的东西。</p>
+            <a class="section-link" href="/articles">全部文章 →</a>
           </div>
         </div>
 
@@ -103,12 +100,11 @@
       <section class="content-section demo-section">
         <div class="section-heading">
           <div>
-            <p class="section-kicker">Demo / Repo</p>
-            <h2>Live Demo & 轻量的项目</h2>
+            <h2>能上手玩的</h2>
           </div>
           <div class="section-heading-side">
-            <p class="section-intro">个人做的一些随便点开就能看、能体验的内容记录</p>
-            <a class="section-link" href="/livedemo">查看全部Live Demo</a>
+            <p class="section-intro">一些点开就能看、能上手试的小东西。</p>
+            <a class="section-link" href="/livedemo">全部 Demo →</a>
           </div>
         </div>
 
@@ -121,10 +117,9 @@
         <div class="updates-panel">
           <div class="section-heading section-heading--compact">
             <div>
-              <p class="section-kicker">Updates / Timeline</p>
               <h2>最近更新</h2>
             </div>
-            <a class="section-link" href="/articles">阅读更新</a>
+            <a class="section-link" href="/articles">看全部 →</a>
           </div>
 
           <ul class="updates-list">
@@ -137,10 +132,9 @@
             <img :src="'/api/v1/website/image/avatar/admin.jpg'" alt="about avatar" />
           </div>
           <div class="about-copy">
-            <p class="section-kicker">About</p>
-            <h2>一个长期维护的小空间</h2>
-            <p>平时写点项目实现、工具脚本、页面实验和部署记录。没有特别严格的边界，想到什么就慢慢补进来。</p>
-            <a class="button-ghost button-small" :href="githubLink">About me / 了解更多</a>
+            <h2>关于我</h2>
+            <p>平时写点项目、工具脚本、页面小实验和部署笔记。没什么严格边界，想到什么就慢慢补进来。</p>
+            <a class="button-ghost button-small" :href="githubLink">了解更多 →</a>
           </div>
         </section>
       </section>
@@ -317,7 +311,7 @@ onBeforeUnmount(() => {
 .card-surface {
   background: var(--app-surface);
   border: 1px solid var(--app-border);
-  border-radius: 24px;
+  border-radius: var(--app-radius-lg);
   box-shadow: var(--app-shadow-sm);
   transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
 }
@@ -326,7 +320,7 @@ onBeforeUnmount(() => {
   transform: translateY(-1px);
   box-shadow: var(--app-shadow-md);
   border-color: var(--app-border-strong);
-  background: rgba(255, 255, 255, 0.95);
+  background: var(--app-surface);
 }
 
 .hero-copy.card-surface,
@@ -356,32 +350,14 @@ onBeforeUnmount(() => {
   padding: 28px 12px 28px 0;
 }
 
-.hero-kicker,
-.section-kicker {
-  margin: 0 0 10px;
-  font-size: 12px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--app-blue);
-}
-
 .hero-copy h1 {
   margin: 0;
-  font-size: clamp(32px, 4vw, 46px);
-  line-height: 1.1;
-  letter-spacing: 0;
-}
-
-.hero-brand-pixel {
-  display: inline-block;
-  margin-left: 0.12em;
-  padding: 0.08em 0.26em 0.14em;
-  border-radius: 12px;
-  background: rgba(0, 113, 227, 0.09);
-  color: var(--app-blue);
-  font-size: 0.94em;
-  vertical-align: 0.06em;
-  white-space: nowrap;
+  font-family: var(--font-display);
+  font-size: clamp(33px, 4.4vw, 48px);
+  font-weight: 600;
+  line-height: 1.14;
+  letter-spacing: -0.01em;
+  color: var(--app-text);
 }
 
 .hero-description {
@@ -436,7 +412,7 @@ onBeforeUnmount(() => {
 .preview-card {
   padding: 24px;
   border: 1px solid var(--app-border);
-  border-radius: 26px;
+  border-radius: var(--app-radius-lg);
   background: var(--app-surface);
   box-shadow: var(--app-shadow-sm);
   transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease, background-color 0.22s ease;
@@ -450,62 +426,7 @@ onBeforeUnmount(() => {
   transform: translateY(-2px);
   box-shadow: var(--app-shadow-md);
   border-color: var(--app-border-strong);
-  background: rgba(255, 255, 255, 0.94);
-}
-
-.preview-card--demo {
-  position: relative;
-  overflow: hidden;
-  border-color: rgba(0, 113, 227, 0.16);
-  background: linear-gradient(135deg, rgba(0, 113, 227, 0.075), transparent 34%), var(--app-surface);
-}
-
-.preview-card--demo::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background: linear-gradient(90deg, rgba(37, 99, 235, 0.16) 0 16px, transparent 16px 100%) 24px 28px / 88px 3px no-repeat,
-    linear-gradient(90deg, rgba(15, 23, 42, 0.1) 0 42px, transparent 42px 100%) 24px 46px / 132px 3px no-repeat,
-    linear-gradient(90deg, rgba(37, 99, 235, 0.11) 0 58px, transparent 58px 100%) 24px 64px / 116px 3px no-repeat,
-    linear-gradient(90deg, rgba(15, 23, 42, 0.08) 0 28px, transparent 28px 100%) 24px 82px / 94px 3px no-repeat;
-  mask-image: linear-gradient(135deg, #000 0%, transparent 62%);
-}
-
-.preview-card--demo::after {
-  content: ">";
-  position: absolute;
-  top: 20px;
-  left: 10px;
-  color: rgba(37, 99, 235, 0.24);
-  font-family: "SFMono-Regular", Menlo, Consolas, "Liberation Mono", Courier, monospace;
-  font-size: 18px;
-  font-weight: 700;
-  pointer-events: none;
-}
-
-.preview-card--demo:hover {
-  border-color: rgba(0, 113, 227, 0.24);
-  background: linear-gradient(135deg, rgba(0, 113, 227, 0.095), transparent 36%), rgba(255, 255, 255, 0.94);
-}
-
-.preview-card--demo .preview-card__eyebrow,
-.preview-card--demo h3 {
-  position: relative;
-  color: var(--app-text);
-}
-
-.preview-card--demo .preview-status {
-  position: relative;
-  border: 1px solid rgba(0, 113, 227, 0.16);
-  border-radius: 999px;
-  background: rgba(0, 113, 227, 0.1);
-  color: var(--app-blue);
-}
-
-.preview-card--demo .preview-card__description,
-.preview-card--demo .text-link {
-  position: relative;
+  background: var(--app-surface);
 }
 
 .preview-card__header {
@@ -534,14 +455,14 @@ onBeforeUnmount(() => {
 .preview-status {
   padding: 6px 10px;
   border-radius: 999px;
-  background: rgba(0, 113, 227, 0.1);
+  background: var(--accent-weak);
   color: var(--app-blue);
-  border: 1px solid rgba(0, 113, 227, 0.16);
+  border: 1px solid var(--accent-line);
   font-size: 12px;
 }
 
 .preview-status--muted {
-  background: rgba(255, 255, 255, 0.64);
+  background: var(--app-surface);
   color: var(--app-text-muted);
   border-color: var(--app-border);
 }
@@ -557,6 +478,8 @@ onBeforeUnmount(() => {
 }
 
 .preview-card h2 {
+  font-family: var(--font-display);
+  font-weight: 600;
   font-size: 24px;
   line-height: 1.35;
 }
@@ -609,18 +532,18 @@ onBeforeUnmount(() => {
   padding: 0 12px;
   border-radius: 999px;
   border: 1px solid var(--app-border);
-  background: rgba(255, 255, 255, 0.58);
+  background: var(--app-surface);
   color: var(--app-text-muted);
   font-size: 12px;
 }
 
 .preview-tags span {
-  background: #ffffff;
-  border-color: #dbe3ef;
+  background: var(--app-surface);
+  border-color: var(--app-border);
 }
 
 .tag-chip--muted {
-  background: #ffffff;
+  background: var(--app-surface);
 }
 
 .text-link {
@@ -637,34 +560,6 @@ onBeforeUnmount(() => {
   gap: 18px;
 }
 
-.preview-screenshot {
-  height: 152px;
-  margin-bottom: 18px;
-  border-radius: 18px;
-  border: 1px solid var(--app-border);
-  overflow: hidden;
-  position: relative;
-  background: #f8fafc;
-}
-
-.preview-screenshot span {
-  position: absolute;
-  inset: 14px;
-  border-radius: 14px;
-}
-
-.preview-screenshot--code span {
-  background: linear-gradient(#0f172a, #0f172a) 18px 20px / 42% 6px no-repeat, linear-gradient(#2563eb, #2563eb) 18px 42px / 68% 6px no-repeat,
-    linear-gradient(#cbd5e1, #cbd5e1) 18px 64px / 54% 6px no-repeat, linear-gradient(#e2e8f0, #e2e8f0) 18px 86px / 74% 6px no-repeat,
-    linear-gradient(135deg, #f8fafc, #eff6ff);
-}
-
-.preview-screenshot--board span {
-  background: radial-gradient(circle at 22% 26%, #2563eb 0 10px, transparent 11px), radial-gradient(circle at 55% 40%, #93c5fd 0 14px, transparent 15px),
-    radial-gradient(circle at 74% 68%, #0f172a 0 8px, transparent 9px), linear-gradient(#dbeafe, #dbeafe) 22% 26% / 34% 2px no-repeat,
-    linear-gradient(#dbeafe, #dbeafe) 55% 40% / 26% 2px no-repeat, linear-gradient(180deg, #f8fafc, #eff6ff);
-}
-
 .content-section {
   margin-bottom: 72px;
 }
@@ -678,6 +573,8 @@ onBeforeUnmount(() => {
 }
 
 .section-heading h2 {
+  font-family: var(--font-display);
+  font-weight: 600;
   font-size: 28px;
   line-height: 1.2;
 }
@@ -742,7 +639,7 @@ onBeforeUnmount(() => {
 
 .about-panel {
   padding: 12px 0 0 24px;
-  border-left: 1px solid #e9eef5;
+  border-left: 1px solid var(--app-border);
   border-radius: 0;
 }
 
@@ -769,8 +666,8 @@ onBeforeUnmount(() => {
   width: 88px;
   height: 88px;
   overflow: hidden;
-  border-radius: 24px;
-  background: rgba(0, 0, 0, 0.08);
+  border-radius: var(--app-radius-lg);
+  background: var(--app-surface-sunken);
 }
 
 .about-copy {
@@ -778,58 +675,10 @@ onBeforeUnmount(() => {
   gap: 14px;
 }
 
-.button-primary,
-.button-secondary,
-.button-ghost {
-  height: 42px;
-  padding: 0 16px;
-  border-radius: 12px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  text-decoration: none;
+.about-copy h2 {
+  font-family: var(--font-display);
   font-weight: 600;
-  transition: transform 0.2s ease, background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
-}
-
-.button-small {
-  height: 38px;
-  padding: 0 14px;
-  font-size: 14px;
-}
-
-.button-primary {
-  background: var(--app-blue);
-  color: #ffffff;
-  border: 1px solid var(--app-blue);
-}
-
-.button-primary:hover {
-  background: var(--app-blue-hover);
-  border-color: var(--app-blue-hover);
-  transform: translateY(-1px);
-}
-
-.button-secondary {
-  background: rgba(0, 113, 227, 0.1);
-  color: var(--app-blue);
-  border: 1px solid rgba(0, 113, 227, 0.16);
-}
-
-.button-secondary:hover {
-  background: rgba(0, 113, 227, 0.14);
-  transform: translateY(-1px);
-}
-
-.button-ghost {
-  background: #ffffff;
-  color: var(--app-text);
-  border: 1px solid var(--app-border);
-}
-
-.button-ghost:hover {
-  background: #f8fafc;
-  transform: translateY(-1px);
+  font-size: 24px;
 }
 
 @media (max-width: 1080px) {

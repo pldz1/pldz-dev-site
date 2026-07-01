@@ -259,7 +259,7 @@ onBeforeUnmount(() => {
   display: flex;
   justify-content: center;
   align-items: center;
-  background: rgba(15, 23, 42, 0.42);
+  background: rgba(42, 36, 32, 0.45);
   overflow: auto;
   padding: 32px 18px;
 }
@@ -288,7 +288,7 @@ onBeforeUnmount(() => {
   inset: auto;
   min-height: 330px;
   z-index: 10032;
-  background: rgba(255, 255, 255, 0.92);
+  background: var(--app-surface);
 }
 
 .auth-header {
@@ -305,14 +305,14 @@ onBeforeUnmount(() => {
   width: 34px;
   border: 1px solid var(--app-border);
   border-radius: 999px;
-  background: #ffffff url("../assets/svgs/close-24.svg") no-repeat center;
+  background: var(--app-surface) url("../assets/svgs/close-24.svg") no-repeat center;
   background-size: 18px;
   cursor: pointer;
 }
 
 .auth-close:hover {
-  background-color: #ffffff;
-  border-color: rgba(0, 113, 227, 0.24);
+  background-color: var(--app-surface);
+  border-color: var(--accent-line);
 }
 
 .auth-container h2 {
@@ -334,7 +334,7 @@ onBeforeUnmount(() => {
   margin: 10px 0 0;
   border: 1px solid var(--app-border);
   border-radius: 14px;
-  background: #ffffff;
+  background: var(--app-surface);
   color: var(--app-text);
   font: inherit;
   box-shadow: none;
@@ -342,9 +342,9 @@ onBeforeUnmount(() => {
 
 .auth-container input:focus {
   outline: none;
-  border-color: rgba(0, 113, 227, 0.34);
-  background: #ffffff;
-  box-shadow: 0 0 0 4px rgba(0, 113, 227, 0.1);
+  border-color: var(--accent-line);
+  background: var(--app-surface);
+  box-shadow: 0 0 0 4px var(--accent-weak);
 }
 
 .auth-container button {
@@ -374,15 +374,15 @@ onBeforeUnmount(() => {
 }
 
 .auth-container .btn-register {
-  background: #ffffff;
+  background: var(--app-surface);
   border-color: var(--app-border);
   color: var(--app-text);
 }
 
 .auth-container .btn-login {
   background: var(--app-blue);
-  color: #ffffff;
-  box-shadow: 0 10px 24px rgba(0, 113, 227, 0.2);
+  color: var(--app-surface);
+  box-shadow: 0 10px 24px rgba(80, 55, 35, 0.16);
 }
 
 .auth-container .error {
@@ -429,7 +429,7 @@ onBeforeUnmount(() => {
   border-radius: 20px;
   overflow: hidden;
   flex-shrink: 0;
-  background: #ffffff;
+  background: var(--app-surface);
 }
 
 .info-avatar img {
@@ -448,8 +448,8 @@ onBeforeUnmount(() => {
   align-items: center;
   justify-content: center;
   font-size: 2rem;
-  background: rgba(0, 0, 0, 0.4);
-  color: #ffffff;
+  background: rgba(120, 105, 85, 0.45);
+  color: var(--app-surface);
   border: none;
   opacity: 0;
   transition: opacity 0.2s ease;
@@ -481,7 +481,7 @@ onBeforeUnmount(() => {
   overflow: hidden;
   color: var(--app-text);
   font-size: 18px;
-  font-weight: 750;
+  font-weight: 700;
   line-height: 1.2;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -504,7 +504,7 @@ onBeforeUnmount(() => {
   min-height: 26px;
   padding: 0 10px;
   border-radius: 999px;
-  background: rgba(0, 113, 227, 0.11);
+  background: var(--accent-weak);
   color: var(--app-blue);
   font-size: 12px;
   font-weight: 700;
@@ -512,7 +512,7 @@ onBeforeUnmount(() => {
 }
 
 .security-pill {
-  background: #ffffff;
+  background: var(--app-surface);
   color: var(--app-text-muted);
   border: 1px solid var(--app-border);
 }
@@ -540,21 +540,21 @@ onBeforeUnmount(() => {
 
 .btn-profile-primary {
   background: var(--app-blue);
-  color: #ffffff;
-  box-shadow: 0 10px 24px rgba(0, 113, 227, 0.2);
+  color: var(--app-surface);
+  box-shadow: 0 10px 24px rgba(80, 55, 35, 0.16);
 }
 
 .btn-profile-secondary {
-  background: #ffffff;
+  background: var(--app-surface);
   border-color: var(--app-border);
   color: var(--app-text);
 }
 
 .btn-profile-danger {
   grid-column: 1 / -1;
-  background: rgba(255, 59, 48, 0.1);
-  border-color: rgba(255, 59, 48, 0.2);
-  color: #c01f18;
+  background: rgba(180, 71, 47, 0.1);
+  border-color: rgba(180, 71, 47, 0.2);
+  color: var(--app-red);
 }
 
 @media (max-width: 480px) {

@@ -6,10 +6,9 @@
     <main class="livedemo-shell">
       <section class="livedemo-heading">
         <div class="hero-copy">
-          <p class="page-kicker">Code Space / Live Demos</p>
-          <p class="page-description">项目预览</p>
+          <p class="page-description">能上手玩的 Demo</p>
         </div>
-        <span class="project-count">{{ mockData.length }} 个项目</span>
+        <span class="project-count">共 {{ mockData.length }} 个</span>
       </section>
 
       <section class="home-content" aria-label="项目列表">
@@ -20,9 +19,11 @@
             <span>{{ c.title || "未命名" }}</span>
           </header>
 
-          <!-- 媒体：缩略图 / 悬停切换 GIF -->
-          <figure class="preview-gif" @mouseenter="hovered = c.url || c.previewgif || c.thumbnail" @mouseleave="hovered = null">
-            <img :src="mediaSrc(c)" :alt="c.title || '预览图'" loading="lazy" decoding="async" @error="(e) => handleImgError(e, c)" />
+          <!-- 媒体：缩略图 / 悬停切换 GIF（CSS-only，不触发 JS 重渲染） -->
+          <figure class="preview-gif">
+            <img v-if="hasThumb(c)" class="preview-gif__thumb" :src="c.thumbnail" :alt="c.title || '预览图'" loading="lazy" decoding="async" @error="(e) => handleImgError(e, c)" />
+            <img v-if="c.previewgif" class="preview-gif__gif" :src="c.previewgif" :alt="c.title || 'GIF 预览'" loading="lazy" decoding="async" @error="(e) => handleImgError(e, c)" />
+            <img v-if="!hasThumb(c) && !c.previewgif" :src="'/404.jpg'" :alt="c.title || '暂无预览'" loading="lazy" decoding="async" />
           </figure>
 
           <!-- 元信息：日期 + 目录 -->
@@ -40,15 +41,15 @@
           <div class="actions">
             <button
               class="btn"
-              :aria-label="`打开预览：${c.title}`"
+              :aria-label="`在线打开：${c.title}`"
               @click="onGoPreview(c.url)"
               :disabled="!c.url"
-              :title="c.url ? '打开预览' : '暂无预览地址'"
+              :title="c.url ? '在线打开' : '还没放预览地址'"
               data-analytics-cta="live_demo"
               :data-analytics-source="`livedemo.list.${c.folder || c.title || 'unknown'}`"
               :data-analytics-label="c.title || 'Live Demo'"
             >
-              打开预览
+              在线打开
             </button>
 
             <a
@@ -57,12 +58,12 @@
               :href="c.sourcelink"
               target="_blank"
               rel="noopener noreferrer"
-              :aria-label="`查看源码：${c.title}`"
-              title="查看源码"
+              :aria-label="`看源码：${c.title}`"
+              title="看源码"
             >
-              查看源码
+              看源码
             </a>
-            <button v-else class="btn btn-secondary" disabled title="暂无源码">查看源码</button>
+            <button v-else class="btn btn-secondary" disabled title="还没放源码">看源码</button>
           </div>
         </article>
       </section>
@@ -92,7 +93,7 @@ import { getAllLiveDemos } from "../utils/apis";
  */
 const mockData = ref([]);
 
-const hovered = ref(null);
+const hasThumb = (c) => Boolean(c.thumbnail);
 
 const onGoPreview = (url) => {
   if (!url) return;
@@ -119,14 +120,6 @@ const handleImgError = (e, c) => {
   }
   el.dataset.fallbackTried = "1";
   el.src = c.thumbnail && el.src !== c.thumbnail ? c.thumbnail : c.previewgif || "/404.jpg";
-};
-
-const mediaSrc = (c) => {
-  // 悬停时优先 gif，否则缩略图；都没有则 404
-  const preferGif = hovered.value === (c.url || c.previewgif || c.thumbnail);
-  const gif = c.previewgif;
-  const thumb = c.thumbnail;
-  return preferGif && gif ? gif : thumb || gif || "/404.jpg";
 };
 
 const onToggleMobileMenu = () => {
@@ -164,7 +157,7 @@ onMounted(async () => {
   justify-content: space-between;
   gap: 24px;
   padding-bottom: 18px;
-  border-bottom: 1px solid #e7edf5;
+  border-bottom: 1px solid var(--app-border);
 }
 
 .hero-copy {
@@ -172,19 +165,12 @@ onMounted(async () => {
   gap: 6px;
 }
 
-.page-kicker {
-  margin: 0 0 12px;
-  color: var(--app-blue);
-  font-size: 12px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-}
-
 .page-description {
   margin: 0;
   color: var(--app-text);
-  font-size: 18px;
-  line-height: 1.45;
+  font-family: var(--font-display);
+  font-size: 26px;
+  line-height: 1.25;
   font-weight: 600;
 }
 
@@ -195,7 +181,7 @@ onMounted(async () => {
   padding: 0 14px;
   border: 1px solid var(--app-border);
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.7);
+  background: var(--app-surface);
   color: var(--app-text-muted);
   font-size: 13px;
   font-weight: 600;
@@ -216,10 +202,10 @@ onMounted(async () => {
   padding: 0;
   overflow: hidden;
   border: 1px solid var(--app-border);
-  border-radius: 22px;
+  border-radius: var(--app-radius-lg);
   background: var(--app-surface);
   box-shadow: var(--app-shadow-sm);
-  transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+  transition: transform var(--app-motion-duration) var(--app-ease), border-color var(--app-motion-duration) var(--app-ease);
 }
 
 .live-demo-card:hover {
@@ -233,7 +219,7 @@ onMounted(async () => {
   padding: 16px 16px 12px;
   color: var(--app-text);
   font-size: 18px;
-  font-weight: 760;
+  font-weight: 700;
   line-height: 1.24;
   border-bottom: 1px solid var(--app-border);
 }
@@ -246,13 +232,14 @@ onMounted(async () => {
 }
 
 .preview-gif {
+  position: relative;
   width: 100%;
   margin: 0;
   padding: 12px;
   aspect-ratio: 16 / 10;
   overflow: hidden;
   border-bottom: 1px solid var(--app-border);
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.45), rgba(245, 245, 247, 0.8));
+  background: linear-gradient(180deg, var(--app-surface), var(--app-surface-sunken));
 }
 
 .preview-gif img {
@@ -261,8 +248,30 @@ onMounted(async () => {
   object-fit: cover;
   display: block;
   border: 1px solid var(--app-border);
-  border-radius: 14px;
-  background: #ffffff;
+  border-radius: var(--app-radius-lg);
+  background: var(--app-surface);
+}
+
+.preview-gif__thumb {
+  position: relative;
+  z-index: 1;
+}
+
+.preview-gif__gif {
+  position: absolute;
+  inset: 12px;
+  z-index: 2;
+  opacity: 0;
+  transition: opacity var(--app-motion-duration) var(--app-ease);
+  pointer-events: none;
+}
+
+.live-demo-card:hover .preview-gif__gif {
+  opacity: 1;
+}
+
+.live-demo-card:hover .preview-gif__thumb {
+  opacity: 0;
 }
 
 .card-meta {
@@ -280,19 +289,19 @@ onMounted(async () => {
   min-height: 24px;
   padding: 0 8px;
   overflow: hidden;
-  border: 1px solid rgba(0, 113, 227, 0.16);
+  border: 1px solid var(--accent-line);
   border-radius: 999px;
-  background: rgba(0, 113, 227, 0.1);
-  color: var(--app-blue);
+  background: var(--accent-weak);
+  color: var(--accent);
   font-size: 12px;
-  font-weight: 750;
+  font-weight: 700;
   line-height: 1.2;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .chip-muted {
-  background: rgba(0, 0, 0, 0.045);
+  background: rgba(120, 105, 85, 0.08);
   color: var(--app-text-muted);
 }
 
@@ -328,14 +337,14 @@ onMounted(async () => {
   align-items: center;
   justify-content: center;
   border: 1px solid transparent;
-  border-radius: 14px;
-  color: #ffffff;
+  border-radius: var(--app-radius-lg);
+  color: var(--app-surface);
   font-size: 13px;
-  font-weight: 720;
+  font-weight: 700;
   text-decoration: none;
   cursor: pointer;
-  box-shadow: 0 8px 20px rgba(0, 113, 227, 0.16);
-  transition: transform 140ms ease, box-shadow 140ms ease, background-color 140ms ease, opacity 140ms ease;
+  box-shadow: var(--app-shadow-sm);
+  transition: transform var(--app-motion-duration) var(--app-ease), background-color var(--app-motion-duration) var(--app-ease), border-color var(--app-motion-duration) var(--app-ease), opacity var(--app-motion-duration) var(--app-ease);
 }
 
 .btn {
@@ -345,17 +354,17 @@ onMounted(async () => {
 .btn:hover {
   background: var(--app-blue-hover);
   transform: translateY(-1px);
-  box-shadow: 0 10px 24px rgba(0, 113, 227, 0.2);
+  box-shadow: 0 10px 24px rgba(80, 55, 35, 0.16);
 }
 
 .btn:active {
   transform: translateY(0);
-  box-shadow: 0 6px 16px rgba(0, 113, 227, 0.14);
+  box-shadow: 0 6px 16px rgba(80, 55, 35, 0.12);
 }
 
 .btn:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 4px rgba(0, 113, 227, 0.14), 0 8px 20px rgba(0, 113, 227, 0.16);
+  box-shadow: 0 0 0 4px rgba(189, 88, 54, 0.14), 0 8px 20px rgba(80, 55, 35, 0.12);
 }
 
 .btn[disabled] {
@@ -366,14 +375,14 @@ onMounted(async () => {
 }
 
 .btn-secondary {
-  background: rgba(255, 255, 255, 0.74);
+  background: var(--app-surface);
   border-color: var(--app-border);
   color: var(--app-text);
   box-shadow: none;
 }
 
 .btn-secondary:hover {
-  background: #ffffff;
+  background: var(--app-surface);
   box-shadow: var(--app-shadow-sm);
 }
 
@@ -437,7 +446,7 @@ onMounted(async () => {
   }
 
   .live-demo-card {
-    border-radius: 18px;
+    border-radius: var(--app-radius-lg);
   }
 
   .preview-title {

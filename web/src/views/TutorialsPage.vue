@@ -1,7 +1,7 @@
 <template>
   <MobileDrawer v-model="isMobileMenuOpen" subtitle="Articles, notes, demos">
-    <p>教程页</p>
-    <p>{{ isSeriesView ? "当前专栏的系列文章。" : "按专栏整理全部教程。" }}</p>
+    <p>文章与教程</p>
+    <p>{{ isSeriesView ? "这个专栏下的文章。" : "按专栏分门别类。" }}</p>
   </MobileDrawer>
 
   <HeaderBar :route-name="'教程'" @toggle-mobile-menu="onToggleMobileMenu" />
@@ -10,12 +10,11 @@
     <main class="tutorials-main">
       <section class="tutorials-hero">
         <div class="hero-copy">
-          <p class="page-kicker">Articles / Tutorials</p>
           <p class="page-description">{{ pageTitle }}</p>
         </div>
 
         <div class="toolbar">
-          <a v-if="isSeriesView" class="back-link" href="/articles">返回专栏</a>
+          <a v-if="isSeriesView" class="back-link" href="/articles">返回</a>
           <button
             v-for="option in sortOptions"
             :key="option.value"
@@ -50,7 +49,7 @@
             <div class="article-copy">
               <div class="article-meta">
                 <span class="meta-pill">第 {{ article.serialNo }} 篇</span>
-                <span>{{ article.date || "暂无日期" }}</span>
+                <span>{{ article.date || "未注明日期" }}</span>
                 <span>{{ article.views || 0 }} 次浏览</span>
               </div>
 
@@ -58,14 +57,14 @@
                 <a :href="getArticleLink(article)">{{ article.title }}</a>
               </h2>
 
-              <p>{{ article.summary || "暂无摘要。" }}</p>
+              <p>{{ article.summary || "还没写摘要" }}</p>
 
               <div class="article-footer">
                 <div class="tag-list">
                   <span v-for="tag in article.tags || []" :key="tag" class="tag-chip">{{ tag }}</span>
                 </div>
 
-                <a class="article-link" :href="getArticleLink(article)">查看文章</a>
+                <a class="article-link" :href="getArticleLink(article)">去读读</a>
               </div>
             </div>
           </template>
@@ -85,14 +84,14 @@
                 <a :href="getArticleLink(article)">{{ getCategoryTitle(article) }}</a>
               </h2>
 
-              <p>{{ article.summary || "暂无摘要。" }}</p>
+              <p>{{ article.summary || "还没写摘要" }}</p>
 
               <div class="article-footer">
                 <div class="tag-list">
                   <span v-for="tag in article.tags || []" :key="tag" class="tag-chip">{{ tag }}</span>
                 </div>
 
-                <a class="article-link" :href="getArticleLink(article)">进入系列</a>
+                <a class="article-link" :href="getArticleLink(article)">进专栏</a>
               </div>
             </div>
           </template>
@@ -267,20 +266,13 @@ watch(activeCategory, loadArticles);
   gap: 6px;
 }
 
-.page-kicker {
-  margin: 0 0 12px;
-  font-size: 12px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--app-blue);
-}
-
 .page-description {
   margin: 0;
-  color: var(--app-text);
-  font-size: 18px;
-  line-height: 1.45;
+  font-family: var(--font-display);
   font-weight: 600;
+  color: var(--app-text);
+  font-size: 26px;
+  line-height: 1.3;
 }
 
 .toolbar {
@@ -297,7 +289,7 @@ watch(activeCategory, loadArticles);
   padding: 0 14px;
   border: 1px solid var(--app-border);
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.7);
+  background: var(--app-surface);
   color: var(--app-text);
   font-size: 13px;
   font-weight: 600;
@@ -305,7 +297,7 @@ watch(activeCategory, loadArticles);
 }
 
 .back-link:hover {
-  border-color: #bfd4ff;
+  border-color: var(--accent-line);
   color: var(--app-blue);
 }
 
@@ -314,7 +306,7 @@ watch(activeCategory, loadArticles);
   padding: 0 16px;
   border: 1px solid var(--app-border);
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.75);
+  background: var(--app-surface);
   color: var(--app-text-muted);
   font-size: 13px;
   cursor: pointer;
@@ -322,15 +314,15 @@ watch(activeCategory, loadArticles);
 }
 
 .sort-chip:hover {
-  background: rgba(255, 255, 255, 0.84);
-  border-color: #cbd8e6;
+  background: var(--app-surface);
+  border-color: var(--app-border-strong);
   color: var(--app-text);
   transform: translateY(-1px);
 }
 
 .sort-chip.active {
-  background: rgba(0, 113, 227, 0.1);
-  border-color: #bfd4ff;
+  background: var(--accent-weak);
+  border-color: var(--accent-line);
   color: var(--app-blue);
 }
 
@@ -367,7 +359,7 @@ watch(activeCategory, loadArticles);
   bottom: 26px;
   left: 118px;
   width: 1px;
-  background: rgba(0, 0, 0, 0.12);
+  background: rgba(120, 105, 85, 0.22);
 }
 
 .category-card {
@@ -375,7 +367,7 @@ watch(activeCategory, loadArticles);
   grid-template-rows: auto 1fr;
   overflow: hidden;
   border: 1px solid var(--app-border);
-  border-radius: 20px;
+  border-radius: var(--app-radius-xl);
   background: var(--app-surface);
   box-shadow: var(--app-shadow-sm);
   transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
@@ -431,8 +423,8 @@ watch(activeCategory, loadArticles);
   align-self: start;
   padding: 10px;
   border: 1px solid var(--app-border);
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.54);
+  border-radius: var(--app-radius-sm);
+  background: var(--app-surface);
   aspect-ratio: 16 / 10;
 }
 
@@ -452,7 +444,7 @@ watch(activeCategory, loadArticles);
   display: block;
   overflow: hidden;
   border-bottom: 1px solid var(--app-border);
-  background: #eef4f9;
+  background: var(--app-surface-sunken);
   aspect-ratio: 16 / 10;
 }
 
@@ -496,7 +488,7 @@ watch(activeCategory, loadArticles);
   padding: 0 10px;
   border-radius: 999px;
   border: 1px solid var(--app-border);
-  background: rgba(255, 255, 255, 0.7);
+  background: var(--app-surface);
   color: var(--app-text-muted);
   font-size: 12px;
 }
@@ -570,7 +562,7 @@ watch(activeCategory, loadArticles);
   padding: 0 14px;
   border: 1px solid var(--app-border);
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.75);
+  background: var(--app-surface);
   color: var(--app-text-muted);
   font-size: 14px;
   cursor: pointer;
@@ -579,8 +571,8 @@ watch(activeCategory, loadArticles);
 
 .page-button:hover,
 .page-number:hover {
-  background: rgba(255, 255, 255, 0.84);
-  border-color: #cbd8e6;
+  background: var(--app-surface);
+  border-color: var(--app-border-strong);
   color: var(--app-text);
 }
 
@@ -590,8 +582,8 @@ watch(activeCategory, loadArticles);
 }
 
 .page-number.active {
-  background: rgba(0, 113, 227, 0.1);
-  border-color: #bfd4ff;
+  background: var(--accent-weak);
+  border-color: var(--accent-line);
   color: var(--app-blue);
 }
 

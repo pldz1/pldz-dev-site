@@ -19,7 +19,7 @@
           {{ item.text }}
         </button>
       </div>
-      <div v-else class="catalog-empty">暂无目录</div>
+      <div v-else class="catalog-empty">还没有目录</div>
     </div>
   </div>
 </template>
@@ -94,10 +94,8 @@ onUnmounted(() => {
 }
 
 .catalog-card-header div > span {
-  font-size: 13px;
-  color: var(--app-text-muted);
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
+  font-size: 14px;
+  color: var(--app-text);
 }
 
 .progress {
@@ -140,9 +138,9 @@ onUnmounted(() => {
 }
 
 .catalog-link.is-active {
-  color: var(--app-text);
+  color: var(--accent);
   font-weight: 600;
-  border-left-color: var(--app-text);
+  border-left-color: var(--accent);
 }
 
 .catalog-link--depth-1 {
@@ -173,7 +171,7 @@ onUnmounted(() => {
 }
 
 .catalog-content::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.24);
+  background: rgba(120, 105, 85, 0.3);
   border-radius: 999px;
 }
 

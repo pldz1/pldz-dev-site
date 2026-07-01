@@ -4,7 +4,7 @@
       <span class="timeline-type">{{ item.type }}</span>
       <span class="timeline-title">{{ item.title }}</span>
       <span class="timeline-date">{{ formattedDate }}</span>
-      <span class="timeline-action">阅读更新</span>
+      <span class="timeline-action">看看</span>
     </a>
   </li>
 </template>
@@ -45,7 +45,7 @@ const formattedDate = computed(() => (props.item.date || "").replaceAll("-", "."
   height: 28px;
   padding: 0 10px;
   border-radius: 999px;
-  background: rgba(0, 0, 0, 0.045);
+  background: rgba(120, 105, 85, 0.08);
   color: var(--app-text-muted);
   font-size: 12px;
   text-transform: lowercase;

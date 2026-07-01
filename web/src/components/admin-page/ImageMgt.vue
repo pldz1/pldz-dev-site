@@ -208,8 +208,8 @@ async function onUploadImageSuccess() {
   height: 72px;
   border-radius: 14px;
   overflow: hidden;
-  background: #eef2f7;
-  border: 1px solid #e2e8f0;
+  background: var(--app-surface-sunken);
+  border: 1px solid var(--app-border);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -222,7 +222,7 @@ async function onUploadImageSuccess() {
 }
 
 .helper-text {
-  color: #6b7280;
+  color: var(--app-text-muted);
   font-size: 13px;
 }
 </style>

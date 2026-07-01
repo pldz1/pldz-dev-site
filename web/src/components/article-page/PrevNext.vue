@@ -69,9 +69,9 @@ watch([() => props.id, () => props.category], async () => {
 /* 分割线样式 */
 .divider {
   width: 100%;
-  height: 2px;
+  height: 1px;
   margin: 20px 0;
-  background: linear-gradient(to right, rgba(0, 123, 255, 0) 0%, rgba(0, 123, 255, 0.6) 50%, rgba(0, 123, 255, 0) 100%);
+  background: linear-gradient(to right, rgba(189, 88, 54, 0) 0%, rgba(189, 88, 54, 0.4) 50%, rgba(189, 88, 54, 0) 100%);
 }
 
 .prev-next-nav {
@@ -90,10 +90,11 @@ watch([() => props.id, () => props.category], async () => {
   margin: 0 10px;
   display: block;
   text-decoration: none;
-  color: #007bff;
-  font-size: 16px;
-  padding: 8px 12px;
-  transition: background-color 0.3s, color 0.3s;
+  color: var(--accent);
+  font-size: 15px;
+  padding: 12px 14px;
+  transition: background-color var(--app-motion-duration) var(--app-ease), color var(--app-motion-duration) var(--app-ease),
+    border-color var(--app-motion-duration) var(--app-ease);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -101,8 +102,8 @@ watch([() => props.id, () => props.category], async () => {
 
 .prev,
 .next {
-  border: 1px solid #007bff;
-  border-radius: 4px;
+  border: 1px solid var(--app-border);
+  border-radius: var(--app-radius-md);
   height: 100%;
 }
 
@@ -115,7 +116,8 @@ watch([() => props.id, () => props.category], async () => {
 }
 
 .nav-link:hover {
-  background-color: #007bff;
-  color: #fff;
+  background-color: var(--accent);
+  border-color: var(--accent);
+  color: #fffdf8;
 }
 </style>

@@ -92,7 +92,7 @@ const menuItems = [
     name: "数据统计",
     icon: "chart",
     caption: "查看 PV/UV、文章点击和按钮点击",
-    gradient: "linear-gradient(135deg, #2563eb 0%, #0f766e 100%)",
+    gradient: "linear-gradient(135deg, #bd5836 0%, #5d7a4a 100%)",
     requiresCategories: false,
   },
   {
@@ -100,7 +100,7 @@ const menuItems = [
     name: "用户管理",
     icon: "users",
     caption: "管理后台用户权限与基础资料",
-    gradient: "linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)",
+    gradient: "linear-gradient(135deg, #7b5e4e 0%, #8b6b5a 100%)",
     requiresCategories: false,
   },
   {
@@ -108,7 +108,7 @@ const menuItems = [
     name: "账号安全",
     icon: "shield",
     caption: "配置登录保护与两步验证",
-    gradient: "linear-gradient(135deg, #0f766e 0%, #2563eb 100%)",
+    gradient: "linear-gradient(135deg, #5d7a4a 0%, #bd5836 100%)",
     requiresCategories: false,
   },
   {
@@ -116,7 +116,7 @@ const menuItems = [
     name: "图片管理",
     icon: "image",
     caption: "上传与维护内容配图",
-    gradient: "linear-gradient(135deg, #14b8a6 0%, #0ea5e9 100%)",
+    gradient: "linear-gradient(135deg, #6b9073 0%, #b57652 100%)",
     requiresCategories: true,
   },
   {
@@ -124,7 +124,7 @@ const menuItems = [
     name: "缓存资源管理",
     icon: "cache",
     caption: "维护静态缓存与资源文件",
-    gradient: "linear-gradient(135deg, #0ea5e9 0%, #6366f1 100%)",
+    gradient: "linear-gradient(135deg, #b57652 0%, #7b5e4e 100%)",
     requiresCategories: false,
   },
 ];
@@ -339,12 +339,12 @@ watch(
 
 .sidebar-link:hover {
   color: var(--app-text);
-  background: rgba(255, 255, 255, 0.54);
+  background: var(--app-surface);
   transform: none;
 }
 
 .sidebar-link.active {
-  background: rgba(255, 255, 255, 0.7);
+  background: var(--app-surface);
   border-radius: 12px;
 }
 
@@ -397,7 +397,7 @@ watch(
 .loading-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(245, 245, 247, 0.82);
+  background: var(--app-surface-sunken);
   z-index: 4;
   display: flex;
   flex-direction: column;
@@ -412,7 +412,7 @@ watch(
   width: 46px;
   height: 46px;
   border-radius: 50%;
-  border: 4px solid rgba(0, 113, 227, 0.14);
+  border: 4px solid var(--accent-weak);
   border-top-color: var(--app-blue);
   animation: spin 0.8s linear infinite;
 }

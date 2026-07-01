@@ -1,5 +1,5 @@
 <template>
-  <MobileDrawer v-model="isMobileMenuOpen" subtitle="Article, chapters" :show-nav-placeholder="false">
+  <MobileDrawer v-model="isMobileMenuOpen" subtitle="文章目录" :show-nav-placeholder="false">
     <ChapterBlock :headings="headings"></ChapterBlock>
   </MobileDrawer>
 
@@ -19,9 +19,9 @@
       <div class="article-header card-surface">
         <h1 class="article-title">{{ article.meta.title }}</h1>
         <div class="article-meta">
-          <span class="article-meta-item"> 最新日期: {{ article.meta.date }}</span>
-          <span>👀 {{ article.views }} 次</span>
-          <span>🏷️ 专栏：{{ article.meta.category }}</span>
+          <span class="article-meta-item">{{ article.meta.date }}</span>
+          <span>{{ article.views }} 次阅读</span>
+          <span>{{ article.meta.category }}</span>
         </div>
       </div>
 
@@ -284,7 +284,7 @@ watch(
   align-items: center;
   flex-wrap: wrap;
   gap: 10px;
-  color: #5b687c;
+  color: var(--app-text-muted);
   font-size: 13px;
 }
 
@@ -294,8 +294,8 @@ watch(
   min-height: 30px;
   padding: 0 11px;
   border-radius: 999px;
-  border: 1px solid rgba(203, 213, 225, 0.8);
-  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid var(--app-border);
+  background: var(--app-surface);
 }
 
 .article-meta-item {
@@ -332,10 +332,9 @@ watch(
 .next-previous-article span {
   display: inline-block;
   margin-bottom: 18px;
-  font-size: 14px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  font-family: var(--font-display);
+  font-size: 19px;
+  font-weight: 600;
   color: var(--app-text);
 }
 
@@ -378,13 +377,15 @@ watch(
 }
 
 .markdown-body :deep(h1) {
+  font-family: var(--font-display);
   font-size: 2.4rem;
 }
 
 .markdown-body :deep(h2) {
+  font-family: var(--font-display);
   font-size: 1.9rem;
   padding-bottom: 0.42em;
-  border-bottom: 1px solid rgba(226, 232, 240, 0.95);
+  border-bottom: 1px solid var(--app-border);
 }
 
 .markdown-body :deep(h3) {
@@ -424,19 +425,20 @@ watch(
 
 .markdown-body :deep(code) {
   padding: 0.16em 0.42em;
-  background: #eef2ff;
-  color: #3347c7;
+  border-radius: var(--app-radius-sm);
+  background: var(--accent-weak);
+  color: var(--accent-hover);
   font-size: 0.92em;
-  font-family: "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
+  font-family: var(--font-mono);
 }
 
 .markdown-body :deep(pre) {
   padding: 22px 24px;
-  border-radius: 16px;
-  background: linear-gradient(180deg, #0f172a 0%, #111827 100%);
-  color: #e2e8f0;
+  border-radius: var(--app-radius-lg);
+  background: linear-gradient(180deg, #2c2823 0%, #262220 100%);
+  color: #ece4d8;
   overflow-x: auto;
-  box-shadow: inset 0 0 0 1px rgba(148, 163, 184, 0.12);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
 }
 
 .markdown-body :deep(pre code) {
@@ -448,10 +450,10 @@ watch(
 .markdown-body :deep(.code-block) {
   margin: 1.2em 0;
   max-width: 100%;
-  border-radius: 18px;
+  border-radius: var(--app-radius-lg);
   overflow: hidden;
-  background: linear-gradient(180deg, #111827 0%, #0f172a 100%);
-  box-shadow: inset 0 0 0 1px rgba(148, 163, 184, 0.12);
+  background: linear-gradient(180deg, #2c2823 0%, #262220 100%);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
 }
 
 .markdown-body :deep(.code-block__header) {
@@ -460,8 +462,8 @@ watch(
   justify-content: space-between;
   gap: 12px;
   padding: 10px 14px;
-  background: rgba(15, 23, 42, 0.92);
-  border-bottom: 1px solid rgba(148, 163, 184, 0.14);
+  background: rgba(20, 17, 15, 0.35);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .markdown-body :deep(.code-block__lang) {
@@ -469,15 +471,15 @@ watch(
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #93c5fd;
+  color: #e3b496;
 }
 
 .markdown-body :deep(.code-block__copy) {
-  border: 1px solid rgba(148, 163, 184, 0.24);
+  border: 1px solid rgba(255, 255, 255, 0.18);
   border-radius: 999px;
   padding: 5px 10px;
-  background: rgba(30, 41, 59, 0.9);
-  color: #e2e8f0;
+  background: rgba(255, 255, 255, 0.08);
+  color: #ece4d8;
   font-size: 12px;
   line-height: 1;
   cursor: pointer;
@@ -485,8 +487,8 @@ watch(
 }
 
 .markdown-body :deep(.code-block__copy:hover) {
-  border-color: rgba(147, 197, 253, 0.45);
-  background: rgba(37, 99, 235, 0.18);
+  border-color: rgba(227, 180, 150, 0.5);
+  background: rgba(189, 88, 54, 0.32);
   color: #ffffff;
 }
 
@@ -509,16 +511,16 @@ watch(
 
 .markdown-body :deep(blockquote) {
   padding: 16px 18px;
-  border-left: 3px solid #60a5fa;
-  border-radius: 0 18px 18px 0;
-  background: linear-gradient(90deg, rgba(241, 245, 249, 0.92), rgba(248, 250, 252, 0.98));
+  border-left: 3px solid var(--accent);
+  border-radius: 0 var(--app-radius-md) var(--app-radius-md) 0;
+  background: var(--app-surface-sunken);
   color: var(--app-text-muted);
 }
 
 .markdown-body :deep(hr) {
   border: none;
   height: 1px;
-  background: linear-gradient(90deg, rgba(148, 163, 184, 0), rgba(148, 163, 184, 0.7), rgba(148, 163, 184, 0));
+  background: linear-gradient(90deg, rgba(150, 135, 115, 0), rgba(150, 135, 115, 0.6), rgba(150, 135, 115, 0));
   margin: 2em 0;
 }
 
@@ -540,7 +542,7 @@ watch(
 }
 
 .markdown-body :deep(thead) {
-  background: rgba(255, 255, 255, 0.64);
+  background: var(--app-surface-sunken);
 }
 
 .markdown-body :deep(th),
@@ -607,7 +609,7 @@ watch(
   width: 44px;
   height: 44px;
   border-radius: 50%;
-  background-color: rgba(255, 255, 255, 0.82);
+  background-color: var(--app-surface);
   border: 1px solid var(--app-border);
   box-shadow: var(--app-shadow-sm);
   background-size: 60% !important;
@@ -748,4 +750,4 @@ watch(
 @media (max-width: 768px) and (orientation: landscape) {
 }
 </style>
-.fab-container { right: 14px; }
+

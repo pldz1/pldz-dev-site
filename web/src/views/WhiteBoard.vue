@@ -1,7 +1,6 @@
 <template>
-  <MobileDrawer v-model="isMobileMenuOpen" subtitle="Whiteboard, notes, cache">
-    <p>白板页</p>
-    <p>通过密钥匹配或创建临时白板。</p>
+  <MobileDrawer v-model="isMobileMenuOpen" subtitle="临时白板 · 密钥 · 笔记">
+    <p>输入密钥来匹配已有白板，或者新建一个。</p>
   </MobileDrawer>
 
   <HeaderBar :route-name="'白板'" @toggle-mobile-menu="onToggleMobileMenu"></HeaderBar>
@@ -10,7 +9,6 @@
     <main class="main-container whiteboard-main">
       <section class="whiteboard-heading">
         <div class="hero-copy">
-          <p class="page-kicker">Tools / Whiteboard</p>
           <p class="page-description">临时白板</p>
         </div>
         <span class="board-count">{{ boards.length }} 个白板</span>
@@ -51,7 +49,7 @@
             ref="editorRef"
             v-model="content"
             :disabled="!selectedBoard"
-            placeholder="请先匹配或创建白板"
+            placeholder="先匹配或创建一个白板吧"
             @paste="handlePaste"
           ></textarea>
           <div v-else class="content-preview" :class="{ empty: !selectedBoard || !content }">
@@ -61,7 +59,7 @@
                 <pre v-else class="preview-text">{{ block.value }}</pre>
               </template>
             </template>
-            <span v-else>请先匹配或创建白板</span>
+            <span v-else>先匹配或创建一个白板吧</span>
           </div>
           <div class="timestamp">上次更新: {{ formatTimestamp(created) }}</div>
         </article>
@@ -81,7 +79,7 @@
               <pre v-else class="preview-text">{{ block.value }}</pre>
             </template>
           </template>
-          <pre v-else class="preview-text">（暂无内容）</pre>
+          <pre v-else class="preview-text">（还没写内容）</pre>
         </div>
         <div class="fullscreen-footer">
           <button type="button" class="exit-btn" @click="closeFullscreen">退出全屏</button>
@@ -173,7 +171,7 @@ const selectBoard = (boardKey) => {
 
 const startEditing = () => {
   if (!selectedBoard.value) {
-    Toast.error("请先匹配白板");
+    Toast.error("先匹配一个白板");
     return;
   }
   if (isEditing.value) {
@@ -194,7 +192,7 @@ const clearKey = () => {
 
 const openFullscreen = () => {
   if (!selectedBoard.value && !content.value) {
-    Toast.info("暂无白板内容可查看");
+    Toast.info("还没有白板内容");
     return;
   }
   showFullscreen.value = true;
@@ -259,11 +257,11 @@ const handlePaste = async (event) => {
     const imageText = images.filter(Boolean).join("\n\n");
     if (imageText) {
       insertAtCursor(imageText);
-      Toast.success("图片已转为 Base64");
+      Toast.success("图片已放进去啦");
     }
   } catch (error) {
     console.error("粘贴图片失败:", error);
-    Toast.error("图片转换失败，请重试");
+    Toast.error("图片读取出错了，再试一次");
   }
 };
 
@@ -282,18 +280,18 @@ const handleClick = async () => {
     }
     boards.value = [res];
     selectBoardByKey(res.key);
-    Toast.success("匹配成功");
+    Toast.success("找到了");
     return;
   }
 
   const res = await getWhiteBoardByUser(username.value, true);
   if (!res || !res.length) {
-    Toast.error("创建白板失败，请稍后再试");
+    Toast.error("白板创建没成功，再试一次");
     return;
   }
   boards.value = [...res];
   selectBoardByKey(boards.value[0].key);
-  Toast.success("已为你创建新的白板");
+  Toast.success("白板建好了");
 };
 
 const updateRecord = async () => {
@@ -307,7 +305,7 @@ const updateRecord = async () => {
   }
   const res = await updateWhiteBoardContent(key.value, content.value);
   if (!res || res.flag === false) {
-    Toast.error(res?.log || "更新失败，请稍后再试");
+    Toast.error(res?.log || "存失败了，再试一次");
     return;
   }
   const timestamp = res.created || new Date().toISOString();
@@ -319,7 +317,7 @@ const updateRecord = async () => {
   }
   boards.value = [...boards.value].sort((a, b) => (b.created || "").localeCompare(a.created || ""));
   isEditing.value = false;
-  Toast.success("更新成功");
+  Toast.success("存好了");
 };
 
 watch(
@@ -413,7 +411,7 @@ onBeforeUnmount(() => {
   padding: 0 14px;
   border: 1px solid var(--app-border);
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.7);
+  background: var(--app-surface);
   color: var(--app-text-muted);
   font-size: 13px;
   font-weight: 600;
@@ -445,16 +443,16 @@ onBeforeUnmount(() => {
   padding: 0 42px 0 14px;
   font-size: 14px;
   border: 1px solid var(--app-border);
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.62);
+  border-radius: var(--app-radius-md);
+  background: var(--app-surface);
   color: var(--app-text);
   transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .input-area input:focus {
-  background: #ffffff;
-  border-color: rgba(0, 113, 227, 0.3);
-  box-shadow: 0 0 0 4px rgba(0, 113, 227, 0.1);
+  background: var(--app-surface);
+  border-color: var(--accent-line);
+  box-shadow: 0 0 0 4px var(--accent-weak);
   outline: none;
 }
 
@@ -464,7 +462,7 @@ onBeforeUnmount(() => {
   font-size: 14px;
   font-weight: 600;
   background-color: var(--app-blue);
-  color: #ffffff;
+  color: var(--app-surface);
   border: 1px solid var(--app-blue);
   border-radius: 999px;
   cursor: pointer;
@@ -498,7 +496,7 @@ onBeforeUnmount(() => {
   justify-content: center;
 }
 .clear-btn:hover {
-  background: rgba(0, 0, 0, 0.045);
+  background: rgba(120, 105, 85, 0.08);
   color: var(--app-text-muted);
 }
 
@@ -526,21 +524,21 @@ onBeforeUnmount(() => {
   font-size: 13px;
   border-radius: 999px;
   border: 1px solid var(--app-border);
-  background: rgba(255, 255, 255, 0.7);
+  background: var(--app-surface);
   color: var(--app-text-muted);
   cursor: pointer;
   transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
 }
 
 .key-chip:hover {
-  background: #ffffff;
-  border-color: rgba(0, 113, 227, 0.24);
+  background: var(--app-surface);
+  border-color: var(--accent-line);
   color: var(--app-blue);
 }
 
 .key-chip.active {
-  background: rgba(0, 113, 227, 0.1);
-  border-color: rgba(0, 113, 227, 0.24);
+  background: var(--accent-weak);
+  border-color: var(--accent-line);
   color: var(--app-blue);
 }
 
@@ -554,7 +552,7 @@ onBeforeUnmount(() => {
   flex-direction: column;
   min-height: 540px;
   border: 1px solid var(--app-border);
-  border-radius: 20px;
+  border-radius: var(--app-radius-xl);
   overflow: hidden;
   background: var(--app-surface);
   box-shadow: var(--app-shadow-sm);
@@ -566,7 +564,7 @@ onBeforeUnmount(() => {
   justify-content: space-between;
   gap: 16px;
   padding: 16px 18px;
-  background-color: rgba(255, 255, 255, 0.56);
+  background-color: var(--app-surface);
   border-bottom: 1px solid var(--app-border);
 }
 
@@ -602,13 +600,13 @@ onBeforeUnmount(() => {
 
 .card-actions .primary {
   background-color: var(--app-blue);
-  color: #ffffff;
+  color: var(--app-surface);
   border: 1px solid var(--app-blue);
 }
 
 .card-actions .primary:disabled {
-  background-color: #bfdbfe;
-  border-color: #bfdbfe;
+  background-color: var(--accent-weak);
+  border-color: var(--accent-line);
   cursor: not-allowed;
 }
 
@@ -617,7 +615,7 @@ onBeforeUnmount(() => {
 }
 
 .card-actions .secondary {
-  background-color: rgba(255, 255, 255, 0.7);
+  background-color: var(--app-surface);
   color: var(--app-text-muted);
   border: 1px solid var(--app-border);
 }
@@ -629,7 +627,7 @@ onBeforeUnmount(() => {
 }
 
 .card-actions .secondary:not(:disabled):hover {
-  border-color: rgba(0, 113, 227, 0.24);
+  border-color: var(--accent-line);
   color: var(--app-blue);
 }
 
@@ -642,12 +640,12 @@ onBeforeUnmount(() => {
   border: none;
   resize: none;
   outline: none;
-  background-color: #ffffff;
+  background-color: var(--app-surface);
   color: var(--app-text);
 }
 
 .card textarea:disabled {
-  background-color: rgba(255, 255, 255, 0.54);
+  background-color: var(--app-surface-sunken);
   color: var(--app-text-soft);
 }
 
@@ -656,7 +654,7 @@ onBeforeUnmount(() => {
   min-height: 420px;
   padding: 18px;
   overflow: auto;
-  background: rgba(255, 255, 255, 0.5);
+  background: var(--app-surface);
   color: var(--app-text);
 }
 
@@ -664,7 +662,7 @@ onBeforeUnmount(() => {
   display: grid;
   place-items: center;
   color: var(--app-text-soft);
-  background: rgba(255, 255, 255, 0.54);
+  background: var(--app-surface-sunken);
 }
 
 .preview-text {
@@ -683,8 +681,8 @@ onBeforeUnmount(() => {
   max-height: 70vh;
   margin: 10px 0;
   border: 1px solid var(--app-border);
-  border-radius: 14px;
-  background: #ffffff;
+  border-radius: var(--app-radius-md);
+  background: var(--app-surface);
   object-fit: contain;
 }
 
@@ -692,7 +690,7 @@ onBeforeUnmount(() => {
   padding: 10px 18px;
   font-size: 13px;
   color: var(--app-text-soft);
-  background-color: rgba(255, 255, 255, 0.5);
+  background-color: var(--app-surface);
   text-align: right;
   border-top: 1px solid var(--app-border);
 }
@@ -700,7 +698,7 @@ onBeforeUnmount(() => {
 .fullscreen-overlay {
   position: fixed;
   inset: 0;
-  background-color: rgba(15, 23, 42, 0.42);
+  background-color: rgba(42, 36, 32, 0.45);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -710,7 +708,7 @@ onBeforeUnmount(() => {
 .fullscreen-panel {
   width: min(1200px, 100%);
   max-height: 100%;
-  background-color: #ffffff;
+  background-color: var(--app-surface);
   border: 1px solid var(--app-border);
   border-radius: var(--app-radius-xl);
   box-shadow: var(--app-shadow-popover);
@@ -726,7 +724,7 @@ onBeforeUnmount(() => {
   border-bottom: 1px solid var(--app-border);
   position: sticky;
   top: 0;
-  background-color: rgba(255, 255, 255, 0.68);
+  background-color: var(--app-surface);
   z-index: 5;
 }
 .fullscreen-title {
@@ -741,7 +739,7 @@ onBeforeUnmount(() => {
   height: 36px;
   border: 1px solid var(--app-border);
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.72);
+  background: var(--app-surface);
   font-size: 22px;
   cursor: pointer;
   color: var(--app-text-muted);
@@ -749,7 +747,7 @@ onBeforeUnmount(() => {
 }
 
 .close-btn:hover {
-  border-color: rgba(0, 113, 227, 0.24);
+  border-color: var(--accent-line);
   color: var(--app-blue);
 }
 
@@ -757,13 +755,13 @@ onBeforeUnmount(() => {
   padding: 20px;
   overflow: auto;
   flex: 1;
-  background-color: rgba(245, 245, 247, 0.72);
+  background-color: var(--app-surface-sunken);
 }
 
 .fullscreen-footer {
   padding: 16px 20px;
   border-top: 1px solid var(--app-border);
-  background-color: rgba(255, 255, 255, 0.68);
+  background-color: var(--app-surface);
   display: flex;
   justify-content: flex-end;
 }
@@ -772,7 +770,7 @@ onBeforeUnmount(() => {
   height: 38px;
   padding: 0 18px;
   background-color: var(--app-blue);
-  color: #ffffff;
+  color: var(--app-surface);
   border: 1px solid var(--app-blue);
   border-radius: 999px;
   cursor: pointer;

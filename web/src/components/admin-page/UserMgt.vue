@@ -262,7 +262,7 @@ onMounted(async () => {
   flex: 0 0 56px;
   border: 1px solid var(--app-border);
   border-radius: 8px;
-  background: rgba(255, 255, 255, 0.58);
+  background: var(--app-surface);
   object-fit: cover;
 }
 
@@ -316,14 +316,14 @@ onMounted(async () => {
 }
 
 .status-pill--admin {
-  border: 1px solid rgba(52, 199, 89, 0.22);
-  background: rgba(52, 199, 89, 0.1);
-  color: #228f3e;
+  border: 1px solid rgba(93, 122, 74, 0.22);
+  background: rgba(93, 122, 74, 0.1);
+  color: var(--app-green);
 }
 
 .status-pill--normal {
   border: 1px solid var(--app-border);
-  background: rgba(255, 255, 255, 0.5);
+  background: var(--app-surface-sunken);
   color: var(--app-text-muted);
 }
 
@@ -341,7 +341,7 @@ onMounted(async () => {
   padding: 10px 12px;
   border: 1px solid var(--app-border);
   border-radius: 8px;
-  background: rgba(245, 245, 247, 0.72);
+  background: var(--app-surface-sunken);
 }
 
 .detail-item span {
@@ -361,7 +361,7 @@ onMounted(async () => {
 }
 
 .text-success {
-  color: #228f3e !important;
+  color: var(--app-green) !important;
 }
 
 .text-muted {

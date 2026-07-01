@@ -204,7 +204,7 @@ const ctaRows = computed(() => {
   });
 });
 
-const articlePalette = ["#2563eb", "#0f766e", "#f59e0b", "#db2777", "#7c3aed", "#0891b2", "#65a30d", "#ea580c", "#475569", "#9333ea"];
+const articlePalette = ["#bd5836", "#7b5e4e", "#b9822f", "#b4472f", "#8b6b5a", "#5d7a4a", "#a48b5c", "#b57652", "#6b6359", "#a44b2b"];
 
 function destroyCharts() {
   trafficChart?.destroy();
@@ -229,7 +229,7 @@ function baseOptions() {
         },
       },
       tooltip: {
-        backgroundColor: "rgba(15, 23, 42, 0.92)",
+        backgroundColor: "rgba(42, 36, 32, 0.94)",
         padding: 10,
         cornerRadius: 8,
       },
@@ -241,7 +241,7 @@ function baseOptions() {
       y: {
         beginAtZero: true,
         ticks: { precision: 0 },
-        grid: { color: "rgba(148, 163, 184, 0.16)" },
+        grid: { color: "rgba(150, 135, 115, 0.18)" },
       },
     },
   };
@@ -259,8 +259,8 @@ function renderCharts() {
           {
             label: "PV",
             data: overview.value.series.pv,
-            borderColor: "#2563eb",
-            backgroundColor: "rgba(37, 99, 235, 0.12)",
+            borderColor: "#bd5836",
+            backgroundColor: "rgba(189, 88, 54, 0.12)",
             borderWidth: 2,
             tension: 0.32,
             fill: true,
@@ -268,8 +268,8 @@ function renderCharts() {
           {
             label: "UV",
             data: overview.value.series.uv,
-            borderColor: "#0f766e",
-            backgroundColor: "rgba(15, 118, 110, 0.1)",
+            borderColor: "#7b5e4e",
+            backgroundColor: "rgba(123, 94, 78, 0.12)",
             borderWidth: 2,
             tension: 0.32,
             fill: true,
@@ -318,8 +318,8 @@ function renderCharts() {
         datasets: [
           {
             data: [cta.value.clicks || 0, remaining],
-            backgroundColor: ["#2563eb", "#e2e8f0"],
-            borderColor: "#ffffff",
+            backgroundColor: ["#bd5836", "#e8e1d4"],
+            borderColor: "#fffdf8",
             borderWidth: 3,
           },
         ],
@@ -429,7 +429,7 @@ onBeforeUnmount(() => {
   padding: 0 10px;
   border: 1px solid var(--app-border);
   border-radius: 8px;
-  background: #fff;
+  background: var(--app-surface);
   color: var(--app-text);
 }
 
@@ -468,15 +468,15 @@ onBeforeUnmount(() => {
 }
 
 .stat-card:nth-child(2) {
-  --stat-color: #0f766e;
+  --stat-color: var(--accent);
 }
 
 .stat-card:nth-child(3) {
-  --stat-color: #f59e0b;
+  --stat-color: var(--app-orange);
 }
 
 .stat-card:nth-child(4) {
-  --stat-color: #db2777;
+  --stat-color: var(--app-red);
 }
 
 .stat-card span {
@@ -515,15 +515,15 @@ onBeforeUnmount(() => {
 }
 
 .stats-panel:nth-child(2) {
-  --panel-accent: #f59e0b;
+  --panel-accent: var(--app-orange);
 }
 
 .stats-panel:nth-child(3) {
-  --panel-accent: #db2777;
+  --panel-accent: var(--app-red);
 }
 
 .stats-panel:nth-child(4) {
-  --panel-accent: #0f766e;
+  --panel-accent: var(--accent);
 }
 
 .stats-panel--wide {
@@ -578,7 +578,7 @@ onBeforeUnmount(() => {
   padding: 10px;
   border: 1px solid var(--app-border);
   border-radius: 8px;
-  background: rgba(255, 255, 255, 0.54);
+  background: var(--app-surface);
   color: var(--app-text-muted);
   font-size: 12px;
   font-weight: 700;
@@ -602,7 +602,7 @@ onBeforeUnmount(() => {
 .article-table-head {
   min-height: 42px;
   padding: 0 16px;
-  background: rgba(255, 255, 255, 0.54);
+  background: var(--app-surface);
   color: var(--app-text-muted);
   font-size: 12px;
   font-weight: 700;
@@ -613,11 +613,11 @@ onBeforeUnmount(() => {
   padding: 9px 16px;
   color: var(--app-text);
   text-decoration: none;
-  border-top: 1px solid #e8eef5;
+  border-top: 1px solid var(--app-border);
 }
 
 .article-row:hover {
-  background: rgba(255, 255, 255, 0.54);
+  background: var(--app-surface);
 }
 
 .rank {

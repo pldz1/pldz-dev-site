@@ -14,8 +14,8 @@
     </div>
 
     <div class="card-actions">
-      <a class="button-primary button-small" :href="project.tutorialLink">查看教程</a>
-      <a class="button-ghost button-small" :href="project.repoLink" target="_blank" rel="noopener noreferrer">查看相关</a>
+      <a class="button-primary button-small" :href="project.tutorialLink">看教程</a>
+      <a class="button-ghost button-small" :href="project.repoLink" target="_blank" rel="noopener noreferrer">看仓库</a>
     </div>
   </article>
 </template>
@@ -36,7 +36,7 @@ defineProps({
   padding: 18px;
   background: var(--app-surface);
   border: 1px solid var(--app-border);
-  border-radius: 24px;
+  border-radius: var(--app-radius-lg);
   box-shadow: var(--app-shadow-sm);
   transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
 }
@@ -45,14 +45,14 @@ defineProps({
   transform: translateY(-1px);
   box-shadow: var(--app-shadow-md);
   border-color: var(--app-border-strong);
-  background: rgba(255, 255, 255, 0.9);
+  background: var(--app-surface);
 }
 
 .project-cover {
-  border-radius: 18px;
+  border-radius: var(--app-radius-md);
   overflow: hidden;
   aspect-ratio: 16 / 9;
-  background: rgba(255, 255, 255, 0.58);
+  background: var(--app-surface-sunken);
 }
 
 .project-cover img {
@@ -96,7 +96,7 @@ defineProps({
   padding: 0 12px;
   border-radius: 999px;
   border: 1px solid var(--app-border);
-  background: rgba(255, 255, 255, 0.58);
+  background: var(--app-surface);
   color: var(--app-text-muted);
   font-size: 12px;
 }
@@ -105,48 +105,6 @@ defineProps({
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
-}
-
-.button-primary,
-.button-ghost {
-  height: 42px;
-  padding: 0 16px;
-  border-radius: 14px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  text-decoration: none;
-  font-weight: 600;
-  transition: transform 0.2s ease, background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
-}
-
-.button-small {
-  height: 38px;
-  padding: 0 14px;
-  font-size: 14px;
-}
-
-.button-primary {
-  background: var(--app-blue);
-  color: #ffffff;
-  border: 1px solid var(--app-blue);
-}
-
-.button-primary:hover {
-  background: var(--app-blue-hover);
-  border-color: var(--app-blue-hover);
-  transform: translateY(-1px);
-}
-
-.button-ghost {
-  background: rgba(255, 255, 255, 0.7);
-  color: var(--app-text);
-  border: 1px solid var(--app-border);
-}
-
-.button-ghost:hover {
-  background: #ffffff;
-  transform: translateY(-1px);
 }
 
 @media (max-width: 640px) {

@@ -194,7 +194,7 @@ async function onDisableTwoFactor() {
   border-radius: 14px;
   object-fit: cover;
   border: 1px solid var(--app-border);
-  background: rgba(255, 255, 255, 0.68);
+  background: var(--app-surface);
 }
 
 .security-user-copy {
@@ -225,15 +225,15 @@ async function onDisableTwoFactor() {
   padding: 9px 12px;
   border-radius: 999px;
   border: 1px solid var(--app-border);
-  background: rgba(255, 255, 255, 0.68);
+  background: var(--app-surface);
   color: var(--app-text-muted);
   white-space: nowrap;
 }
 
 .security-status.active {
-  border-color: rgba(52, 199, 89, 0.28);
-  background: rgba(52, 199, 89, 0.1);
-  color: #228f3e;
+  border-color: rgba(93, 122, 74, 0.28);
+  background: rgba(93, 122, 74, 0.1);
+  color: var(--app-green);
 }
 
 .security-status span,
@@ -291,7 +291,7 @@ async function onDisableTwoFactor() {
   padding: 12px;
   border: 1px solid var(--app-border);
   border-radius: 16px;
-  background: rgba(255, 255, 255, 0.7);
+  background: var(--app-surface);
 }
 
 .qr-frame img {
@@ -312,7 +312,7 @@ async function onDisableTwoFactor() {
   overflow-wrap: anywhere;
   border: 1px solid var(--app-border);
   border-radius: 12px;
-  background: rgba(255, 255, 255, 0.7);
+  background: var(--app-surface);
   color: var(--app-text);
   font-size: 13px;
   line-height: 1.6;

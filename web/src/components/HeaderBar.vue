@@ -27,6 +27,37 @@
       </nav>
 
       <div class="header-right">
+        <div ref="themePickerRef" :class="['theme-picker', { 'theme-picker--open': isThemeMenuOpen }]">
+          <button
+            class="theme-trigger"
+            type="button"
+            aria-label="切换主题"
+            :aria-expanded="isThemeMenuOpen"
+            :style="{ '--theme-swatch': currentThemeOption.swatch }"
+            @click="onToggleThemeMenu"
+          >
+            <span class="theme-trigger__dot" aria-hidden="true"></span>
+            <span class="theme-trigger__label">{{ currentThemeOption.label }}</span>
+            <span class="theme-trigger__chevron" aria-hidden="true"></span>
+          </button>
+
+          <div v-if="isThemeMenuOpen" class="theme-menu" role="menu">
+            <button
+              v-for="theme in themes"
+              :key="theme.id"
+              :class="['theme-option', { 'theme-option--active': theme.id === currentTheme }]"
+              type="button"
+              role="menuitemradio"
+              :aria-checked="theme.id === currentTheme"
+              :style="{ '--theme-swatch': theme.swatch }"
+              @click="onSelectTheme(theme.id)"
+            >
+              <span class="theme-option__dot" aria-hidden="true"></span>
+              <span class="theme-option__label">{{ theme.label }}</span>
+            </button>
+          </div>
+        </div>
+
         <button class="search-trigger" type="button" aria-label="打开搜索" title="搜索" @click="onOpenSearch">
           <span class="search-trigger__icon"></span>
           <span class="search-trigger__text">搜索</span>
@@ -48,6 +79,7 @@
 import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { useStore } from "vuex";
 import Toast from "../utils/toast.js";
+import { getStoredTheme, setStoredTheme, themes } from "../utils/theme";
 import LoginCard from "./LoginCard.vue";
 import SearchOverlay from "./SearchOverlay.vue";
 
@@ -81,6 +113,10 @@ const showLoginForm = ref(false);
 const searchOpen = ref(false);
 const isHeaderVisible = ref(true);
 const activeAnchor = ref("");
+const currentTheme = ref(getStoredTheme());
+const themePickerRef = ref(null);
+const isThemeMenuOpen = ref(false);
+const currentThemeOption = computed(() => themes.find((theme) => theme.id === currentTheme.value) || themes[0]);
 
 const navItems = [
   { label: "首页", href: "/", anchor: "" },
@@ -191,7 +227,29 @@ function onCloseLoginForm() {
 }
 
 function onOpenSearch() {
+  isThemeMenuOpen.value = false;
   searchOpen.value = true;
+}
+
+function onToggleThemeMenu() {
+  isThemeMenuOpen.value = !isThemeMenuOpen.value;
+}
+
+function onSelectTheme(theme) {
+  currentTheme.value = setStoredTheme(theme);
+  isThemeMenuOpen.value = false;
+}
+
+function onDocumentClick(event) {
+  if (!themePickerRef.value?.contains(event.target)) {
+    isThemeMenuOpen.value = false;
+  }
+}
+
+function onDocumentKeydown(event) {
+  if (event.key === "Escape") {
+    isThemeMenuOpen.value = false;
+  }
 }
 
 function syncActiveAnchor() {
@@ -215,6 +273,8 @@ onMounted(async () => {
   );
   hashchangeHandler = () => syncActiveAnchor();
   window.addEventListener("hashchange", hashchangeHandler);
+  document.addEventListener("click", onDocumentClick);
+  document.addEventListener("keydown", onDocumentKeydown);
   syncActiveAnchor();
 });
 
@@ -223,6 +283,8 @@ onBeforeUnmount(() => {
   if (hashchangeHandler) {
     window.removeEventListener("hashchange", hashchangeHandler);
   }
+  document.removeEventListener("click", onDocumentClick);
+  document.removeEventListener("keydown", onDocumentKeydown);
 });
 </script>
 
@@ -233,7 +295,7 @@ onBeforeUnmount(() => {
   left: 0;
   right: 0;
   z-index: 10005;
-  background: rgba(247, 244, 238, 0.9);
+  background: var(--app-header-bg);
   border-bottom: 1px solid var(--app-border);
   transition: border-color var(--app-motion-duration) ease-out, background-color var(--app-motion-duration) ease-out;
 }
@@ -289,6 +351,9 @@ onBeforeUnmount(() => {
   font-weight: 700;
   color: var(--app-text);
   line-height: 1.1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .brand-subtitle {
@@ -331,7 +396,7 @@ onBeforeUnmount(() => {
 
 .nav-item a:hover {
   color: var(--app-text);
-  background: rgba(120, 105, 85, 0.08);
+  background: var(--app-hover-bg);
 }
 
 .nav-item.active a {
@@ -350,6 +415,119 @@ onBeforeUnmount(() => {
   background: var(--accent-weak);
   border-radius: 999px;
   padding: 3px 6px;
+}
+
+
+.theme-picker {
+  position: relative;
+  flex: 0 0 auto;
+}
+
+.theme-trigger {
+  width: 118px;
+  height: 38px;
+  padding: 0 11px;
+  border: 1px solid var(--app-border);
+  border-radius: 999px;
+  background: linear-gradient(180deg, var(--app-surface), var(--app-bg-elevated));
+  color: var(--app-text);
+  display: inline-grid;
+  grid-template-columns: 12px minmax(0, 1fr) 12px;
+  align-items: center;
+  gap: 8px;
+  box-shadow: var(--app-shadow-sm);
+  cursor: pointer;
+}
+
+.theme-trigger:hover,
+.theme-picker--open .theme-trigger {
+  border-color: var(--accent-line);
+  background: var(--app-surface);
+  box-shadow: 0 0 0 4px var(--accent-weak);
+}
+
+.theme-trigger__dot,
+.theme-option__dot {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: var(--theme-swatch, var(--accent));
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--theme-swatch, var(--accent)) 18%, transparent);
+  flex: 0 0 auto;
+}
+
+.theme-trigger__label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1;
+  text-align: left;
+}
+
+.theme-trigger__chevron {
+  width: 7px;
+  height: 7px;
+  justify-self: center;
+  border-right: 1.5px solid var(--app-text-soft);
+  border-bottom: 1.5px solid var(--app-text-soft);
+  transform: translateY(-2px) rotate(45deg);
+  transition: transform var(--app-motion-duration) var(--app-ease), border-color var(--app-motion-duration) var(--app-ease);
+}
+
+.theme-picker--open .theme-trigger__chevron {
+  border-color: var(--accent);
+  transform: translateY(2px) rotate(225deg);
+}
+
+.theme-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 2;
+  width: 136px;
+  padding: 6px;
+  border: 1px solid var(--app-border);
+  border-radius: var(--app-radius-md);
+  background: var(--app-surface);
+  box-shadow: var(--app-shadow-popover);
+}
+
+.theme-option {
+  width: 100%;
+  height: 34px;
+  padding: 0 10px;
+  border: 1px solid transparent;
+  border-radius: var(--app-radius-sm);
+  background: transparent;
+  color: var(--app-text-muted);
+  display: grid;
+  grid-template-columns: 12px minmax(0, 1fr);
+  align-items: center;
+  gap: 9px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 650;
+  text-align: left;
+}
+
+.theme-option:hover {
+  background: var(--app-hover-bg);
+  color: var(--app-text);
+}
+
+.theme-option--active {
+  border-color: var(--accent-line);
+  background: var(--accent-weak);
+  color: var(--accent);
+}
+
+.theme-option__label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .header-right {
@@ -404,7 +582,7 @@ onBeforeUnmount(() => {
 
 .login-register-btn:hover {
   border-color: var(--accent-line);
-  background: rgba(189, 88, 54, 0.16);
+  background: var(--accent-weak-hover);
   transform: translateY(-1px);
 }
 
@@ -457,8 +635,19 @@ onBeforeUnmount(() => {
   .header-inner {
     width: min(100%, calc(100% - 24px));
     height: 64px;
-    grid-template-columns: auto auto;
-    justify-content: space-between;
+    grid-template-columns: minmax(0, 1fr) auto;
+    justify-content: stretch;
+    gap: 12px;
+  }
+
+  .header-left,
+  .brand-link,
+  .brand-copy {
+    overflow: hidden;
+  }
+
+  .brand-link {
+    gap: 9px;
   }
 
   .header-nav {
@@ -468,6 +657,7 @@ onBeforeUnmount(() => {
   .mobile-menu-btn {
     display: inline-flex;
     flex-shrink: 0;
+    margin-right: 8px;
   }
 
   .brand-subtitle {
@@ -476,6 +666,58 @@ onBeforeUnmount(() => {
 }
 
 @media (max-width: 640px) {
+  .header-inner {
+    width: min(100%, calc(100% - 16px));
+    height: 58px;
+    gap: 8px;
+  }
+
+  .header-right {
+    gap: 8px;
+  }
+
+  .app-logo {
+    width: 30px;
+    height: 30px;
+    border-radius: 9px;
+    background-size: 20px;
+  }
+
+  .brand-name {
+    max-width: 92px;
+    font-size: 14px;
+  }
+
+  .mobile-menu-btn {
+    width: 36px;
+    height: 36px;
+    margin-right: 6px;
+    background-size: 28px;
+  }
+
+  .theme-trigger {
+    width: 38px;
+    height: 38px;
+    padding: 0;
+    display: inline-flex;
+    justify-content: center;
+    gap: 0;
+  }
+
+  .theme-trigger__label,
+  .theme-trigger__chevron {
+    display: none;
+  }
+
+  .theme-trigger__dot {
+    width: 12px;
+    height: 12px;
+  }
+
+  .theme-menu {
+    width: 128px;
+  }
+
   .search-trigger {
     width: 38px;
     padding: 0;
@@ -499,10 +741,27 @@ onBeforeUnmount(() => {
   }
 
   .brand-name {
-    font-size: 15px;
+    max-width: 82px;
+    font-size: 13px;
+  }
+
+  .login-register-btn {
+    height: 38px;
+    padding: 0 10px;
+    font-size: 12.5px;
   }
 
   .github-link {
+    display: none;
+  }
+}
+
+@media (max-width: 380px) {
+  .brand-name {
+    max-width: 64px;
+  }
+
+  .app-logo {
     display: none;
   }
 }

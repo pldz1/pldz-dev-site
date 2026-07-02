@@ -5,6 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>爬楼的猪 Dev</title>
 
+    <script>
+      (() => {
+        const allowedThemes = new Set(["light", "lime", "brown"]);
+        const legacyThemeMap = { gemini: "light", gpt: "lime", claude: "brown" };
+        let theme = "light";
+
+        try {
+          const storedTheme = window.localStorage.getItem("pldz-dev-theme");
+          if (allowedThemes.has(storedTheme)) theme = storedTheme;
+          else if (legacyThemeMap[storedTheme]) theme = legacyThemeMap[storedTheme];
+        } catch (_error) {}
+
+        document.documentElement.dataset.theme = theme;
+      })();
+    </script>
     <style>
       #loading {
         position: fixed;

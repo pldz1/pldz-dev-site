@@ -1,64 +1,157 @@
 @import url("./components/loader.css");
 
 /* ============================================================
-   设计令牌 · 暖纸温润（warm paper / editorial）
+   设计令牌 · 多主题
    ============================================================ */
-:root {
-  /* 暖纸表面 */
-  --app-bg: #f7f4ee;
-  --app-bg-elevated: #fffdf8;
-  --app-surface: #fffdf8;
-  --app-surface-solid: #fffdf8;
-  --app-surface-sunken: #f1ece2;
+:root,
+html[data-theme="light"],
+html[data-theme="gemini"] {
+  color-scheme: light;
 
-  /* 暖发丝描边 */
-  --app-border: #e8e1d4;
-  --app-border-strong: #d8cfbd;
+  /* 亮色 */
+  --app-bg: #f7faff;
+  --app-bg-elevated: #ffffff;
+  --app-surface: #ffffff;
+  --app-surface-solid: #ffffff;
+  --app-surface-sunken: #eef4ff;
 
-  /* 暖墨文字 */
-  --app-text: #2a2420;
-  --app-text-muted: #6b6359;
-  --app-text-soft: #9a9286;
+  --app-border: #d8e2f0;
+  --app-border-strong: #b8c7dc;
 
-  /* 陶土点缀色（沿用 --app-blue 变量名以一键换肤全站链接/按钮/激活态） */
-  --app-blue: #bd5836;
-  --app-blue-hover: #a44b2b;
-  --accent: #bd5836;
-  --accent-hover: #a44b2b;
-  --accent-weak: rgba(189, 88, 54, 0.1);
-  --accent-line: rgba(189, 88, 54, 0.22);
+  --app-text: #1f2937;
+  --app-text-muted: #5f6b7a;
+  --app-text-soft: #8a96a8;
 
-  /* 语义色（暖化、降饱和） */
-  --app-green: #5d7a4a;
-  --app-orange: #b9822f;
-  --app-red: #b4472f;
+  --app-blue: #1a73e8;
+  --app-blue-hover: #1558b0;
+  --accent: #1a73e8;
+  --accent-hover: #1558b0;
+  --accent-weak: rgba(26, 115, 232, 0.1);
+  --accent-weak-hover: rgba(26, 115, 232, 0.16);
+  --accent-line: rgba(26, 115, 232, 0.24);
+  --accent-selection: rgba(26, 115, 232, 0.18);
+  --app-on-accent: #ffffff;
 
-  /* 统一圆角刻度 8 / 12 / 16 / 20 */
+  --app-green: #188038;
+  --app-orange: #f29900;
+  --app-red: #d93025;
+
+  --app-header-bg: rgba(247, 250, 255, 0.9);
+  --app-hover-bg: rgba(66, 133, 244, 0.08);
+  --app-overlay: rgba(24, 35, 52, 0.42);
+  --app-soft-rule: rgba(95, 107, 122, 0.25);
+
   --app-radius-sm: 8px;
   --app-radius-md: 12px;
   --app-radius-lg: 16px;
   --app-radius-xl: 20px;
   --app-radius-pill: 999px;
 
-  /* 暖调柔和阴影 */
-  --app-shadow-sm: 0 1px 2px rgba(60, 45, 30, 0.05);
-  --app-shadow-md: 0 6px 20px rgba(60, 45, 30, 0.07);
-  --app-shadow-popover: 0 16px 40px rgba(60, 45, 30, 0.12);
+  --app-shadow-sm: 0 1px 2px rgba(60, 64, 67, 0.08);
+  --app-shadow-md: 0 8px 24px rgba(60, 64, 67, 0.1);
+  --app-shadow-popover: 0 18px 44px rgba(60, 64, 67, 0.16);
   --app-blur-bg: none;
 
-  /* 动效 */
   --app-motion-duration: 180ms;
   --app-ease: cubic-bezier(0.2, 0, 0, 1);
 
-  /* 字体 */
   --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Segoe UI", "Roboto", "Helvetica Neue", "PingFang SC",
     "Microsoft YaHei", sans-serif;
-  --font-display: "Georgia", "Times New Roman", "Songti SC", "Noto Serif CJK SC", "Source Han Serif SC", "PingFang SC", serif;
+  --font-display: var(--font-sans);
   --font-mono: "JetBrains Mono", "SFMono-Regular", "Cascadia Code", Menlo, Consolas, "Liberation Mono", monospace;
 
-  /* 滚动条 */
   --scrollbar-size: 10px;
   --scrollbar-track: transparent;
+  --scrollbar-thumb: rgba(95, 107, 122, 0.34);
+  --scrollbar-thumb-hover: rgba(95, 107, 122, 0.54);
+}
+
+html[data-theme="lime"],
+html[data-theme="gpt"] {
+  color-scheme: light;
+
+  --app-bg: #f7f7f4;
+  --app-bg-elevated: #ffffff;
+  --app-surface: #ffffff;
+  --app-surface-solid: #ffffff;
+  --app-surface-sunken: #ecefeb;
+
+  --app-border: #d9ded7;
+  --app-border-strong: #bbc4b8;
+
+  --app-text: #1f2320;
+  --app-text-muted: #606761;
+  --app-text-soft: #8e968f;
+
+  --app-blue: #10a37f;
+  --app-blue-hover: #0d8c6d;
+  --accent: #10a37f;
+  --accent-hover: #0d8c6d;
+  --accent-weak: rgba(16, 163, 127, 0.1);
+  --accent-weak-hover: rgba(16, 163, 127, 0.16);
+  --accent-line: rgba(16, 163, 127, 0.24);
+  --accent-selection: rgba(16, 163, 127, 0.18);
+  --app-on-accent: #ffffff;
+
+  --app-green: #0f7b62;
+  --app-orange: #b66b17;
+  --app-red: #b42318;
+
+  --app-header-bg: rgba(247, 247, 244, 0.92);
+  --app-hover-bg: rgba(64, 75, 67, 0.08);
+  --app-overlay: rgba(31, 35, 32, 0.42);
+  --app-soft-rule: rgba(96, 103, 97, 0.25);
+
+  --app-shadow-sm: 0 1px 2px rgba(31, 35, 32, 0.06);
+  --app-shadow-md: 0 8px 24px rgba(31, 35, 32, 0.09);
+  --app-shadow-popover: 0 18px 44px rgba(31, 35, 32, 0.14);
+
+  --font-display: var(--font-sans);
+  --scrollbar-thumb: rgba(96, 103, 97, 0.34);
+  --scrollbar-thumb-hover: rgba(96, 103, 97, 0.54);
+}
+
+html[data-theme="brown"],
+html[data-theme="claude"] {
+  color-scheme: light;
+
+  --app-bg: #f7f4ee;
+  --app-bg-elevated: #fffdf8;
+  --app-surface: #fffdf8;
+  --app-surface-solid: #fffdf8;
+  --app-surface-sunken: #f1ece2;
+
+  --app-border: #e8e1d4;
+  --app-border-strong: #d8cfbd;
+
+  --app-text: #2a2420;
+  --app-text-muted: #6b6359;
+  --app-text-soft: #9a9286;
+
+  --app-blue: #bd5836;
+  --app-blue-hover: #a44b2b;
+  --accent: #bd5836;
+  --accent-hover: #a44b2b;
+  --accent-weak: rgba(189, 88, 54, 0.1);
+  --accent-weak-hover: rgba(189, 88, 54, 0.16);
+  --accent-line: rgba(189, 88, 54, 0.22);
+  --accent-selection: rgba(189, 88, 54, 0.18);
+  --app-on-accent: #fffdf8;
+
+  --app-green: #5d7a4a;
+  --app-orange: #b9822f;
+  --app-red: #b4472f;
+
+  --app-header-bg: rgba(247, 244, 238, 0.9);
+  --app-hover-bg: rgba(120, 105, 85, 0.08);
+  --app-overlay: rgba(42, 36, 32, 0.45);
+  --app-soft-rule: rgba(120, 105, 85, 0.3);
+
+  --app-shadow-sm: 0 1px 2px rgba(60, 45, 30, 0.05);
+  --app-shadow-md: 0 6px 20px rgba(60, 45, 30, 0.07);
+  --app-shadow-popover: 0 16px 40px rgba(60, 45, 30, 0.12);
+
+  --font-display: "Georgia", "Times New Roman", "Songti SC", "Noto Serif CJK SC", "Source Han Serif SC", "PingFang SC", serif;
   --scrollbar-thumb: rgba(120, 105, 85, 0.38);
   --scrollbar-thumb-hover: rgba(120, 105, 85, 0.58);
 }
@@ -99,7 +192,7 @@ a {
 }
 
 ::selection {
-  background: rgba(189, 88, 54, 0.18);
+  background: var(--accent-selection);
 }
 
 /* ============================================================
@@ -165,7 +258,7 @@ button,
 
 .button-primary {
   background: var(--accent);
-  color: #fffdf8;
+  color: var(--app-on-accent);
   border-color: var(--accent);
 }
 
@@ -182,7 +275,7 @@ button,
 }
 
 .button-secondary:hover:not(:disabled) {
-  background: rgba(189, 88, 54, 0.16);
+  background: var(--accent-weak-hover);
   transform: translateY(-1px);
 }
 

@@ -6,6 +6,7 @@ import store from "./store";
 import { createApp } from "vue";
 import { refresh } from "./utils/apis";
 import { initAnalytics } from "./utils/analytics";
+import { initTheme } from "./utils/theme";
 
 const refreshAuthState = async () => {
   try {
@@ -24,6 +25,8 @@ const refreshAuthState = async () => {
     await store.dispatch("authState/ready", true);
   }
 };
+
+initTheme();
 
 const bootstrap = () => {
   try {

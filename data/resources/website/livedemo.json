@@ -3,6 +3,16 @@
     "version": "1.0.0",
     "data": [
         {
+            "title": "AI API HUB",
+            "folder": "ai-api-hub",
+            "url": "/io/llm/",
+            "thumbnail": "/api/v1/website/image/live-demo/ai-api-v001-thumbnail.jpg",
+            "previewgif": "/api/v1/website/image/live-demo/ai-api-v001-preview.gif",
+            "sourcelink": "https://github.com/pldz1/ai-api-hub",
+            "date": "2026-06-04",
+            "description": "用一个工具体验多个AI平台的API"
+        },
+        {
             "title": "Git Folder Dashboard",
             "folder": "git-folder-dashboard",
             "url": "/io/git-folder-dashboard/",

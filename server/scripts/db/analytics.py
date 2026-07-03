@@ -107,6 +107,88 @@ def _append_unique(items: List[str], value: str) -> None:
         items.append(value)
 
 
+def _track_page_view(bucket: dict, path: str, visitor_hash: str) -> None:
+    page_views = bucket["page_views"]
+    page_views["pv"] += 1
+    _append_unique(page_views["visitors"], visitor_hash)
+    normalized_path = path or "/"
+    page_views["paths"][normalized_path] = page_views["paths"].get(normalized_path, 0) + 1
+
+
+def _track_article_view(bucket: dict, article_id: str, article_title: str, visitor_hash: str) -> None:
+    if not article_id:
+        return
+
+    article_bucket = bucket["articles"].setdefault(
+        article_id,
+        {
+            "title": article_title or article_id,
+            "clicks": 0,
+            "visitors": [],
+        },
+    )
+    article_bucket["title"] = article_title or article_bucket.get("title") or article_id
+    article_bucket["clicks"] += 1
+    _append_unique(article_bucket["visitors"], visitor_hash)
+
+
+def _track_cta_event(bucket: dict, event_name: str, event_key: str, event_source: str, path: str, visitor_hash: str) -> None:
+    cta_key = event_key or "unknown"
+    cta_bucket = bucket["cta"].setdefault(
+        cta_key,
+        {
+            "label": cta_key,
+            "impressions": 0,
+            "clicks": 0,
+            "visitors": [],
+            "click_visitors": [],
+            "sources": {},
+        },
+    )
+    cta_bucket["label"] = cta_key or cta_bucket.get("label") or "unknown"
+
+    if event_name == "cta_impression":
+        cta_bucket["impressions"] += 1
+        _append_unique(cta_bucket["visitors"], visitor_hash)
+        return
+
+    cta_bucket["clicks"] += 1
+    _append_unique(cta_bucket["click_visitors"], visitor_hash)
+    source_key = event_source or path or "unknown"
+    cta_bucket["sources"][source_key] = cta_bucket["sources"].get(source_key, 0) + 1
+
+
+def _build_recent_event(
+    *,
+    event_name: str,
+    path: str,
+    event_key: str,
+    event_source: str,
+    article_id: str,
+    article_title: str,
+    referrer: str,
+    visitor_hash: str,
+    ip: str,
+    user_agent: str,
+    created_at: datetime,
+    extra: Optional[dict],
+) -> dict:
+    return {
+        "event_name": event_name,
+        "event_key": event_key,
+        "event_source": event_source,
+        "article_id": article_id,
+        "article_title": article_title,
+        "path": path,
+        "referrer": referrer,
+        "visitor_hash": visitor_hash,
+        "ip": ip,
+        "user_agent": user_agent,
+        "created_at": created_at.isoformat(),
+        "extra": extra or {},
+    }
+
+
 class AnalyticsHandler:
     @classmethod
     def track_event(
@@ -130,66 +212,29 @@ class AnalyticsHandler:
         with _lock:
             data = _read_db()
             bucket = _ensure_day_bucket(data, date_key)
-            page_views = bucket["page_views"]
 
             if event_name == "page_view":
-                page_views["pv"] += 1
-                _append_unique(page_views["visitors"], visitor_hash)
-                normalized_path = path or "/"
-                page_views["paths"][normalized_path] = page_views["paths"].get(normalized_path, 0) + 1
-
+                _track_page_view(bucket, path, visitor_hash)
             elif event_name == "article_view":
-                if article_id:
-                    article_bucket = bucket["articles"].setdefault(
-                        article_id,
-                        {
-                            "title": article_title or article_id,
-                            "clicks": 0,
-                            "visitors": [],
-                        },
-                    )
-                    article_bucket["title"] = article_title or article_bucket.get("title") or article_id
-                    article_bucket["clicks"] += 1
-                    _append_unique(article_bucket["visitors"], visitor_hash)
-
+                _track_article_view(bucket, article_id, article_title, visitor_hash)
             elif event_name in {"cta_impression", "cta_click"}:
-                cta_key = event_key or "unknown"
-                cta_bucket = bucket["cta"].setdefault(
-                    cta_key,
-                    {
-                        "label": event_key or "unknown",
-                        "impressions": 0,
-                        "clicks": 0,
-                        "visitors": [],
-                        "click_visitors": [],
-                        "sources": {},
-                    },
-                )
-                cta_bucket["label"] = event_key or cta_bucket.get("label") or "unknown"
-                if event_name == "cta_impression":
-                    cta_bucket["impressions"] += 1
-                    _append_unique(cta_bucket["visitors"], visitor_hash)
-                else:
-                    cta_bucket["clicks"] += 1
-                    _append_unique(cta_bucket["click_visitors"], visitor_hash)
-                    source_key = event_source or path or "unknown"
-                    cta_bucket["sources"][source_key] = cta_bucket["sources"].get(source_key, 0) + 1
+                _track_cta_event(bucket, event_name, event_key, event_source, path, visitor_hash)
 
             data["recent_events"].append(
-                {
-                    "event_name": event_name,
-                    "event_key": event_key,
-                    "event_source": event_source,
-                    "article_id": article_id,
-                    "article_title": article_title,
-                    "path": path,
-                    "referrer": referrer,
-                    "visitor_hash": visitor_hash,
-                    "ip": ip,
-                    "user_agent": user_agent,
-                    "created_at": now.isoformat(),
-                    "extra": extra or {},
-                }
+                _build_recent_event(
+                    event_name=event_name,
+                    event_key=event_key,
+                    event_source=event_source,
+                    article_id=article_id,
+                    article_title=article_title,
+                    path=path,
+                    referrer=referrer,
+                    visitor_hash=visitor_hash,
+                    ip=ip,
+                    user_agent=user_agent,
+                    created_at=now,
+                    extra=extra,
+                )
             )
             data["recent_events"] = data["recent_events"][-_MAX_RECENT_EVENTS:]
             _write_db(data)

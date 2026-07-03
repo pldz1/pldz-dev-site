@@ -4,7 +4,10 @@ import datetime
 import random
 
 
-INVALID_TIME = 60*60*24  # 一天
+INVALID_TIME = 60 * 60 * 24  # 一天
+MAX_WHITEBOARD_ITEMS = 900
+MIN_RANDOM_KEY = 100
+MAX_RANDOM_KEY = 999
 
 
 class WhiteBoardItem(typing.TypedDict):
@@ -23,9 +26,6 @@ class WhiteBoardItem(typing.TypedDict):
 
 class WhiteBoardHandler:
     white_board_list: typing.List[WhiteBoardItem] = []
-
-    def __init__(self):
-        pass
 
     @classmethod
     def _now(cls) -> datetime.datetime:
@@ -51,10 +51,10 @@ class WhiteBoardHandler:
         """
         生成 100-999 的随机数字密钥，保证全局唯一
         """
-        if len(cls.white_board_list) >= 900:
+        if len(cls.white_board_list) >= MAX_WHITEBOARD_ITEMS:
             raise RuntimeError("Whiteboard capacity exhausted.")
         while True:
-            candidate = str(random.randint(100, 999))
+            candidate = str(random.randint(MIN_RANDOM_KEY, MAX_RANDOM_KEY))
             if all(item['key'] != candidate for item in cls.white_board_list):
                 return candidate
 

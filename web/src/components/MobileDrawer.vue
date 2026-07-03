@@ -83,7 +83,10 @@ onBeforeUnmount(() => {
 
 .mobile-drawer {
   position: fixed;
-  inset: 0 auto 0 0;
+  top: 68px;
+  right: auto;
+  bottom: 0;
+  left: 0;
   z-index: 80;
   width: min(312px, calc(100vw - 32px));
   background: var(--app-surface);
@@ -93,6 +96,26 @@ onBeforeUnmount(() => {
   overflow-x: hidden;
   overscroll-behavior: contain;
   -webkit-overflow-scrolling: touch;
+}
+
+@media (max-width: 840px) {
+  .mobile-drawer-overlay {
+    top: 64px;
+  }
+
+  .mobile-drawer {
+    top: 64px;
+  }
+}
+
+@media (max-width: 640px) {
+  .mobile-drawer-overlay {
+    top: 58px;
+  }
+
+  .mobile-drawer {
+    top: 58px;
+  }
 }
 
 .mobile-drawer__header {

@@ -97,7 +97,7 @@ const props = defineProps({
   scroll: {
     type: Boolean,
     required: false,
-    default: false,
+    default: true,
   },
 });
 
@@ -297,12 +297,15 @@ onBeforeUnmount(() => {
   z-index: 10005;
   background: var(--app-header-bg);
   border-bottom: 1px solid var(--app-border);
-  transition: border-color var(--app-motion-duration) ease-out, background-color var(--app-motion-duration) ease-out;
+  transition:
+    transform var(--app-motion-duration) ease-out,
+    border-color var(--app-motion-duration) ease-out,
+    background-color var(--app-motion-duration) ease-out;
 }
 
 .header--hidden {
-  transform: none;
-  pointer-events: auto;
+  transform: translateY(-100%);
+  pointer-events: none;
 }
 
 .header-inner {
@@ -424,17 +427,17 @@ onBeforeUnmount(() => {
 }
 
 .theme-trigger {
-  width: 118px;
+  width: 96px;
   height: 38px;
-  padding: 0 11px;
+  padding: 0 9px;
   border: 1px solid var(--app-border);
   border-radius: 999px;
   background: linear-gradient(180deg, var(--app-surface), var(--app-bg-elevated));
   color: var(--app-text);
   display: inline-grid;
-  grid-template-columns: 12px minmax(0, 1fr) 12px;
+  grid-template-columns: 12px minmax(0, 1fr) 10px;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   box-shadow: var(--app-shadow-sm);
   cursor: pointer;
 }

@@ -4,7 +4,7 @@
   </MobileDrawer>
 
   <!-- 顶部导航栏 -->
-  <HeaderBar @toggle-mobile-menu="toggleMobileMenu"></HeaderBar>
+  <HeaderBar :scroll="true" @toggle-mobile-menu="toggleMobileMenu"></HeaderBar>
 
   <!-- 主体内容 -->
   <div class="main-container article-layout" id="article-main-container">
@@ -750,4 +750,3 @@ watch(
 @media (max-width: 768px) and (orientation: landscape) {
 }
 </style>
-

@@ -1,7 +1,8 @@
-from fastapi import APIRouter, Depends, HTTPException, Request, status
+from fastapi import APIRouter, Depends, Request
 from pydantic import BaseModel, Field
 
 from scripts.db import AnalyticsHandler, AuthorizedHandler
+from .dependencies import ensure_admin_user
 
 ANALYTICS_ROUTER = APIRouter(prefix="/analytics", tags=["analytics"])
 
@@ -19,18 +20,11 @@ def _get_request_ip(request: Request) -> str:
 
 
 def _ensure_admin(user: dict) -> dict:
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="未授权访问，请先登录。",
-        )
-
-    if not AuthorizedHandler.check_admin(user.get("username", "")):
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="您没有权限访问该统计数据。",
-        )
-    return user
+    return ensure_admin_user(
+        user,
+        login_detail="未授权访问，请先登录。",
+        forbidden_detail="您没有权限访问该统计数据。",
+    )
 
 
 class AnalyticsTrackRequest(BaseModel):

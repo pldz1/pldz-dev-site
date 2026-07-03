@@ -1,6 +1,6 @@
 <template>
   <!-- 顶部导航栏 -->
-  <HeaderBar @toggle-mobile-menu="onToggleMobileMenu" :route-name="'Code Space'" :show-mobile-menu="false" />
+  <HeaderBar @toggle-mobile-menu="onToggleMobileMenu" :route-name="'Code Space'" :scroll="true" :show-mobile-menu="false" />
 
   <div class="main-container">
     <main class="livedemo-shell">

@@ -8,6 +8,7 @@ import datetime
 import random
 
 from scripts.db import AuthorizedHandler, SECRET_KEY, ALGORITHM
+from .dependencies import ensure_admin_user
 
 AUTH_ROUTER = APIRouter(prefix="/authorization", tags=["authorization"])
 ACCESS_EXPIRE = datetime.timedelta(minutes=int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 30)))
@@ -213,19 +214,11 @@ async def api_get_all_user(user: dict = Depends(AuthorizedHandler.get_current_us
     """
     获取所有用户信息
     """
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="未授权访问，请先登录!"
-        )
-
-    username = user.get('username')
-    isadmin = AuthorizedHandler.check_admin(username)
-    if not isadmin:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="您没有权限访问此资源!"
-        )
+    ensure_admin_user(
+        user,
+        login_detail="未授权访问，请先登录!",
+        forbidden_detail="您没有权限访问此资源!",
+    )
 
     users = AuthorizedHandler.get_all_users()
     return JSONResponse({'data': {'flag': True, 'data': users, 'log': '获取所有用户信息成功.'}})
@@ -236,23 +229,16 @@ class DeleteUserRequest(BaseModel):
 
 
 @AUTH_ROUTER.post('/usermanagement/delete')
-async def api_get_all_user(data: DeleteUserRequest, user: dict = Depends(AuthorizedHandler.get_current_user)):
+async def api_delete_user(data: DeleteUserRequest, user: dict = Depends(AuthorizedHandler.get_current_user)):
     """
     获取所有用户信息
     """
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="未授权访问，请先登录!"
-        )
-
+    ensure_admin_user(
+        user,
+        login_detail="未授权访问，请先登录!",
+        forbidden_detail="您没有权限访问此资源!",
+    )
     username = user.get('username')
-    isadmin = AuthorizedHandler.check_admin(username)
-    if not isadmin:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="您没有权限访问此资源!"
-        )
 
     if not data.username:
         raise HTTPException(

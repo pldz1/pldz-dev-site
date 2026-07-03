@@ -13,7 +13,6 @@ from fastapi import (
     UploadFile,
     Form,
     Depends,
-    status,
     Query,
     Request,
 )
@@ -25,6 +24,8 @@ from starlette.concurrency import run_in_threadpool
 from core import Logger, ProjectConfig
 from scripts.db import AuthorizedHandler
 from scripts.filesystem import ImageCrudHandler
+from routes.dependencies import ensure_admin_user, ensure_authenticated
+from routes.path_utils import has_invalid_path_part
 
 IMAGES_ROUTE = APIRouter(prefix="/website/image", tags=["website-image"])
 
@@ -36,6 +37,8 @@ CACHE_CONTROL_HEADER = {"Cache-Control": "public, max-age=86400"}
 SUPPORTED_OUTPUT_FORMATS = {"webp", "jpeg"}
 DEFAULT_IMAGE_PROCESS_CONCURRENCY = 2
 DEFAULT_WEBP_METHOD = 4
+ADMIN_REQUIRED_DETAIL = "You do not have permission to sync articles."
+LOGIN_REQUIRED_DETAIL = "You must be logged in to sync articles."
 
 
 def _get_positive_int_env(name: str, default: int) -> int:
@@ -44,6 +47,14 @@ def _get_positive_int_env(name: str, default: int) -> int:
     except (TypeError, ValueError):
         return default
     return value if value > 0 else default
+
+
+def _ensure_image_admin(user: dict) -> None:
+    ensure_admin_user(
+        user,
+        login_detail=LOGIN_REQUIRED_DETAIL,
+        forbidden_detail=ADMIN_REQUIRED_DETAIL,
+    )
 
 
 IMAGE_PROCESS_CONCURRENCY = _get_positive_int_env(
@@ -57,9 +68,9 @@ _IMAGE_CACHE_LOCKS_GUARD = asyncio.Lock()
 
 
 def _validate_image_request(category: str, image: str) -> None:
-    if any(sep in category for sep in ("..", "/", "\\")):
+    if has_invalid_path_part(category):
         raise HTTPException(status_code=400, detail="非法的图片分类")
-    if any(sep in image for sep in ("..", "/", "\\")):
+    if has_invalid_path_part(image):
         raise HTTPException(status_code=400, detail="非法的图片文件名")
 
 
@@ -397,20 +408,7 @@ async def api_post_all_images(category: ImageCategoryData, user: dict = Depends(
     获取指定分类下的所有图片
     :param category: 图片分类
     """
-    # 验证用户是否已登录
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="You must be logged in to sync articles."
-        )
-
-    username = user.get('username')
-    isadmin = AuthorizedHandler.check_admin(username)
-    if not isadmin:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="You do not have permission to sync articles."
-        )
+    _ensure_image_admin(user)
 
     try:
         images = ImageCrudHandler.get_all_images(category.category)
@@ -437,22 +435,9 @@ async def api_rename_image(
     :param payload: 包含分类和新旧图片名的请求体
     :param user: 当前用户
     """
-    # 验证用户是否已登录
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="You must be logged in to sync articles."
-        )
+    _ensure_image_admin(user)
 
-    username = user.get('username')
-    isadmin = AuthorizedHandler.check_admin(username)
-    if not isadmin:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="You do not have permission to sync articles."
-        )
-
-    if any(sep in payload.newName for sep in ("..", "/", "\\")):
+    if has_invalid_path_part(payload.newName):
         raise HTTPException(400, "非法文件名")
 
     try:
@@ -482,20 +467,7 @@ async def api_delete_image(
     :param payload: 包含分类和图片名的请求体
     :param user: 当前用户
     """
-    # 验证用户是否已登录
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="You must be logged in to sync articles."
-        )
-
-    username = user.get('username')
-    isadmin = AuthorizedHandler.check_admin(username)
-    if not isadmin:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="You do not have permission to sync articles."
-        )
+    _ensure_image_admin(user)
 
     try:
         success = ImageCrudHandler.delete_image(payload.category, payload.name)
@@ -525,9 +497,8 @@ async def api_upload_avatar(
     """
     # 验证用户是否已登录
 
-    if not user:
-        raise HTTPException(403, "未授权的用户")
-    if any(sep in name for sep in ("..", "/", "\\")):
+    ensure_authenticated(user, detail="未授权的用户", status_code=403)
+    if has_invalid_path_part(name):
         raise HTTPException(400, "非法文件名")
 
     data = await file.read()
@@ -559,9 +530,8 @@ async def api_upload_article_image(
     :param user: 当前用户
     """
     # 验证用户是否已登录
-    if not user:
-        raise HTTPException(403, "未授权的用户")
-    if any(sep in name for sep in ("..", "/", "\\")):
+    ensure_authenticated(user, detail="未授权的用户", status_code=403)
+    if has_invalid_path_part(name):
         raise HTTPException(400, "非法文件名")
 
     data = await file.read()
@@ -591,7 +561,6 @@ async def api_check_image_exist(
     :param user: 当前用户
     """
     # 验证用户是否已登录
-    if not user:
-        raise HTTPException(403, "未授权的用户")
+    ensure_authenticated(user, detail="未授权的用户", status_code=403)
     exists = ImageCrudHandler.check_exists(payload.category, payload.name)
     return {"data": not exists}

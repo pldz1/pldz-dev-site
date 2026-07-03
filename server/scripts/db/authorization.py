@@ -46,9 +46,6 @@ class UserItem(TypedDict):
 
 class AuthorizedHandler:
 
-    def __init__(self) -> None:
-        pass
-
     @classmethod
     def init_admin(cls):
         cls.add_user(ADMIN_USERNAME, ADMIN_PASSWORD, "爬楼的猪", "/api/v1/website/image/avatar/admin.jpg")
@@ -164,15 +161,6 @@ class AuthorizedHandler:
                 }
             _write_json(db, data)
         return True
-
-    @classmethod
-    def verify_password_by_username(cls, username: str, password: str) -> bool:
-        with _lock:
-            data = _read_json(get_users_db_path())
-        user = data.get(username)
-        if not user:
-            return False
-        return cls.verify_password(password, user['password'])
 
     @classmethod
     def update_user_token(cls, username: str, token: str) -> bool:

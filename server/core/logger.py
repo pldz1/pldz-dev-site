@@ -3,8 +3,12 @@ import time
 import logging
 from logging.handlers import TimedRotatingFileHandler
 
+LOGGER_NAME = 'PLDZ-DEV-SITE'
+DEFAULT_BACKUP_COUNT = 3
+ROTATE_WHEN = 'midnight'
 
-class Logger():
+
+class Logger:
     '''
     The logging handling level int value:
      - CRITICAL = 50
@@ -27,7 +31,8 @@ class Logger():
          - (str) fileLevelL: The file output log level, the default value is 50.
          - (str) filePath: The log file directory, the default vaule is the current location.
         '''
-        cls.logger = logging.Logger('PLDZ-DEV-SITE')
+        cls.logger = logging.Logger(LOGGER_NAME)
+        cls.logger.handlers.clear()
         cls.logger.setLevel(logging.DEBUG)
         cls.formatter = logging.Formatter(
             '[ %(levelname)s ] - PLDZ-DEV-SITE: %(message)s')
@@ -42,7 +47,6 @@ class Logger():
         '''
         cls.set_console_handling(consoleLevel)
         if filePath != "":
-            print(filePath)
             cls.set_file_handling(fileLevel, filePath)
 
     @classmethod
@@ -50,8 +54,6 @@ class Logger():
         '''Set the log level at which the information can be outputed on screen.
          - (str) level: The log level at which the information can be outputed on screen.
         '''
-        consoleHandling = logging.StreamHandler()
-        # The handle to control if the logger can be output on terminal.
         consoleHandling = logging.StreamHandler()
         # If you want the INFO can be outputed on terminal, you can set the level in DEBUG
         consoleHandling.setLevel(level)
@@ -66,18 +68,17 @@ class Logger():
          - (str) filePath: The log file path, If the path does not exist, one is created.
         '''
         # The handle of the files saved.
-        logPath = os.getcwd() + filePath + "/"
-        if not os.path.exists(logPath):
-            try:
-                os.mkdir(logPath)
-            except OSError:
-                print("Create the log file directory `{}`  failed!".format(logPath))
-                return
+        logPath = os.path.join(os.getcwd(), filePath)
+        try:
+            os.makedirs(logPath, exist_ok=True)
+        except OSError:
+            cls.logger.error("Create the log file directory `%s` failed!", logPath)
+            return
 
         logName = time.strftime('%Y-%m-%d-%H-%M-%S.log', time.localtime())
+        log_file = os.path.join(logPath, logName)
         fileHandler = TimedRotatingFileHandler(
-            logPath+logName, when='midnight', backupCount=3)
-        print(logPath+logName)
+            log_file, when=ROTATE_WHEN, backupCount=DEFAULT_BACKUP_COUNT)
         fileHandler.setLevel(level)
         fileHandler.setFormatter(cls.formatter)
 

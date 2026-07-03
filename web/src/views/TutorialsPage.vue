@@ -4,7 +4,7 @@
     <p>{{ isSeriesView ? "这个专栏下的文章。" : "按专栏分门别类。" }}</p>
   </MobileDrawer>
 
-  <HeaderBar :route-name="'教程'" @toggle-mobile-menu="onToggleMobileMenu" />
+  <HeaderBar :route-name="'教程'" :scroll="true" @toggle-mobile-menu="onToggleMobileMenu" />
 
   <div class="tutorials-page">
     <main class="tutorials-main">

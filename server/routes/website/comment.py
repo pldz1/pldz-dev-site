@@ -3,6 +3,7 @@ from fastapi import Depends, HTTPException, status
 from fastapi.routing import APIRouter
 from scripts.db import AuthorizedHandler
 from scripts.db import CommentHandler
+from routes.dependencies import ensure_admin_user
 
 COMMENTS_ROUTE = APIRouter(prefix="/website/comment", tags=["website-comments"])
 
@@ -39,19 +40,11 @@ async def api_add_comment(request: AddCommentRequest, user: dict = Depends(Autho
     """
     添加评论
     """
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="You must be logged in to add comments."
-        )
-
-    username = user.get('username')
-    isadmin = AuthorizedHandler.check_admin(username)
-    if not isadmin:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="You do not have permission to sync articles."
-        )
+    ensure_admin_user(
+        user,
+        login_detail="You must be logged in to add comments.",
+        forbidden_detail="You do not have permission to sync articles.",
+    )
     flag = CommentHandler.add_comment(request.article_id, request.content, request.parent_id)
     return {"data": flag}
 
@@ -66,19 +59,11 @@ async def api_delete_comment(request: DeleteCommentRequest, user: dict = Depends
     """
     删除评论
     """
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="You must be logged in to delete comments."
-        )
-
-    username = user.get('username')
-    isadmin = AuthorizedHandler.check_admin(username)
-    if not isadmin:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="You do not have permission to delete comments."
-        )
+    ensure_admin_user(
+        user,
+        login_detail="You must be logged in to delete comments.",
+        forbidden_detail="You do not have permission to delete comments.",
+    )
 
     flag = CommentHandler.delete_comment(request.article_id, request.comment_id)
     return {"data": flag}

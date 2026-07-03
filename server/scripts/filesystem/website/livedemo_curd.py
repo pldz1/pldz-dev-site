@@ -67,7 +67,7 @@ class LiveDemoHandler:
                 Logger.error(f"LiveDemo.json 配置项缺少必要字段: {e}")
         return items
 
-    def set_LiveDemo_items(self, items: typing.List[LiveDemoItem]) -> None:
+    def set_livedemo_items(self, items: typing.List[LiveDemoItem]) -> bool:
         """
         设置LiveDemo配置中的所有项目
         """
@@ -82,3 +82,6 @@ class LiveDemoHandler:
         except Exception as e:
             Logger.error(f"保存LiveDemo配置时发生错误: {e}")
             return False
+
+    def set_LiveDemo_items(self, items: typing.List[LiveDemoItem]) -> bool:
+        return self.set_livedemo_items(items)

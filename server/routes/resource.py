@@ -1,14 +1,24 @@
 import os
 from pydantic import BaseModel
-from fastapi import APIRouter, HTTPException, File, UploadFile, Form, Depends, status
+from fastapi import APIRouter, HTTPException, File, UploadFile, Depends, status
 from fastapi.responses import HTMLResponse, FileResponse
 
 from core import ProjectConfig, Logger
-from scripts.filesystem import CacheCurdHandle
+from scripts.filesystem import CacheCrudHandle
 from scripts.db import AuthorizedHandler
+from .dependencies import ensure_admin_user
+from .path_utils import resolve_safe_file_path
 
 
 RESOURCE_ROUTE = APIRouter(prefix="/resource", tags=["resource"])
+
+
+def _ensure_cache_admin(user: dict, action: str) -> None:
+    ensure_admin_user(
+        user,
+        login_detail=f"You must be logged in to {action} cache files.",
+        forbidden_detail=f"You do not have permission to {action} cache files.",
+    )
 
 
 def get_html_template(html_content: str) -> str:
@@ -104,21 +114,11 @@ async def api_get_raw_resource_file(file_path: str):
     :param file_path: 相对于资源目录的文件路径
     :return: 原始文件响应
     """
-    normalized_file_path = file_path.strip().lstrip('/\\')
-    if not normalized_file_path:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="File path must be provided."
-        )
-
-    resource_path = os.path.abspath(ProjectConfig.get_resource_path())
-    target_path = os.path.abspath(os.path.join(resource_path, normalized_file_path))
-
-    if os.path.commonpath([resource_path, target_path]) != resource_path:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Access to this file path is not allowed."
-        )
+    normalized_file_path, target_path = resolve_safe_file_path(
+        ProjectConfig.get_resource_path(),
+        file_path,
+        "File path must be provided.",
+    )
 
     if not os.path.isfile(target_path):
         raise HTTPException(
@@ -136,21 +136,9 @@ async def api_get_all_cache_files(user: dict = Depends(AuthorizedHandler.get_cur
     :param user: 当前用户信息
     :return: 缓存文件列表
     """
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="You must be logged in to access cache files."
-        )
+    _ensure_cache_admin(user, "access")
 
-    username = user.get('username')
-    isadmin = AuthorizedHandler.check_admin(username)
-    if not isadmin:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="You do not have permission to access cache files."
-        )
-
-    cache_files = CacheCurdHandle.get_all_cache_files()
+    cache_files = CacheCrudHandle.get_all_cache_files()
     return {"data": cache_files}
 
 
@@ -167,19 +155,7 @@ async def api_download_cache_file(request: CacheDataRequest, user: dict = Depend
     :param user: 当前用户信息
     :return: 缓存文件内容
     """
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="You must be logged in to download cache files."
-        )
-
-    username = user.get('username')
-    isadmin = AuthorizedHandler.check_admin(username)
-    if not isadmin:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="You do not have permission to download cache files."
-        )
+    _ensure_cache_admin(user, "download")
 
     filename = request.filename.strip()
     if not filename:
@@ -188,7 +164,7 @@ async def api_download_cache_file(request: CacheDataRequest, user: dict = Depend
             detail="Filename must be provided."
         )
 
-    file_path = CacheCurdHandle.get_cache_file(filename)
+    file_path = CacheCrudHandle.get_cache_file(filename)
     if not os.path.exists(file_path):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -205,21 +181,11 @@ async def api_get_raw_cache_file(filename: str):
     :param filename: 缓存文件名
     :return: 原始文件响应
     """
-    normalized_filename = filename.strip().lstrip('/\\')
-    if not normalized_filename:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Filename must be provided."
-        )
-
-    cache_path = os.path.abspath(ProjectConfig.get_cache_path())
-    target_path = os.path.abspath(os.path.join(cache_path, normalized_filename))
-
-    if os.path.commonpath([cache_path, target_path]) != cache_path:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Access to this file path is not allowed."
-        )
+    normalized_filename, target_path = resolve_safe_file_path(
+        ProjectConfig.get_cache_path(),
+        filename,
+        "Filename must be provided.",
+    )
 
     if not os.path.isfile(target_path):
         raise HTTPException(
@@ -239,19 +205,7 @@ async def api_delete_cache_file(request: CacheDataRequest, user: dict = Depends(
     :param user: 当前用户信息
     :return: 删除结果
     """
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="You must be logged in to delete cache files."
-        )
-
-    username = user.get('username')
-    isadmin = AuthorizedHandler.check_admin(username)
-    if not isadmin:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="You do not have permission to delete cache files."
-        )
+    _ensure_cache_admin(user, "delete")
 
     filename = request.filename.strip()
     if not filename:
@@ -260,7 +214,7 @@ async def api_delete_cache_file(request: CacheDataRequest, user: dict = Depends(
             detail="Filename must be provided."
         )
 
-    success = CacheCurdHandle.delete_cache_file(filename)
+    success = CacheCrudHandle.delete_cache_file(filename)
     return {"data": success}
 
 
@@ -275,19 +229,7 @@ async def api_upload_cache_file(
     :param user: 当前用户信息
     :return: 上传结果
     """
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="You must be logged in to upload cache files."
-        )
-
-    username = user.get('username')
-    isadmin = AuthorizedHandler.check_admin(username)
-    if not isadmin:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="You do not have permission to upload cache files."
-        )
+    _ensure_cache_admin(user, "upload")
 
     if not file.filename:
         raise HTTPException(
@@ -296,7 +238,7 @@ async def api_upload_cache_file(
         )
 
     try:
-        flag = CacheCurdHandle.save_cache_file(file.filename, await file.read())
+        flag = CacheCrudHandle.save_cache_file(file.filename, await file.read())
         return {"data": flag}
     except Exception as e:
         Logger.error(f"上传缓存文件失败: {e}")

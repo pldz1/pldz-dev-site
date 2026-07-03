@@ -40,9 +40,9 @@ class CacheCurdHandle:
         file_path = os.path.join(CACHE_PATH, filename)
         if os.path.isfile(file_path):
             return file_path
-        else:
-            Logger.error(f"缓存文件 {filename} 不存在")
-            return ""
+
+        Logger.error(f"缓存文件 {filename} 不存在")
+        return ""
 
     @classmethod
     def delete_cache_file(cls, filename: str) -> bool:
@@ -50,16 +50,16 @@ class CacheCurdHandle:
         删除指定的缓存文件
         """
         file_path = os.path.join(CACHE_PATH, filename)
-        if os.path.isfile(file_path):
-            try:
-                os.remove(file_path)
-                Logger.info(f"成功删除缓存文件: {filename}")
-                return True
-            except Exception as e:
-                Logger.error(f"删除缓存文件失败: {e}")
-                return False
-        else:
+        if not os.path.isfile(file_path):
             Logger.error(f"缓存文件 {filename} 不存在")
+            return False
+
+        try:
+            os.remove(file_path)
+            Logger.info(f"成功删除缓存文件: {filename}")
+            return True
+        except OSError as e:
+            Logger.error(f"删除缓存文件失败: {e}")
             return False
 
     @classmethod
@@ -76,6 +76,6 @@ class CacheCurdHandle:
                 f.write(data)
             Logger.info(f"成功保存缓存文件: {filename}")
             return True
-        except Exception as e:
+        except OSError as e:
             Logger.error(f"保存缓存文件失败: {e}")
             return False

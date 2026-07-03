@@ -32,9 +32,9 @@ class ArticleCrudHandler:
         """递归将 metadata 中的 date/datetime 转为 ISO，防止 BSON 序列化错误"""
         if isinstance(obj, (datetime.date, datetime.datetime)):
             return obj.isoformat()
-        elif isinstance(obj, dict):
+        if isinstance(obj, dict):
             return {k: cls.normalize_meta(v) for k, v in obj.items()}
-        elif isinstance(obj, list):
+        if isinstance(obj, list):
             return [cls.normalize_meta(v) for v in obj]
         return obj
 

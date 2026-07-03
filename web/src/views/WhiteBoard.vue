@@ -3,7 +3,7 @@
     <p>输入密钥来匹配已有白板，或者新建一个。</p>
   </MobileDrawer>
 
-  <HeaderBar :route-name="'白板'" @toggle-mobile-menu="onToggleMobileMenu"></HeaderBar>
+  <HeaderBar :route-name="'白板'" :scroll="true" @toggle-mobile-menu="onToggleMobileMenu"></HeaderBar>
 
   <div class="whiteboard-page">
     <main class="main-container whiteboard-main">

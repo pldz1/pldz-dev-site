@@ -2,6 +2,13 @@ import os
 import sys
 import dotenv
 
+DEFAULT_RESOURCE_PATH = "data/resources"
+DEFAULT_IMAGE_PATH = "data/images"
+DEFAULT_ARTICLES_PATH = "data/articles"
+DEFAULT_CACHE_PATH = "data/cache"
+DEFAULT_WEBP_CACHE_PATH = "data/webp"
+DEFAULT_DB_PATH = "data/db"
+
 
 class ProjectConfig:
     '''
@@ -33,13 +40,14 @@ class ProjectConfig:
         dotenv.load_dotenv(env_file_path, override=False)
 
     @classmethod
-    def get_abs_path(cls, folder: str = None, fileName: str = None) -> str:
+    def get_abs_path(cls, folder: str = None, fileName: str = None, file_name: str = None) -> str:
         '''
         获取任何项目文件的绝对路径
         '''
         folder = folder if folder is not None else ''
-        fileName = fileName if fileName is not None else ''
-        path = os.path.normpath(os.path.join(cls.PROJECT_ROOT, folder, fileName))
+        file_name = file_name if file_name is not None else fileName
+        file_name = file_name if file_name is not None else ''
+        path = os.path.normpath(os.path.join(cls.PROJECT_ROOT, folder, file_name))
         return path
 
     @classmethod
@@ -54,31 +62,31 @@ class ProjectConfig:
         '''
         获得资源文件的绝对路径
         '''
-        RESOURCES_PATH = os.environ.get('RESOURCES_PATH', "data/resources")
-        return cls.get_abs_path(RESOURCES_PATH)
+        resources_path = os.environ.get('RESOURCES_PATH', DEFAULT_RESOURCE_PATH)
+        return cls.get_abs_path(resources_path)
 
     @classmethod
     def get_images_path(cls) -> str:
         '''
         获得存储图像的绝对路径
         '''
-        IMAGE_PATH = os.environ.get('IMAGES_PATH', "data/images")
-        return cls.get_abs_path(IMAGE_PATH)
+        image_path = os.environ.get('IMAGES_PATH', DEFAULT_IMAGE_PATH)
+        return cls.get_abs_path(image_path)
 
     @classmethod
     def get_articles_path(cls) -> str:
         '''
         获得存储文章的绝对路径
         '''
-        ARTICLES_PATH = os.environ.get('ARTICLES_PATH', "data/articles")
-        return cls.get_abs_path(ARTICLES_PATH)
+        articles_path = os.environ.get('ARTICLES_PATH', DEFAULT_ARTICLES_PATH)
+        return cls.get_abs_path(articles_path)
 
     @classmethod
     def get_cache_path(cls) -> str:
         """
         获取缓存目录的路径
         """
-        cache_path = os.environ.get('CACHE_PATH', 'data/cache')
+        cache_path = os.environ.get('CACHE_PATH', DEFAULT_CACHE_PATH)
         return cls.get_abs_path(cache_path)
 
     @classmethod
@@ -86,7 +94,7 @@ class ProjectConfig:
         """
         获取缓存目录的路径
         """
-        webp_cache_path = os.environ.get('WEBP_CACHE_PATH', 'data/webp')
+        webp_cache_path = os.environ.get('WEBP_CACHE_PATH', DEFAULT_WEBP_CACHE_PATH)
         return cls.get_abs_path(webp_cache_path)
 
     @classmethod
@@ -102,5 +110,5 @@ class ProjectConfig:
         """
         获取 JSON 数据库文件目录的绝对路径
         """
-        db_path = os.environ.get('DB_PATH', 'data/db')
+        db_path = os.environ.get('DB_PATH', DEFAULT_DB_PATH)
         return cls.get_abs_path(db_path)

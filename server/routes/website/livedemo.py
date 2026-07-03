@@ -1,8 +1,9 @@
 from pydantic import BaseModel
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends
 from fastapi.routing import APIRouter
 from scripts.filesystem import LiveDemoHandler
 from scripts.db import AuthorizedHandler
+from routes.dependencies import ensure_admin_user
 
 LIVEDEMO_ROUTER = APIRouter(prefix="/website/livedemo", tags=["website-livedemo"])
 
@@ -32,18 +33,10 @@ async def api_set_livedemo(request: SetLiveDemoRequest, user: dict = Depends(Aut
     """
     设置 livedemo 信息
     """
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="You must be logged in to sync articles."
-        )
-
-    username = user.get('username')
-    isadmin = AuthorizedHandler.check_admin(username)
-    if not isadmin:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="You do not have permission to sync articles."
-        )
+    ensure_admin_user(
+        user,
+        login_detail="You must be logged in to sync articles.",
+        forbidden_detail="You do not have permission to sync articles.",
+    )
     flag = LIVEDEMO_HANDLE.set_livedemo_items(request.data)
     return {"data": flag}

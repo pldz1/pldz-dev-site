@@ -15,7 +15,7 @@
       </nav>
     </MobileDrawer>
 
-    <HeaderBar @toggle-mobile-menu="onToggleMobileMenu"></HeaderBar>
+    <HeaderBar :scroll="true" @toggle-mobile-menu="onToggleMobileMenu"></HeaderBar>
 
     <div v-if="hasInitializedAdmin" class="main-container admin-main" :class="{ 'mobile-menu-open': isMobileMenuOpen }">
       <aside class="sidebar sidebar-sticky admin-sidebar">

@@ -14,9 +14,6 @@ class CommentItem(typing.TypedDict):
 
 
 class CommentHandler:
-    def __init__(self):
-        pass
-
     @classmethod
     def get_all_comments_by_id(cls, article_id: str) -> typing.List[CommentItem]:
         if not article_id:

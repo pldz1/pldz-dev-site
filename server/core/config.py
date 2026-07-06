@@ -8,6 +8,7 @@ DEFAULT_ARTICLES_PATH = "data/articles"
 DEFAULT_CACHE_PATH = "data/cache"
 DEFAULT_WEBP_CACHE_PATH = "data/webp"
 DEFAULT_DB_PATH = "data/db"
+DEFAULT_TEMPLATES_PATH = "data/templates"
 
 
 class ProjectConfig:
@@ -112,3 +113,11 @@ class ProjectConfig:
         """
         db_path = os.environ.get('DB_PATH', DEFAULT_DB_PATH)
         return cls.get_abs_path(db_path)
+
+    @classmethod
+    def get_templates_path(cls) -> str:
+        """
+        Get the directory that stores static template deployments.
+        """
+        templates_path = os.environ.get('TEMPLATES_PATH', DEFAULT_TEMPLATES_PATH)
+        return cls.get_abs_path(templates_path)

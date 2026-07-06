@@ -47,6 +47,7 @@
           <SecurityMgt v-if="activeMenuKey === 'security'"></SecurityMgt>
           <ImageMgt v-if="activeMenuKey === 'imagemgt'" :all-categories="allCategories" :is-loading="isCategoriesLoading"></ImageMgt>
           <CacheMgt v-if="activeMenuKey === 'cachemgt'"></CacheMgt>
+          <TemplateDeployMgt v-if="activeMenuKey === 'templatedeploy'"></TemplateDeployMgt>
         </section>
       </main>
     </div>
@@ -70,6 +71,7 @@ import UserMgt from "../components/admin-page/UserMgt.vue";
 import ImageMgt from "../components/admin-page/ImageMgt.vue";
 import CacheMgt from "../components/admin-page/CacheMgt.vue";
 import SecurityMgt from "../components/admin-page/SecurityMgt.vue";
+import TemplateDeployMgt from "../components/admin-page/TemplateDeployMgt.vue";
 
 import { useRoute, useRouter } from "vue-router";
 import { useStore } from "vuex";
@@ -125,6 +127,14 @@ const menuItems = [
     icon: "cache",
     caption: "维护静态缓存与资源文件",
     gradient: "linear-gradient(135deg, #b57652 0%, #7b5e4e 100%)",
+    requiresCategories: false,
+  },
+  {
+    key: "templatedeploy",
+    name: "模板部署",
+    icon: "deploy",
+    caption: "查看 CI 模板部署记录和重试任务",
+    gradient: "linear-gradient(135deg, #5d7a4a 0%, #7b5e4e 100%)",
     requiresCategories: false,
   },
 ];

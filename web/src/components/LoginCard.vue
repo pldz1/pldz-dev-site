@@ -38,10 +38,18 @@
         <!-- 表单 -->
         <form method="post" @submit.prevent="onLoginOrRegister">
           <!-- 用户名 -->
-          <input type="text" placeholder="邮箱地址(示例:user@example.com)" required v-model="name" @change="onCheckName" />
+          <input type="text" placeholder="邮箱地址(示例:user@example.com)" required v-model="name" />
           <!-- 密码 -->
           <input type="password" placeholder="请输入密码" required v-model="pwd" />
-          <input v-if="requiresTwoFactor && !showRegister" type="text" inputmode="numeric" autocomplete="one-time-code" placeholder="请输入 6 位两步验证码" required v-model="otpCode" />
+          <input
+            v-if="requiresTwoFactor && !showRegister"
+            type="text"
+            inputmode="numeric"
+            autocomplete="one-time-code"
+            placeholder="请输入 6 位两步验证码"
+            required
+            v-model="otpCode"
+          />
           <!-- 昵称，仅在注册时显示 -->
           <input v-if="showRegister" type="text" placeholder="昵称" required v-model="nick" />
           <div class="action-buttons">
@@ -141,15 +149,15 @@ async function updateAuthState(res) {
  */
 async function onLoginOrRegister() {
   showLoginCss.value = true;
-  const isValid = onCheckName();
-  if (!isValid) {
-    showLoginCss.value = false;
-    return;
-  }
 
   // 如果是注册界面，则调用注册接口
   let res;
   if (showRegister.value) {
+    const isValid = onCheckName();
+    if (!isValid) {
+      showLoginCss.value = false;
+      return;
+    }
     res = await register(name.value, pwd.value, nick.value);
   } else {
     res = await login(name.value, pwd.value, otpCode.value);

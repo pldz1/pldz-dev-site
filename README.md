@@ -1,10 +1,10 @@
 # pldz-dev-site
 
-`pldz-dev-site` 是支撑 `pldz1.com` 的个人开发空间网站源码
+`pldz-dev-site` 是我个人网站 `pldz1.com` 的源码
 
 ## 项目定位
 
-这个仓库目前承载的产品形态可以理解为：
+这个仓库目前承载的功能可以理解为：
 
 - 个人首页：展示最近文章、项目教程、Demo、更新记录和个人入口。
 - 教程/文章系统：基于 `data/articles/**/*.md` 的 Markdown + frontmatter 内容系统。
@@ -77,7 +77,8 @@
 ├── web/                       # Vue 3 前端工程
 ├── Dockerfile                 # backend 镜像构建文件
 ├── docker-compose.yaml        # backend + nginx 编排
-├── requirements.txt           # Python 依赖
+├── requirements.txt           # Python 生产运行依赖
+├── requirements-dev.txt       # Python 本地开发/测试依赖
 ├── .env.example               # 环境变量示例
 └── README.md                  # 当前文档
 ```
@@ -111,6 +112,13 @@ docker compose up --build
 cp .env.example .env
 pip install -r requirements.txt
 python server/main.py
+```
+
+如需运行测试或使用开发工具，请安装开发依赖：
+
+```bash
+pip install -r requirements-dev.txt
+pytest
 ```
 
 默认后端监听：
@@ -1190,7 +1198,7 @@ Content-Type: application/json
 cp .env.example .env
 python -m venv .venv
 source .venv/bin/activate
-pip install -r requirements.txt
+pip install -r requirements-dev.txt
 python server/main.py
 ```
 

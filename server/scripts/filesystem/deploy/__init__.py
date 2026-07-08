@@ -1,3 +1,3 @@
-from .template_deploy import TemplateDeployHandler
+from .www_deployment import WwwDeployHandler
 
-__all__ = ["TemplateDeployHandler"]
+__all__ = ["WwwDeployHandler"]

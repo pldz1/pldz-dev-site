@@ -1,4 +1,4 @@
-def assert_requires_login(response):
+﻿def assert_requires_login(response):
     assert response.status_code == 401
 
 
@@ -153,9 +153,9 @@ def test_analytics_cta_requires_login(client):
     assert_requires_login(client.get("/api/v1/analytics/cta"))
 
 
-def test_template_deployments_all_requires_login(client):
-    assert_requires_login(client.get("/api/v1/deploy/templates/all"))
+def test_www_deployments_all_requires_login(client):
+    assert_requires_login(client.get("/api/v1/deploy/www/all"))
 
 
-def test_template_deployments_retry_requires_login(client):
-    assert_requires_login(client.post("/api/v1/deploy/templates/retry", json={"id": "missing"}))
+def test_www_deployments_retry_requires_login(client):
+    assert_requires_login(client.post("/api/v1/deploy/www/retry", json={"id": "missing"}))

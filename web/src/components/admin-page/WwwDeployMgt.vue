@@ -1,8 +1,8 @@
 <template>
   <div class="content-container">
     <div class="content-header">
-      <h1>模板部署</h1>
-      <p>查看 GitHub CI 模板部署记录、错误日志和重试失败任务</p>
+      <h1>WWW 部署</h1>
+      <p>查看 GitHub CI WWW 部署记录、错误日志和重试失败任务</p>
     </div>
 
     <div class="content-body">
@@ -52,7 +52,7 @@
       </div>
 
       <div v-else class="empty-state">
-        <p>暂无模板部署记录。</p>
+        <p>暂无 WWW 部署记录。</p>
         <button class="btn btn-outline" type="button" @click="loadDeployments">刷新</button>
       </div>
     </div>
@@ -61,14 +61,14 @@
 
 <script setup>
 import { computed, onMounted, reactive, ref } from "vue";
-import { getTemplateDeployments, retryTemplateDeployment } from "../../utils/apis";
+import { getWwwDeployments, retryWwwDeployment } from "../../utils/apis";
 import Toast from "../../utils/toast.js";
 import { useLoading } from "../../utils/use-loading";
 
 const deployments = ref([]);
 const errorMessage = ref("");
 const retrying = reactive({});
-const { isLoading: isDeployLoading, start: startDeployLoading, stop: stopDeployLoading } = useLoading("admin.template-deploy.list");
+const { isLoading: isDeployLoading, start: startDeployLoading, stop: stopDeployLoading } = useLoading("admin.www-deployment.list");
 
 const retryingIds = computed(() => new Set(Object.keys(retrying).filter((id) => retrying[id])));
 
@@ -79,7 +79,7 @@ function isRetrying(id) {
 async function loadDeployments() {
   startDeployLoading();
   try {
-    const res = await getTemplateDeployments();
+    const res = await getWwwDeployments();
     if (!Array.isArray(res)) {
       throw new Error("Invalid deployment list response");
     }
@@ -87,8 +87,8 @@ async function loadDeployments() {
     errorMessage.value = "";
   } catch (error) {
     console.error(error);
-    errorMessage.value = "模板部署记录加载失败，请稍后再试";
-    Toast.error("模板部署记录加载失败");
+    errorMessage.value = "WWW 部署记录加载失败，请稍后再试";
+    Toast.error("WWW 部署记录加载失败");
   } finally {
     stopDeployLoading();
   }
@@ -97,7 +97,7 @@ async function loadDeployments() {
 async function onRetry(item) {
   retrying[item.id] = true;
   try {
-    const res = await retryTemplateDeployment(item.id);
+    const res = await retryWwwDeployment(item.id);
     if (!res) {
       throw new Error("Retry request failed");
     }

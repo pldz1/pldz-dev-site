@@ -6,10 +6,10 @@ from pydantic import BaseModel
 
 from routes.dependencies import ensure_admin_user
 from scripts.db import AuthorizedHandler
-from scripts.filesystem import TemplateDeployHandler
+from scripts.filesystem import WwwDeployHandler
 
 
-DEPLOY_ROUTER = APIRouter(prefix="/deploy/templates", tags=["template-deploy"])
+WWW_DEPLOY_ROUTER = APIRouter(prefix="/deploy/www", tags=["www-deployment"])
 
 
 class NoticeDeployRequest(BaseModel):
@@ -21,12 +21,8 @@ class RetryDeployRequest(BaseModel):
     id: str
 
 
-def _check_deploy_token(deploy_token: str, authorization: str) -> None:
-    scheme, _, token = authorization.partition(" ")
+def _check_deploy_token(deploy_token: str) -> None:
     provided = deploy_token.strip()
-    if not provided and scheme.lower() == "bearer":
-        provided = token.strip()
-
     expected = os.environ.get("DEPLOY_NOTICE_TOKEN", "").strip()
     if not expected or provided != expected:
         raise HTTPException(
@@ -41,45 +37,44 @@ def _model_to_dict(model: BaseModel) -> dict:
     return model.dict()
 
 
-@DEPLOY_ROUTER.post("/notice")
-async def api_notice_template_deploy(
+@WWW_DEPLOY_ROUTER.post("/notice")
+async def api_notice_www_deployment(
     request: NoticeDeployRequest,
     background_tasks: BackgroundTasks,
     x_deploy_token: str = Header("", alias="X-Deploy-Token"),
-    authorization: str = Header(""),
 ):
-    _check_deploy_token(x_deploy_token, authorization)
-    record = TemplateDeployHandler.create_record(_model_to_dict(request))
-    background_tasks.add_task(TemplateDeployHandler.run_deploy, record["id"])
+    _check_deploy_token(x_deploy_token)
+    record = WwwDeployHandler.create_record(_model_to_dict(request))
+    background_tasks.add_task(WwwDeployHandler.run_deploy, record["id"])
     return {"data": {"id": record["id"], "status": record["status"]}}
 
 
-@DEPLOY_ROUTER.get("/all")
-async def api_get_template_deployments(user: dict = Depends(AuthorizedHandler.get_current_user)):
+@WWW_DEPLOY_ROUTER.get("/all")
+async def api_get_www_deployments(user: dict = Depends(AuthorizedHandler.get_current_user)):
     ensure_admin_user(
         user,
-        login_detail="You must be logged in to access template deployments.",
-        forbidden_detail="You do not have permission to access template deployments.",
+        login_detail="You must be logged in to access www deployments.",
+        forbidden_detail="You do not have permission to access www deployments.",
     )
-    return {"data": TemplateDeployHandler.list_records()}
+    return {"data": WwwDeployHandler.list_records()}
 
 
-@DEPLOY_ROUTER.post("/retry")
-async def api_retry_template_deployment(
+@WWW_DEPLOY_ROUTER.post("/retry")
+async def api_retry_www_deployment(
     request: RetryDeployRequest,
     background_tasks: BackgroundTasks,
     user: dict = Depends(AuthorizedHandler.get_current_user),
 ):
     ensure_admin_user(
         user,
-        login_detail="You must be logged in to retry template deployments.",
-        forbidden_detail="You do not have permission to retry template deployments.",
+        login_detail="You must be logged in to retry www deployments.",
+        forbidden_detail="You do not have permission to retry www deployments.",
     )
-    record = TemplateDeployHandler.retry_record(request.id)
+    record = WwwDeployHandler.retry_record(request.id)
     if not record:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Deployment record not found.",
         )
-    background_tasks.add_task(TemplateDeployHandler.run_deploy, record["id"])
+    background_tasks.add_task(WwwDeployHandler.run_deploy, record["id"])
     return {"data": record}

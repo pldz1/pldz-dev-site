@@ -8,4 +8,4 @@ export * from "./authorize-post.js";
 export * from "./cache-post.js";
 export * from "./image-post.js";
 export * from "./analytics.js";
-export * from "./template-deploy.js";
+export * from "./www-deployment.js";

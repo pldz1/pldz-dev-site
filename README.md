@@ -1137,12 +1137,12 @@ volumes:
   - ./data/www:/usr/share/nginx/www:ro
 ```
 
-### 模板部署通知接口
+### WWW 部署通知接口
 
-后端提供一个供 GitHub Actions 通知的模板部署接口：
+后端提供一个供 GitHub Actions 通知的 WWW 部署接口：
 
 ```text
-POST /api/v1/deploy/templates/notice
+POST /api/v1/deploy/www/notice
 X-Deploy-Token: <DEPLOY_NOTICE_TOKEN>
 Content-Type: application/json
 ```
@@ -1163,6 +1163,8 @@ Content-Type: application/json
 3. 后端用服务器 `.env` 中的 `DEPLOY_GITHUB_TOKEN` 下载 artifact。
 4. 后端校验压缩包路径、解压、检查 `index.html`、备份旧目录。
 5. 后端替换 `data/www/{folder}`，并在 Linux 上设置目录 `755`、文件 `644`。
+
+`folder` 就是 `data/www` 下的目标目录名，例如主站 `web` 或某个 Demo 的目录名。
 
 `DEPLOY_GITHUB_TOKEN` 只放在服务器 `.env`，不要从浏览器或 CI 请求体传入。
 
@@ -1188,7 +1190,7 @@ Content-Type: application/json
       }'
 ```
 
-如果旧 workflow 先把 `dist` 打成 zip 再上传，GitHub artifact 会形成“外层 artifact zip + 内层 dist zip”的双层压缩包。后端保留了自动解单个内层压缩包的兼容兜底，但更推荐直接上传 `dist` 目录。
+如果 workflow 先把 `dist` 打成 zip 再上传，GitHub artifact 会形成“外层 artifact zip + 内层 dist zip”的双层压缩包。后端可以自动解单个内层压缩包，但更推荐直接上传 `dist` 目录。
 
 ## 本地开发流程
 

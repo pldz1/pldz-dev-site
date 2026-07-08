@@ -3,7 +3,7 @@ from .website.image_crud import ImageCrudHandler
 from .website.article_crud import ArticleCrudHandler, ArticleDocument
 from .cache.cache_crud import CacheCrudHandle, CacheCurdHandle
 from .website.livedemo_crud import LiveDemoHandler
-from .deploy import TemplateDeployHandler
+from .deploy import WwwDeployHandler
 
 
 __all__ = [
@@ -14,5 +14,5 @@ __all__ = [
     'CacheCrudHandle',
     'CacheCurdHandle',
     'LiveDemoHandler',
-    'TemplateDeployHandler'
+    'WwwDeployHandler'
 ]

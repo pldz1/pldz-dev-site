@@ -1,4 +1,4 @@
-name: Deploy Web Template
+name: WWW Deployment
 
 on:
   push:
@@ -6,16 +6,16 @@ on:
       - main
     paths:
       - "web/**"
-      - ".github/workflows/deploy-web-template.yml"
+      - ".github/workflows/www-deployment.yml"
   workflow_dispatch:
 
 concurrency:
-  group: deploy-web-template
+  group: www-deployment
   cancel-in-progress: true
 
 jobs:
   build-and-notify:
-    name: Build web and notify template deploy
+    name: Build web and notify www deployment
     runs-on: ubuntu-latest
 
     environment: main-branch

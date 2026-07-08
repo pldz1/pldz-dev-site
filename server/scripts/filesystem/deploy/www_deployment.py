@@ -17,13 +17,13 @@ from urllib.request import HTTPRedirectHandler, Request, ProxyHandler, build_ope
 from core import ProjectConfig
 
 
-DEPLOY_DB_FILENAME = "template_deployments.json"
+DEPLOY_DB_FILENAME = "www_deployments.json"
 GITHUB_API_VERSION = "2022-11-28"
 MAX_LOG_LINES = 80
 DEFAULT_MAX_ARTIFACT_BYTES = 100 * 1024 * 1024
 
 
-class TemplateDeployHandler:
+class WwwDeployHandler:
     _lock = threading.Lock()
 
     @classmethod
@@ -86,8 +86,7 @@ class TemplateDeployHandler:
 
             folder = record["folder"]
             cls._validate_folder(folder)
-            cls._ensure_known_folder(folder)
-            logger.add(f"Deploying artifact to template folder {folder}.")
+            logger.add(f"Deploying artifact to www folder {folder}.")
 
             cache_root = Path(ProjectConfig.get_cache_path()) / "deployments" / "work" / record_id
             work_dir = cache_root
@@ -123,7 +122,7 @@ class TemplateDeployHandler:
             if target_path and backup_path and backup_path.exists() and not target_path.exists():
                 try:
                     shutil.move(str(backup_path), str(target_path))
-                    logger.add("Restored previous template directory after failure.")
+                    logger.add("Restored previous www folder after failure.")
                 except Exception as restore_exc:
                     logger.add(f"ERROR: Failed to restore backup: {restore_exc}")
             cls._update_record(record_id, {
@@ -139,20 +138,7 @@ class TemplateDeployHandler:
     @classmethod
     def _validate_folder(cls, folder: str) -> None:
         if not folder or "/" in folder or "\\" in folder or ".." in folder:
-            raise RuntimeError("Template folder is not a safe folder name.")
-
-    @classmethod
-    def _ensure_known_folder(cls, folder: str) -> None:
-        with open(ProjectConfig.get_livedemo_config_path(), "r", encoding="utf-8") as file_obj:
-            payload = json.load(file_obj)
-
-        allowed = {
-            str(item.get("folder", "")).strip()
-            for item in payload.get("data", [])
-            if str(item.get("folder", "")).strip()
-        }
-        if folder not in allowed:
-            raise RuntimeError(f"Template folder '{folder}' is not configured in livedemo.json.")
+            raise RuntimeError("WWW folder is not a safe folder name.")
 
     @classmethod
     def _download_artifact(cls, url: str, output_path: Path, logger) -> None:
@@ -197,7 +183,7 @@ class TemplateDeployHandler:
                 "Authorization": f"Bearer {token}",
                 "Accept": "application/vnd.github+json",
                 "X-GitHub-Api-Version": GITHUB_API_VERSION,
-                "User-Agent": "pldz-dev-site-template-deployer",
+                "User-Agent": "pldz-dev-site-www-deployer",
             },
         )
 
@@ -269,7 +255,7 @@ class TemplateDeployHandler:
             # Some workflows upload a pre-zipped dist file. GitHub then wraps
             # that file in the artifact zip, so the downloaded artifact has two
             # archive layers. Prefer uploading the dist directory, keep this as
-            # a compatibility fallback.
+            # a small tolerance for the double-archive shape.
             nested_extract_path = extract_path / "__nested_artifact__"
             nested_extract_path.mkdir(parents=True, exist_ok=True)
             cls._extract_archive_to(nested_archive, nested_extract_path)
@@ -345,10 +331,10 @@ class TemplateDeployHandler:
     def _replace_target(cls, source_path: Path, target_path: Path, backup_path: Path, logger) -> None:
         if target_path.exists():
             shutil.move(str(target_path), str(backup_path))
-            logger.add(f"Backed up existing template to {backup_path}.")
+            logger.add(f"Backed up existing www folder to {backup_path}.")
 
         shutil.move(str(source_path), str(target_path))
-        logger.add(f"Moved new template into {target_path}.")
+        logger.add(f"Moved new www deployment into {target_path}.")
 
     @classmethod
     def _apply_permissions(cls, target_path: Path, logger) -> None:
@@ -393,7 +379,10 @@ class TemplateDeployHandler:
 
     @classmethod
     def _read_records_unlocked(cls) -> list[dict]:
-        db_path = cls._db_path()
+        return cls._read_records_from_path(cls._db_path())
+
+    @classmethod
+    def _read_records_from_path(cls, db_path: Path) -> list[dict]:
         if not db_path.exists():
             return []
         with open(db_path, "r", encoding="utf-8") as file_obj:

@@ -1,23 +1,6 @@
-import json
+﻿import json
 import zipfile
 from pathlib import Path
-
-
-def _write_livedemo(root: Path, folder: str = "demo") -> None:
-    config_dir = root / "data" / "resources" / "website"
-    config_dir.mkdir(parents=True, exist_ok=True)
-    with open(config_dir / "livedemo.json", "w", encoding="utf-8") as file_obj:
-        json.dump(
-            {
-                "data": [
-                    {
-                        "folder": folder,
-                        "sourcelink": "https://github.com/acme/demo",
-                    }
-                ]
-            },
-            file_obj,
-        )
 
 
 def _write_zip(path: Path, files: dict[str, str]) -> None:
@@ -31,7 +14,6 @@ def _setup_project(monkeypatch, tmp_path: Path):
 
     monkeypatch.setattr(ProjectConfig, "PROJECT_ROOT", str(tmp_path))
     monkeypatch.setenv("DEPLOY_NOTICE_TOKEN", "secret")
-    _write_livedemo(tmp_path)
     (tmp_path / "data" / "db").mkdir(parents=True, exist_ok=True)
     (tmp_path / "data" / "cache").mkdir(parents=True, exist_ok=True)
     (tmp_path / "data" / "www").mkdir(parents=True, exist_ok=True)
@@ -49,42 +31,28 @@ def _headers(token: str = "secret") -> dict:
 
 
 def _records(tmp_path: Path) -> list[dict]:
-    with open(tmp_path / "data" / "db" / "template_deployments.json", "r", encoding="utf-8") as file_obj:
+    with open(tmp_path / "data" / "db" / "www_deployments.json", "r", encoding="utf-8") as file_obj:
         return json.load(file_obj)
 
 
-def test_template_deploy_notice_rejects_missing_or_wrong_token(client, monkeypatch, tmp_path):
+def test_www_deployment_notice_rejects_missing_or_wrong_token(client, monkeypatch, tmp_path):
     _setup_project(monkeypatch, tmp_path)
     zip_path = tmp_path / "site.zip"
     _write_zip(zip_path, {"index.html": "hello"})
 
     assert client.post(
-        "/api/v1/deploy/templates/notice",
+        "/api/v1/deploy/www/notice",
         json=_notice_payload(zip_path.as_uri()),
     ).status_code == 403
 
     assert client.post(
-        "/api/v1/deploy/templates/notice",
+        "/api/v1/deploy/www/notice",
         json=_notice_payload(zip_path.as_uri()),
         headers=_headers("bad"),
     ).status_code == 403
 
 
-def test_template_deploy_notice_accepts_legacy_bearer_token(client, monkeypatch, tmp_path):
-    _setup_project(monkeypatch, tmp_path)
-    zip_path = tmp_path / "site.zip"
-    _write_zip(zip_path, {"index.html": "hello"})
-
-    response = client.post(
-        "/api/v1/deploy/templates/notice",
-        json=_notice_payload(zip_path.as_uri()),
-        headers={"Authorization": "Bearer secret"},
-    )
-
-    assert response.status_code == 200
-
-
-def test_template_deploy_success_replaces_target_and_creates_backup(client, monkeypatch, tmp_path):
+def test_www_deployment_success_replaces_target_and_creates_backup(client, monkeypatch, tmp_path):
     _setup_project(monkeypatch, tmp_path)
     target = tmp_path / "data" / "www" / "demo"
     target.mkdir(parents=True)
@@ -94,7 +62,7 @@ def test_template_deploy_success_replaces_target_and_creates_backup(client, monk
     _write_zip(zip_path, {"dist/index.html": "new", "dist/app.js": "console.log(1)"})
 
     response = client.post(
-        "/api/v1/deploy/templates/notice",
+        "/api/v1/deploy/www/notice",
         json=_notice_payload(zip_path.as_uri()),
         headers=_headers(),
     )
@@ -109,7 +77,30 @@ def test_template_deploy_success_replaces_target_and_creates_backup(client, monk
     assert records[-1]["folder"] == "demo"
 
 
-def test_template_deploy_extracts_single_nested_archive(client, monkeypatch, tmp_path):
+def test_www_deployment_allows_main_web_folder(client, monkeypatch, tmp_path):
+    _setup_project(monkeypatch, tmp_path)
+    target = tmp_path / "data" / "www" / "web"
+    target.mkdir(parents=True)
+    (target / "index.html").write_text("old", encoding="utf-8")
+
+    zip_path = tmp_path / "site.zip"
+    _write_zip(zip_path, {"index.html": "main", "assets/app.js": "console.log(1)"})
+
+    response = client.post(
+        "/api/v1/deploy/www/notice",
+        json=_notice_payload(zip_path.as_uri(), folder="web"),
+        headers=_headers(),
+    )
+
+    assert response.status_code == 200
+    assert (target / "index.html").read_text(encoding="utf-8") == "main"
+    assert (target / "assets" / "app.js").is_file()
+    records = _records(tmp_path)
+    assert records[-1]["status"] == "success"
+    assert records[-1]["folder"] == "web"
+
+
+def test_www_deployment_extracts_single_nested_archive(client, monkeypatch, tmp_path):
     _setup_project(monkeypatch, tmp_path)
     target = tmp_path / "data" / "www" / "demo"
     target.mkdir(parents=True)
@@ -123,7 +114,7 @@ def test_template_deploy_extracts_single_nested_archive(client, monkeypatch, tmp
         archive.write(inner_zip_path, "demo-dist.zip")
 
     response = client.post(
-        "/api/v1/deploy/templates/notice",
+        "/api/v1/deploy/www/notice",
         json=_notice_payload(outer_zip_path.as_uri()),
         headers=_headers(),
     )
@@ -136,30 +127,32 @@ def test_template_deploy_extracts_single_nested_archive(client, monkeypatch, tmp
     assert any("nested artifact archive" in line for line in records[-1]["log_tail"])
 
 
-def test_template_deploy_rejects_unknown_folder(client, monkeypatch, tmp_path):
+def test_www_deployment_allows_any_safe_www_folder(client, monkeypatch, tmp_path):
     _setup_project(monkeypatch, tmp_path)
+    target = tmp_path / "data" / "www" / "new-site"
     zip_path = tmp_path / "site.zip"
-    _write_zip(zip_path, {"index.html": "hello"})
+    _write_zip(zip_path, {"index.html": "new site"})
 
     response = client.post(
-        "/api/v1/deploy/templates/notice",
-        json=_notice_payload(zip_path.as_uri(), folder="unknown"),
+        "/api/v1/deploy/www/notice",
+        json=_notice_payload(zip_path.as_uri(), folder="new-site"),
         headers=_headers(),
     )
 
     assert response.status_code == 200
     record = _records(tmp_path)[-1]
-    assert record["status"] == "failed"
-    assert "livedemo.json" in record["error"]
+    assert record["status"] == "success"
+    assert record["folder"] == "new-site"
+    assert (target / "index.html").read_text(encoding="utf-8") == "new site"
 
 
-def test_template_deploy_rejects_unsafe_folder(client, monkeypatch, tmp_path):
+def test_www_deployment_rejects_unsafe_folder(client, monkeypatch, tmp_path):
     _setup_project(monkeypatch, tmp_path)
     zip_path = tmp_path / "site.zip"
     _write_zip(zip_path, {"index.html": "hello"})
 
     response = client.post(
-        "/api/v1/deploy/templates/notice",
+        "/api/v1/deploy/www/notice",
         json=_notice_payload(zip_path.as_uri(), folder="../bad"),
         headers=_headers(),
     )
@@ -170,13 +163,13 @@ def test_template_deploy_rejects_unsafe_folder(client, monkeypatch, tmp_path):
     assert "safe folder" in record["error"]
 
 
-def test_template_deploy_rejects_zip_path_traversal(client, monkeypatch, tmp_path):
+def test_www_deployment_rejects_zip_path_traversal(client, monkeypatch, tmp_path):
     _setup_project(monkeypatch, tmp_path)
     zip_path = tmp_path / "site.zip"
     _write_zip(zip_path, {"../index.html": "bad"})
 
     response = client.post(
-        "/api/v1/deploy/templates/notice",
+        "/api/v1/deploy/www/notice",
         json=_notice_payload(zip_path.as_uri()),
         headers=_headers(),
     )
@@ -187,13 +180,13 @@ def test_template_deploy_rejects_zip_path_traversal(client, monkeypatch, tmp_pat
     assert "unsafe path" in record["error"]
 
 
-def test_template_deploy_rejects_missing_index(client, monkeypatch, tmp_path):
+def test_www_deployment_rejects_missing_index(client, monkeypatch, tmp_path):
     _setup_project(monkeypatch, tmp_path)
     zip_path = tmp_path / "site.zip"
     _write_zip(zip_path, {"app.js": "console.log(1)"})
 
     response = client.post(
-        "/api/v1/deploy/templates/notice",
+        "/api/v1/deploy/www/notice",
         json=_notice_payload(zip_path.as_uri()),
         headers=_headers(),
     )
@@ -204,12 +197,12 @@ def test_template_deploy_rejects_missing_index(client, monkeypatch, tmp_path):
     assert "index.html" in record["error"]
 
 
-def test_template_deploy_builds_github_artifact_api_request(monkeypatch):
-    from scripts.filesystem import TemplateDeployHandler
+def test_www_deployment_builds_github_artifact_api_request(monkeypatch):
+    from scripts.filesystem import WwwDeployHandler
 
     monkeypatch.setenv("DEPLOY_GITHUB_TOKEN", "github-token")
 
-    request = TemplateDeployHandler._build_github_artifact_request(
+    request = WwwDeployHandler._build_github_artifact_request(
         "https://github.com/acme/demo/actions/runs/123/artifacts/456"
     )
 
@@ -217,19 +210,19 @@ def test_template_deploy_builds_github_artifact_api_request(monkeypatch):
     assert request.headers["Authorization"] == "Bearer github-token"
 
 
-def test_template_deploy_retry_creates_new_record(monkeypatch, tmp_path):
+def test_www_deployment_retry_creates_new_record(monkeypatch, tmp_path):
     from core import ProjectConfig
-    from scripts.filesystem import TemplateDeployHandler
+    from scripts.filesystem import WwwDeployHandler
 
     monkeypatch.setattr(ProjectConfig, "PROJECT_ROOT", str(tmp_path))
     (tmp_path / "data" / "db").mkdir(parents=True, exist_ok=True)
 
-    original = TemplateDeployHandler.create_record({
+    original = WwwDeployHandler.create_record({
         "folder": "demo",
         "artifact_url": "file:///tmp/site.zip",
     })
 
-    retry = TemplateDeployHandler.retry_record(original["id"])
+    retry = WwwDeployHandler.retry_record(original["id"])
 
     assert retry["id"] != original["id"]
     assert retry["artifact_url"] == original["artifact_url"]

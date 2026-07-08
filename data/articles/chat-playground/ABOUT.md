@@ -1,5 +1,5 @@
 ---
-author: admin@pldz1.com
+author: pldz1
 category: chat-playground
 csdn: ''
 date: '2025-01-11'

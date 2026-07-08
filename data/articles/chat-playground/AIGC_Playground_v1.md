@@ -1,5 +1,5 @@
 ---
-author: admin@pldz1.com
+author: pldz1
 category: chat-playground
 csdn: 'https://blog.csdn.net/qq_42727752/article/details/147812037'
 date: '2025-05-08'

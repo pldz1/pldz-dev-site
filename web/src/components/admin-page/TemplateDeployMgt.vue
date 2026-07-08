@@ -28,8 +28,7 @@
               <span :class="['status-pill', 'status-pill--' + item.status]">{{ formatStatus(item.status) }}</span>
             </div>
             <div class="deploy-meta">
-              <span>{{ item.repo }}</span>
-              <span>{{ shortSha(item.sha) }}</span>
+              <span>{{ item.artifact_url }}</span>
               <span>{{ formatTime(item.created_at) }}</span>
             </div>
             <div v-if="item.error" class="deploy-error">{{ item.error }}</div>
@@ -111,10 +110,6 @@ async function onRetry(item) {
   } finally {
     retrying[item.id] = false;
   }
-}
-
-function shortSha(sha) {
-  return sha ? String(sha).slice(0, 8) : "-";
 }
 
 function formatStatus(status) {

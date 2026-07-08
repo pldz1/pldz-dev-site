@@ -173,6 +173,12 @@ SITE_NAME=爬楼的猪 Dev
 SITE_COPYRIGHT=©2026 pldz1.com
 SITE_ICP=京ICP备: 180xxxxx号-x
 SITE_PS=京公网安备11xxxxxxxx9号
+
+DEPLOY_NOTICE_TOKEN=change-me
+DEPLOY_GITHUB_TOKEN=github_pat_xxx
+DEPLOY_MAX_ARTIFACT_BYTES=104857600
+DEPLOY_HTTP_PROXY=
+DEPLOY_HTTPS_PROXY=
 ```
 
 后端启动时会调用 `ProjectConfig.load_env()`：
@@ -1122,6 +1128,59 @@ data/templates/sse-markdown
 volumes:
   - ./data/templates:/usr/share/nginx/templates:ro
 ```
+
+### 模板部署通知接口
+
+后端提供一个供 GitHub Actions 通知的模板部署接口：
+
+```text
+POST /api/v1/deploy/templates/notice
+Authorization: Bearer <DEPLOY_NOTICE_TOKEN>
+Content-Type: application/json
+```
+
+请求体只需要两个字段：
+
+```json
+{
+  "folder": "ai-api-hub",
+  "artifact_url": "https://github.com/OWNER/REPO/actions/runs/RUN_ID/artifacts/ARTIFACT_ID"
+}
+```
+
+部署流程：
+
+1. CI 上传构建产物 artifact。
+2. CI 用 `DEPLOY_NOTICE_TOKEN` 通知本站后端。
+3. 后端用服务器 `.env` 中的 `DEPLOY_GITHUB_TOKEN` 下载 artifact。
+4. 后端校验压缩包路径、解压、检查 `index.html`、备份旧目录。
+5. 后端替换 `data/templates/{folder}`，并在 Linux 上设置目录 `755`、文件 `644`。
+
+`DEPLOY_GITHUB_TOKEN` 只放在服务器 `.env`，不要从浏览器或 CI 请求体传入。
+
+推荐 GitHub Actions 直接上传 `dist` 目录：
+
+```yaml
+- name: Upload dist artifact
+  id: upload
+  uses: actions/upload-artifact@v4
+  with:
+    name: ai-api-hub-dist
+    path: dist
+    if-no-files-found: error
+
+- name: Notify target server
+  run: |
+    curl -f -X POST "${{ secrets.SERVER_NOTICE_URL }}" \
+      -H "Authorization: Bearer ${{ secrets.SERVER_DEPLOY_TOKEN }}" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "folder": "ai-api-hub",
+        "artifact_url": "${{ steps.upload.outputs.artifact-url }}"
+      }'
+```
+
+如果旧 workflow 先把 `dist` 打成 zip 再上传，GitHub artifact 会形成“外层 artifact zip + 内层 dist zip”的双层压缩包。后端保留了自动解单个内层压缩包的兼容兜底，但更推荐直接上传 `dist` 目录。
 
 ## 本地开发流程
 

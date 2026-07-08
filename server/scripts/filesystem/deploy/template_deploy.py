@@ -1,6 +1,7 @@
 import json
 import os
 import platform
+import re
 import shutil
 import tarfile
 import threading
@@ -9,13 +10,17 @@ import uuid
 import zipfile
 from datetime import datetime, timezone
 from pathlib import Path
-from urllib.request import ProxyHandler, build_opener
+from urllib.error import HTTPError, URLError
+from urllib.parse import urlparse
+from urllib.request import HTTPRedirectHandler, Request, ProxyHandler, build_opener, url2pathname
 
 from core import ProjectConfig
 
 
 DEPLOY_DB_FILENAME = "template_deployments.json"
+GITHUB_API_VERSION = "2022-11-28"
 MAX_LOG_LINES = 80
+DEFAULT_MAX_ARTIFACT_BYTES = 100 * 1024 * 1024
 
 
 class TemplateDeployHandler:
@@ -26,20 +31,9 @@ class TemplateDeployHandler:
         now = cls._now()
         record = {
             "id": uuid.uuid4().hex,
-            "repo": payload["repo"],
-            "sha": payload["sha"],
-            "ref": payload["ref"],
-            "run_id": payload["run_id"],
-            "run_attempt": payload["run_attempt"],
-            "artifact_name": payload["artifact_name"],
-            "artifact_url": payload.get("artifact_url", ""),
-            "artifact_path": payload.get("artifact_path", ""),
-            "folder": payload.get("folder", ""),
-            "oidc_sub": payload.get("oidc_sub", ""),
-            "workflow": payload.get("workflow", ""),
-            "event_name": payload.get("event_name", ""),
-            "actor": payload.get("actor", ""),
-            "repository_id": payload.get("repository_id", ""),
+            "folder": str(payload["folder"]).strip(),
+            "artifact_url": str(payload["artifact_url"]).strip(),
+            "artifact_path": "",
             "status": "queued",
             "started_at": "",
             "finished_at": "",
@@ -62,29 +56,13 @@ class TemplateDeployHandler:
             return None
 
         return cls.create_record({
-            "repo": source["repo"],
-            "sha": source["sha"],
-            "ref": source["ref"],
-            "run_id": source["run_id"],
-            "run_attempt": source["run_attempt"],
-            "artifact_name": source["artifact_name"],
-            "artifact_url": source.get("artifact_url", ""),
-            "artifact_path": source.get("artifact_path", ""),
-            "folder": source.get("folder", ""),
-            "oidc_sub": source.get("oidc_sub", ""),
-            "workflow": source.get("workflow", ""),
-            "event_name": source.get("event_name", ""),
-            "actor": source.get("actor", ""),
-            "repository_id": source.get("repository_id", ""),
+            "folder": source["folder"],
+            "artifact_url": source["artifact_url"],
         })
 
     @classmethod
     def get_artifact_path(cls, record_id: str) -> Path:
-        return Path(ProjectConfig.get_cache_path()) / "deployments" / "artifacts" / record_id / "artifact"
-
-    @classmethod
-    def set_artifact_path(cls, record_id: str, artifact_path: Path) -> None:
-        cls._update_record(record_id, {"artifact_path": str(artifact_path)})
+        return Path(ProjectConfig.get_cache_path()) / "deployments" / "artifacts" / record_id / "artifact.zip"
 
     @classmethod
     def get_record(cls, record_id: str) -> dict | None:
@@ -106,26 +84,21 @@ class TemplateDeployHandler:
             if not record:
                 raise RuntimeError("Deployment record not found.")
 
-            folder = record.get("folder") or cls._resolve_folder(record["repo"])
+            folder = record["folder"]
             cls._validate_folder(folder)
-            cls._update_record(record_id, {"folder": folder})
-            logger.add(f"Matched repo {record['repo']} to template folder {folder}.")
+            cls._ensure_known_folder(folder)
+            logger.add(f"Deploying artifact to template folder {folder}.")
 
             cache_root = Path(ProjectConfig.get_cache_path()) / "deployments" / "work" / record_id
             work_dir = cache_root
-            archive_path = Path(record.get("artifact_path") or "")
+            archive_path = cls.get_artifact_path(record_id)
             extract_path = cache_root / "extract"
+            archive_path.parent.mkdir(parents=True, exist_ok=True)
             cache_root.mkdir(parents=True, exist_ok=True)
 
-            if archive_path and archive_path.is_file():
-                logger.add(f"Using uploaded artifact {archive_path}.")
-            else:
-                if not record.get("artifact_url"):
-                    raise RuntimeError("Deployment record has no uploaded artifact or artifact URL.")
-                archive_path = cls.get_artifact_path(record_id)
-                archive_path.parent.mkdir(parents=True, exist_ok=True)
-                cls._download_artifact(record["artifact_url"], archive_path, logger)
-                cls._update_record(record_id, {"artifact_path": str(archive_path)})
+            cls._download_artifact(record["artifact_url"], archive_path, logger)
+            cls._update_record(record_id, {"artifact_path": str(archive_path)})
+
             source_path = cls._extract_artifact(archive_path, extract_path, logger)
             cls._ensure_index_html(source_path)
             logger.add(f"Validated static site root {source_path}.")
@@ -135,7 +108,7 @@ class TemplateDeployHandler:
             templates_root.mkdir(parents=True, exist_ok=True)
             backups_root.mkdir(parents=True, exist_ok=True)
             target_path = templates_root / folder
-            backup_path = backups_root / f"{folder}-{datetime.now().strftime('%Y%m%d%H%M%S')}-{record['sha'][:12]}-{record_id[:8]}"
+            backup_path = backups_root / cls._backup_name(record, folder)
 
             cls._replace_target(source_path, target_path, backup_path, logger)
             cls._apply_permissions(target_path, logger)
@@ -164,38 +137,87 @@ class TemplateDeployHandler:
                 shutil.rmtree(work_dir, ignore_errors=True)
 
     @classmethod
-    def _resolve_folder(cls, repo: str) -> str:
+    def _validate_folder(cls, folder: str) -> None:
+        if not folder or "/" in folder or "\\" in folder or ".." in folder:
+            raise RuntimeError("Template folder is not a safe folder name.")
+
+    @classmethod
+    def _ensure_known_folder(cls, folder: str) -> None:
         with open(ProjectConfig.get_livedemo_config_path(), "r", encoding="utf-8") as file_obj:
             payload = json.load(file_obj)
 
-        normalized_repo = cls._normalize_repo(repo)
-        for item in payload.get("data", []):
-            if cls._normalize_repo(str(item.get("sourcelink", ""))) == normalized_repo:
-                return str(item.get("folder", "")).strip()
-
-        raise RuntimeError(f"Repo '{repo}' does not match any livedemo item.")
-
-    @classmethod
-    def _normalize_repo(cls, value: str) -> str:
-        value = value.strip().lower()
-        if "github.com/" in value:
-            value = value.split("github.com/", 1)[1]
-        value = value.removeprefix("git@github.com:")
-        value = value.split("/tree/", 1)[0]
-        value = value.split("/blob/", 1)[0]
-        value = value.removesuffix(".git")
-        parts = [part for part in value.strip("/").split("/") if part]
-        if len(parts) >= 2:
-            return "/".join(parts[:2])
-        return value.strip("/")
-
-    @classmethod
-    def _validate_folder(cls, folder: str) -> None:
-        if not folder or "/" in folder or "\\" in folder or ".." in folder:
-            raise RuntimeError("Resolved folder is not a safe template folder name.")
+        allowed = {
+            str(item.get("folder", "")).strip()
+            for item in payload.get("data", [])
+            if str(item.get("folder", "")).strip()
+        }
+        if folder not in allowed:
+            raise RuntimeError(f"Template folder '{folder}' is not configured in livedemo.json.")
 
     @classmethod
     def _download_artifact(cls, url: str, output_path: Path, logger) -> None:
+        parsed = urlparse(url)
+        if parsed.scheme == "file":
+            source = Path(url2pathname(parsed.path))
+            if not source.is_file():
+                raise RuntimeError("Local artifact file does not exist.")
+            shutil.copyfile(source, output_path)
+            logger.add(f"Copied local artifact from {source}.")
+        else:
+            request = cls._build_github_artifact_request(url)
+            opener = cls._build_url_opener()
+            logger.add(f"Downloading GitHub artifact from {request.full_url}.")
+            try:
+                with opener.open(request, timeout=300) as response:
+                    cls._stream_response(response, output_path)
+            except HTTPError as exc:
+                raise RuntimeError(f"GitHub artifact download failed with HTTP {exc.code}: {cls._read_error(exc)}") from exc
+            except URLError as exc:
+                raise RuntimeError(f"GitHub artifact download failed: {exc.reason}") from exc
+
+        if not output_path.exists() or output_path.stat().st_size <= 0:
+            raise RuntimeError("Downloaded artifact is empty.")
+        if output_path.stat().st_size > cls._max_artifact_bytes():
+            raise RuntimeError("Downloaded artifact is too large.")
+        if not zipfile.is_zipfile(output_path) and not tarfile.is_tarfile(output_path):
+            raise RuntimeError("Downloaded artifact must be a zip or tar archive.")
+        logger.add(f"Downloaded artifact size: {output_path.stat().st_size} bytes.")
+
+    @classmethod
+    def _build_github_artifact_request(cls, page_url: str) -> Request:
+        owner, repo, artifact_id = cls._parse_github_artifact_url(page_url)
+        token = os.environ.get("DEPLOY_GITHUB_TOKEN", "").strip()
+        if not token:
+            raise RuntimeError("DEPLOY_GITHUB_TOKEN must be configured on the server.")
+
+        api_url = f"https://api.github.com/repos/{owner}/{repo}/actions/artifacts/{artifact_id}/zip"
+        return Request(
+            api_url,
+            headers={
+                "Authorization": f"Bearer {token}",
+                "Accept": "application/vnd.github+json",
+                "X-GitHub-Api-Version": GITHUB_API_VERSION,
+                "User-Agent": "pldz-dev-site-template-deployer",
+            },
+        )
+
+    @classmethod
+    def _parse_github_artifact_url(cls, page_url: str) -> tuple[str, str, str]:
+        match = re.match(
+            r"^https://github\.com/"
+            r"(?P<owner>[^/]+)/"
+            r"(?P<repo>[^/]+)/"
+            r"actions/runs/\d+/artifacts/"
+            r"(?P<artifact_id>\d+)/?"
+            r"(?:\?.*)?$",
+            page_url.strip(),
+        )
+        if not match:
+            raise RuntimeError("Artifact URL must be a GitHub Actions artifact page URL.")
+        return match.group("owner"), match.group("repo"), match.group("artifact_id")
+
+    @classmethod
+    def _build_url_opener(cls):
         proxies = {}
         http_proxy = os.environ.get("DEPLOY_HTTP_PROXY", "").strip()
         https_proxy = os.environ.get("DEPLOY_HTTPS_PROXY", "").strip()
@@ -203,33 +225,83 @@ class TemplateDeployHandler:
             proxies["http"] = http_proxy
         if https_proxy:
             proxies["https"] = https_proxy
+        return build_opener(ProxyHandler(proxies), _StripAuthRedirectHandler())
 
-        opener = build_opener(ProxyHandler(proxies))
-        logger.add(f"Downloading artifact from {url}.")
-        with opener.open(url, timeout=60) as response:
-            with open(output_path, "wb") as file_obj:
-                shutil.copyfileobj(response, file_obj)
+    @classmethod
+    def _stream_response(cls, response, output_path: Path) -> None:
+        max_bytes = cls._max_artifact_bytes()
+        downloaded = 0
+        with open(output_path, "wb") as file_obj:
+            while True:
+                chunk = response.read(1024 * 1024)
+                if not chunk:
+                    break
+                downloaded += len(chunk)
+                if downloaded > max_bytes:
+                    raise RuntimeError("Downloaded artifact is too large.")
+                file_obj.write(chunk)
 
-        if output_path.stat().st_size <= 0:
-            raise RuntimeError("Downloaded artifact is empty.")
-        logger.add(f"Downloaded {output_path.stat().st_size} bytes.")
+    @classmethod
+    def _read_error(cls, exc: HTTPError) -> str:
+        try:
+            return exc.read(500).decode("utf-8", errors="replace").strip()
+        except Exception:
+            return str(exc)
+
+    @classmethod
+    def _max_artifact_bytes(cls) -> int:
+        raw_value = os.environ.get("DEPLOY_MAX_ARTIFACT_BYTES", "").strip()
+        if not raw_value:
+            return DEFAULT_MAX_ARTIFACT_BYTES
+        try:
+            return max(1, int(raw_value))
+        except ValueError:
+            return DEFAULT_MAX_ARTIFACT_BYTES
 
     @classmethod
     def _extract_artifact(cls, archive_path: Path, extract_path: Path, logger) -> Path:
         extract_path.mkdir(parents=True, exist_ok=True)
+        cls._extract_archive_to(archive_path, extract_path)
+        logger.add("Extracted artifact.")
+
+        nested_archive = cls._single_nested_archive(extract_path)
+        if nested_archive:
+            # Some workflows upload a pre-zipped dist file. GitHub then wraps
+            # that file in the artifact zip, so the downloaded artifact has two
+            # archive layers. Prefer uploading the dist directory, keep this as
+            # a compatibility fallback.
+            nested_extract_path = extract_path / "__nested_artifact__"
+            nested_extract_path.mkdir(parents=True, exist_ok=True)
+            cls._extract_archive_to(nested_archive, nested_extract_path)
+            logger.add(f"Extracted nested artifact archive {nested_archive.name}.")
+            return cls._select_site_root(nested_extract_path)
+
+        return cls._select_site_root(extract_path)
+
+    @classmethod
+    def _extract_archive_to(cls, archive_path: Path, extract_path: Path) -> None:
         if zipfile.is_zipfile(archive_path):
             with zipfile.ZipFile(archive_path) as archive:
                 cls._validate_zip_members(archive)
                 archive.extractall(extract_path)
-        elif tarfile.is_tarfile(archive_path):
+            return
+        if tarfile.is_tarfile(archive_path):
             with tarfile.open(archive_path) as archive:
                 cls._validate_tar_members(archive)
                 archive.extractall(extract_path)
-        else:
-            raise RuntimeError("Artifact must be a zip or tar archive.")
+            return
+        raise RuntimeError("Artifact must be a zip or tar archive.")
 
-        logger.add("Extracted artifact.")
-        return cls._select_site_root(extract_path)
+    @classmethod
+    def _single_nested_archive(cls, extract_path: Path) -> Path | None:
+        visible_items = [item for item in extract_path.iterdir() if item.name != "__MACOSX"]
+        if len(visible_items) != 1 or not visible_items[0].is_file():
+            return None
+
+        candidate = visible_items[0]
+        if zipfile.is_zipfile(candidate) or tarfile.is_tarfile(candidate):
+            return candidate
+        return None
 
     @classmethod
     def _validate_zip_members(cls, archive: zipfile.ZipFile) -> None:
@@ -293,6 +365,11 @@ class TemplateDeployHandler:
         logger.add("Applied directory 755 and file 644 permissions.")
 
     @classmethod
+    def _backup_name(cls, record: dict, folder: str) -> str:
+        timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
+        return f"{folder}-{timestamp}-{record['id'][:8]}"
+
+    @classmethod
     def _append_record(cls, record: dict) -> None:
         with cls._lock:
             records = cls._read_records_unlocked()
@@ -353,3 +430,12 @@ class _DeployLog:
 
     def tail(self) -> list[str]:
         return list(self.lines[-MAX_LOG_LINES:])
+
+
+class _StripAuthRedirectHandler(HTTPRedirectHandler):
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        redirected = super().redirect_request(req, fp, code, msg, headers, newurl)
+        if redirected:
+            redirected.headers.pop("Authorization", None)
+            redirected.unredirected_hdrs.pop("Authorization", None)
+        return redirected

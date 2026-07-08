@@ -1,5 +1,5 @@
 ---
-author: admin@pldz1.com
+author: pldz1
 category: 2h2g-playbook
 csdn: ''
 date: '2026-04-12'

@@ -21,10 +21,14 @@ class RetryDeployRequest(BaseModel):
     id: str
 
 
-def _check_deploy_token(authorization: str) -> None:
+def _check_deploy_token(deploy_token: str, authorization: str) -> None:
     scheme, _, token = authorization.partition(" ")
+    provided = deploy_token.strip()
+    if not provided and scheme.lower() == "bearer":
+        provided = token.strip()
+
     expected = os.environ.get("DEPLOY_NOTICE_TOKEN", "").strip()
-    if scheme.lower() != "bearer" or not token.strip() or not expected or token.strip() != expected:
+    if not expected or provided != expected:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Invalid deployment token.",
@@ -41,9 +45,10 @@ def _model_to_dict(model: BaseModel) -> dict:
 async def api_notice_template_deploy(
     request: NoticeDeployRequest,
     background_tasks: BackgroundTasks,
+    x_deploy_token: str = Header("", alias="X-Deploy-Token"),
     authorization: str = Header(""),
 ):
-    _check_deploy_token(authorization)
+    _check_deploy_token(x_deploy_token, authorization)
     record = TemplateDeployHandler.create_record(_model_to_dict(request))
     background_tasks.add_task(TemplateDeployHandler.run_deploy, record["id"])
     return {"data": {"id": record["id"], "status": record["status"]}}

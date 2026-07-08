@@ -45,7 +45,7 @@ def _notice_payload(artifact_url: str, folder: str = "demo") -> dict:
 
 
 def _headers(token: str = "secret") -> dict:
-    return {"Authorization": f"Bearer {token}"}
+    return {"X-Deploy-Token": token}
 
 
 def _records(tmp_path: Path) -> list[dict]:
@@ -68,6 +68,20 @@ def test_template_deploy_notice_rejects_missing_or_wrong_token(client, monkeypat
         json=_notice_payload(zip_path.as_uri()),
         headers=_headers("bad"),
     ).status_code == 403
+
+
+def test_template_deploy_notice_accepts_legacy_bearer_token(client, monkeypatch, tmp_path):
+    _setup_project(monkeypatch, tmp_path)
+    zip_path = tmp_path / "site.zip"
+    _write_zip(zip_path, {"index.html": "hello"})
+
+    response = client.post(
+        "/api/v1/deploy/templates/notice",
+        json=_notice_payload(zip_path.as_uri()),
+        headers={"Authorization": "Bearer secret"},
+    )
+
+    assert response.status_code == 200
 
 
 def test_template_deploy_success_replaces_target_and_creates_backup(client, monkeypatch, tmp_path):

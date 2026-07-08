@@ -1143,7 +1143,7 @@ volumes:
 
 ```text
 POST /api/v1/deploy/templates/notice
-Authorization: Bearer <DEPLOY_NOTICE_TOKEN>
+X-Deploy-Token: <DEPLOY_NOTICE_TOKEN>
 Content-Type: application/json
 ```
 
@@ -1180,7 +1180,7 @@ Content-Type: application/json
 - name: Notify target server
   run: |
     curl -f -X POST "${{ secrets.SERVER_NOTICE_URL }}" \
-      -H "Authorization: Bearer ${{ secrets.SERVER_DEPLOY_TOKEN }}" \
+      -H "X-Deploy-Token: ${{ secrets.SERVER_DEPLOY_TOKEN }}" \
       -H "Content-Type: application/json" \
       -d '{
         "folder": "ai-api-hub",

@@ -56,7 +56,7 @@ jobs:
         if: env.SERVER_NOTICE_URL != '' && env.SERVER_DEPLOY_TOKEN != ''
         run: |
           curl -f -X POST "$SERVER_NOTICE_URL" \
-            -H "Authorization: Bearer ${SERVER_DEPLOY_TOKEN}" \
+            -H "X-Deploy-Token: ${SERVER_DEPLOY_TOKEN}" \
             -H "Content-Type: application/json" \
             -d '{
               "folder": "web",

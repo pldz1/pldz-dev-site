@@ -21,6 +21,7 @@ data/templates/**/*.db
 data/cache/**
 data/webp/*.webp
 data/db/*.json
+data/www
 
 # Python REPL 历史记录
 .python_history

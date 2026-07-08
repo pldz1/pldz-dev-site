@@ -103,11 +103,11 @@ class TemplateDeployHandler:
             cls._ensure_index_html(source_path)
             logger.add(f"Validated static site root {source_path}.")
 
-            templates_root = Path(ProjectConfig.get_templates_path())
-            backups_root = templates_root / ".backups"
-            templates_root.mkdir(parents=True, exist_ok=True)
+            www_root = Path(ProjectConfig.get_www_path())
+            backups_root = www_root / ".backups"
+            www_root.mkdir(parents=True, exist_ok=True)
             backups_root.mkdir(parents=True, exist_ok=True)
-            target_path = templates_root / folder
+            target_path = www_root / folder
             backup_path = backups_root / cls._backup_name(record, folder)
 
             cls._replace_target(source_path, target_path, backup_path, logger)

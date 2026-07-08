@@ -34,7 +34,7 @@ def _setup_project(monkeypatch, tmp_path: Path):
     _write_livedemo(tmp_path)
     (tmp_path / "data" / "db").mkdir(parents=True, exist_ok=True)
     (tmp_path / "data" / "cache").mkdir(parents=True, exist_ok=True)
-    (tmp_path / "data" / "templates").mkdir(parents=True, exist_ok=True)
+    (tmp_path / "data" / "www").mkdir(parents=True, exist_ok=True)
 
 
 def _notice_payload(artifact_url: str, folder: str = "demo") -> dict:
@@ -72,7 +72,7 @@ def test_template_deploy_notice_rejects_missing_or_wrong_token(client, monkeypat
 
 def test_template_deploy_success_replaces_target_and_creates_backup(client, monkeypatch, tmp_path):
     _setup_project(monkeypatch, tmp_path)
-    target = tmp_path / "data" / "templates" / "demo"
+    target = tmp_path / "data" / "www" / "demo"
     target.mkdir(parents=True)
     (target / "index.html").write_text("old", encoding="utf-8")
 
@@ -88,7 +88,7 @@ def test_template_deploy_success_replaces_target_and_creates_backup(client, monk
     assert response.status_code == 200
     assert (target / "index.html").read_text(encoding="utf-8") == "new"
     assert (target / "app.js").is_file()
-    backups = list((tmp_path / "data" / "templates" / ".backups").glob("demo-*"))
+    backups = list((tmp_path / "data" / "www" / ".backups").glob("demo-*"))
     assert backups
     records = _records(tmp_path)
     assert records[-1]["status"] == "success"
@@ -97,7 +97,7 @@ def test_template_deploy_success_replaces_target_and_creates_backup(client, monk
 
 def test_template_deploy_extracts_single_nested_archive(client, monkeypatch, tmp_path):
     _setup_project(monkeypatch, tmp_path)
-    target = tmp_path / "data" / "templates" / "demo"
+    target = tmp_path / "data" / "www" / "demo"
     target.mkdir(parents=True)
     (target / "index.html").write_text("old", encoding="utf-8")
 

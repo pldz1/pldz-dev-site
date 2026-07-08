@@ -101,7 +101,7 @@ docker compose up --build
 - 浏览器访问 `http://127.0.0.1:10058`
 - Nginx 监听宿主机 `10058`
 - Nginx 把 `/api/` 代理到 backend 容器内 `10057`
-- Nginx 把 `/io/sse-markdown` 代理到 `data/templates/sse-markdown/index.html`
+- Nginx 把 `/io/sse-markdown` 代理到 `data/www/sse-markdown/index.html`
 - backend 容器通过 `python server/main.py` 启动
 
 ### 方式二：本地前后端分开开发
@@ -163,7 +163,7 @@ http://127.0.0.1:10058
 ```dotenv
 ARTICLES_PATH=data/articles
 IMAGES_PATH=data/images
-TEMPLATES_PATH=data/templates
+WWW_PATH=data/www
 RESOURCES_PATH=data/resources
 CACHE_PATH=data/cache
 DB_PATH=data/db
@@ -202,7 +202,7 @@ DEPLOY_HTTPS_PROXY=
 | ---------------- | ----------------- | ---------------------------- |
 | `ARTICLES_PATH`  | `data/articles`   | Markdown 文章目录            |
 | `IMAGES_PATH`    | `data/images`     | 图片根目录                   |
-| `TEMPLATES_PATH` | `data/templates`  | 前端构建产物和 Demo 模板目录 |
+| `WWW_PATH`       | `data/www`       | 前端构建产物和 Demo 模板目录 |
 | `RESOURCES_PATH` | `data/resources`  | 导航、广告、协议等资源配置   |
 | `CACHE_PATH`     | `data/cache`      | 管理后台缓存资源目录         |
 | `DB_PATH`        | `data/db`         | JSON 数据库目录              |
@@ -1123,18 +1123,18 @@ data/resources/user_agreement.txt
 data/resources/website/livedemo.json
 ```
 
-### data/templates
+### data/www
 
 ```text
-data/templates/web
-data/templates/sse-markdown
+data/www/web
+data/www/sse-markdown
 ```
 
-`data/templates` 是 Nginx 当前挂载的前端静态目录：
+`data/www` 是 Nginx 当前挂载的前端静态目录：
 
 ```yaml
 volumes:
-  - ./data/templates:/usr/share/nginx/templates:ro
+  - ./data/www:/usr/share/nginx/www:ro
 ```
 
 ### 模板部署通知接口
@@ -1162,7 +1162,7 @@ Content-Type: application/json
 2. CI 用 `DEPLOY_NOTICE_TOKEN` 通知本站后端。
 3. 后端用服务器 `.env` 中的 `DEPLOY_GITHUB_TOKEN` 下载 artifact。
 4. 后端校验压缩包路径、解压、检查 `index.html`、备份旧目录。
-5. 后端替换 `data/templates/{folder}`，并在 Linux 上设置目录 `755`、文件 `644`。
+5. 后端替换 `data/www/{folder}`，并在 Linux 上设置目录 `755`、文件 `644`。
 
 `DEPLOY_GITHUB_TOKEN` 只放在服务器 `.env`，不要从浏览器或 CI 请求体传入。
 
@@ -1233,10 +1233,10 @@ npm run build
 默认 Vite 会输出到 `web/dist`，但当前 Docker/Nginx 配置挂载的是：
 
 ```text
-data/templates/web
+data/www/web
 ```
 
-因此如果要让 Nginx 服务最新前端，需要把构建产物同步到 `data/templates/web`，或调整 Vite `build.outDir` / Nginx volume。
+因此如果要让 Nginx 服务最新前端，需要把构建产物同步到 `data/www/web`，或调整 Vite `build.outDir` / Nginx volume。
 
 ## Docker 部署流程
 
@@ -1285,14 +1285,14 @@ docker compose down
 - 挂载：
   - `./nginx/nginx.conf`
   - `./nginx/prod.d`
-  - `./data/templates/web`
+  - `./data/www/web`
 
 ### Nginx 路由
 
 ```text
-/                  -> /usr/share/nginx/templates/web/index.html
+/                  -> /usr/share/nginx/www/web/index.html
 /api/*             -> http://backend:10057
-/io/sse-markdown   -> /usr/share/nginx/templates/sse-markdown/index.html
+/io/sse-markdown   -> /usr/share/nginx/www/sse-markdown/index.html
 ```
 
 ## 管理后台使用
@@ -1421,7 +1421,7 @@ AuthorizedHandler.hash_password(data.password)
 
 ### 前端构建产物目录需要明确
 
-Vite 默认输出 `web/dist`，Nginx 当前服务 `data/templates/web`。如果部署时发现页面不是最新版本，要检查构建产物是否同步到了 Nginx 挂载目录。
+Vite 默认输出 `web/dist`，Nginx 当前服务 `data/www/web`。如果部署时发现页面不是最新版本，要检查构建产物是否同步到了 Nginx 挂载目录。
 
 ## 常见维护任务
 
@@ -1622,7 +1622,7 @@ docker rmi docker.m.daocloud.io/library/nginx:1.25-alpine
 3. `data/db/articles.json` 是 Markdown 的索引缓存，不是文章正文主存储。
 4. 用户、评论、文章 views 当前存在 JSON 文件里。
 5. 管理后台写的是本地 JSON 配置和本地文件。
-6. 生产入口是 Nginx，前端静态文件来自 `data/templates/web`。
+6. 生产入口是 Nginx，前端静态文件来自 `data/www/web`。
 7. 主后端 `python server/main.py`
 8. 前端请求工具默认只返回后端 `data` 字段。
 9. 管理员权限只由用户名是否等于 `ADMIN_USERNAME` 决定。

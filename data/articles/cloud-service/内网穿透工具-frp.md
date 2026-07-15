@@ -1,5 +1,5 @@
 ---
-author: admin@pldz1.com
+author: pldz1
 category: cloud-service
 csdn: ''
 date: '2025-08-24'

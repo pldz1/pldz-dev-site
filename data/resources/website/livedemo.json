@@ -3,6 +3,16 @@
     "version": "1.0.0",
     "data": [
         {
+            "title": "HTML-2-Video",
+            "folder": "html-edge-tts-video",
+            "url": "/io/html2video/",
+            "thumbnail": "/api/v1/website/image/live-demo/html-2-tts-video-thumbnail.jpg",
+            "previewgif": "/api/v1/website/image/live-demo/html-2-tts-video-preview.gif",
+            "sourcelink": "https://github.com/pldz1/html-edge-tts-video",
+            "date": "2026-07-16",
+            "description": "html转video的工具."
+        },
+        {
             "title": "AI API HUB",
             "folder": "ai-api-hub",
             "url": "/io/llm/",

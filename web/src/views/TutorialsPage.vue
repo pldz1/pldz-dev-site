@@ -135,7 +135,7 @@ const activeCategory = computed(() => {
 });
 
 const isSeriesView = computed(() => Boolean(activeCategory.value));
-const pageTitle = computed(() => (isSeriesView.value ? `${activeCategory.value} 时间线` : "教程专栏"));
+const pageTitle = computed(() => (isSeriesView.value ? `${activeCategory.value} 专栏时间线` : "教程专栏"));
 const sortOptions = computed(() => {
   const options = [
     { label: "按时间", value: "date" },
@@ -425,7 +425,6 @@ watch(activeCategory, loadArticles);
   border: 1px solid var(--app-border);
   border-radius: var(--app-radius-sm);
   background: var(--app-surface);
-  aspect-ratio: 16 / 10;
 }
 
 .timeline-cover img {
@@ -601,6 +600,7 @@ watch(activeCategory, loadArticles);
   .category-grid {
     grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
     gap: 20px;
+    padding: 4px 8px;
   }
 
   .timeline-list::before {
@@ -657,6 +657,7 @@ watch(activeCategory, loadArticles);
   .category-grid {
     grid-template-columns: 1fr;
     gap: 16px;
+    padding: 4px 8px;
   }
 
   .timeline-list {

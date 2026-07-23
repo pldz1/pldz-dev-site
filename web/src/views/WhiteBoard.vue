@@ -39,11 +39,13 @@
               <div class="card-owner">创建者: {{ displayUsername }}</div>
             </div>
             <div class="card-actions">
+              <button class="secondary" @click="openImageUpload" :disabled="!selectedBoard">上传图片</button>
               <button class="secondary" @click="startEditing" :disabled="!canEdit">编辑</button>
               <button class="primary" @click="updateRecord" :disabled="!canSave">保存</button>
               <button class="secondary" @click="openFullscreen" :disabled="!selectedBoard">全屏</button>
             </div>
           </div>
+          <input ref="imageUploadRef" class="image-upload-input" type="file" accept="image/*" multiple @change="handleImageUpload" />
           <textarea
             v-if="isEditing"
             ref="editorRef"
@@ -96,11 +98,14 @@ import HeaderBar from "../components/HeaderBar.vue";
 import FooterBar from "../components/FooterBar.vue";
 import MobileDrawer from "../components/MobileDrawer.vue";
 import { computed, nextTick, onBeforeUnmount, ref, watch } from "vue";
+import { useRoute, useRouter } from "vue-router";
 import { useStore } from "vuex";
 import Toast from "../utils/toast.js";
 import { getWhiteBoardByKey, getWhiteBoardByUser, updateWhiteBoardContent } from "../utils/apis";
 
 const store = useStore();
+const route = useRoute();
+const router = useRouter();
 const username = computed(() => store.state.authState.username || "");
 
 const boards = ref([]);
@@ -109,9 +114,11 @@ const content = ref("");
 const created = ref("");
 const isEditing = ref(false);
 const editorRef = ref(null);
+const imageUploadRef = ref(null);
 const showFullscreen = ref(false);
 const isMobileMenuOpen = ref(false);
 const originalBodyOverflow = ref("");
+const ignoredRouteKey = ref(null);
 const keydownHandler = (event) => {
   if (event.key === "Escape") {
     event.preventDefault();
@@ -154,6 +161,28 @@ const contentBlocks = computed(() => {
 
 const formatTimestamp = (ts) => (ts ? new Date(ts).toLocaleString() : "-");
 
+const normalizeKey = (value) => (typeof value === "string" ? value.trim() : "");
+
+const clearBoard = () => {
+  key.value = "";
+  content.value = "";
+  created.value = "";
+  boards.value = [];
+  isEditing.value = false;
+};
+
+const syncRouteKey = async (boardKey) => {
+  const normalizedKey = normalizeKey(boardKey);
+  if (normalizeKey(route.query.key) === normalizedKey) return;
+
+  const query = { ...route.query };
+  if (normalizedKey) query.key = normalizedKey;
+  else delete query.key;
+
+  ignoredRouteKey.value = normalizedKey;
+  await router.push({ query });
+};
+
 const selectBoardByKey = (boardKey) => {
   const match = boards.value.find((item) => item.key === boardKey);
   if (!match) {
@@ -167,6 +196,7 @@ const selectBoardByKey = (boardKey) => {
 
 const selectBoard = (boardKey) => {
   selectBoardByKey(boardKey);
+  syncRouteKey(boardKey);
 };
 
 const startEditing = () => {
@@ -184,10 +214,8 @@ const startEditing = () => {
 };
 
 const clearKey = () => {
-  key.value = "";
-  content.value = "";
-  created.value = "";
-  isEditing.value = false;
+  clearBoard();
+  syncRouteKey("");
 };
 
 const openFullscreen = () => {
@@ -222,6 +250,43 @@ const insertAtCursor = (value) => {
     const cursor = start + value.length;
     editor.setSelectionRange(cursor, cursor);
   });
+};
+
+const readImageFile = (file) =>
+  new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result || ""));
+    reader.onerror = () => reject(reader.error || new Error("Failed to read image"));
+    reader.readAsDataURL(file);
+  });
+
+const openImageUpload = () => {
+  if (!selectedBoard.value) {
+    Toast.error("请先匹配一个白板");
+    return;
+  }
+  if (!isEditing.value) {
+    isEditing.value = true;
+  }
+  nextTick(() => {
+    editorRef.value?.focus();
+    imageUploadRef.value?.click();
+  });
+};
+
+const handleImageUpload = async (event) => {
+  const files = Array.from(event.target.files || []).filter((file) => file.type.startsWith("image/"));
+  event.target.value = "";
+  if (!files.length) return;
+
+  try {
+    const images = await Promise.all(files.map(readImageFile));
+    insertAtCursor(images.filter(Boolean).join("\n\n"));
+    Toast.success("图片已放进去了");
+  } catch (error) {
+    console.error("上传图片失败:", error);
+    Toast.error("图片读取出错了，再试一次");
+  }
 };
 
 const handlePaste = async (event) => {
@@ -270,6 +335,7 @@ const handleClick = async () => {
   isEditing.value = false;
 
   if (trimmedKey) {
+    await syncRouteKey(trimmedKey);
     const res = await getWhiteBoardByKey(trimmedKey);
     if (!res) {
       Toast.error("未找到对应的白板");
@@ -291,8 +357,26 @@ const handleClick = async () => {
   }
   boards.value = [...res];
   selectBoardByKey(boards.value[0].key);
+  await syncRouteKey(boards.value[0].key);
   Toast.success("白板建好了");
 };
+
+watch(
+  () => normalizeKey(route.query.key),
+  async (routeKey) => {
+    if (ignoredRouteKey.value === routeKey) {
+      ignoredRouteKey.value = null;
+      return;
+    }
+    if (!routeKey) {
+      clearBoard();
+      return;
+    }
+    key.value = routeKey;
+    await handleClick();
+  },
+  { immediate: true }
+);
 
 const updateRecord = async () => {
   if (!selectedBoard.value) {
@@ -588,6 +672,11 @@ onBeforeUnmount(() => {
   align-items: center;
   flex-wrap: wrap;
 }
+
+.image-upload-input {
+  display: none;
+}
+
 .card-actions button {
   height: 36px;
   padding: 0 14px;

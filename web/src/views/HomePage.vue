@@ -69,7 +69,7 @@
         <div class="section-heading section-heading--lab">
           <div>
             <p class="section-kicker">Live Demo</p>
-            <h2 id="demo-lab-title">在线快速体验</h2>
+            <h2 id="demo-lab-title">在线体验</h2>
           </div>
           <div class="section-heading-side">
             <a class="section-link" href="/livedemo">全部 Demo<span class="link-arrow" aria-hidden="true"></span></a>
@@ -81,14 +81,11 @@
             <span class="ide-dot ide-dot--red"></span>
             <span class="ide-dot ide-dot--yellow"></span>
             <span class="ide-dot ide-dot--green"></span>
-            <strong>demo-workspace</strong>
             <span>{{ selectedDemoPathLabel }}</span>
           </div>
 
           <div class="ide-body">
             <aside class="demo-rail" aria-label="Demo 文件列表">
-              <div class="explorer-heading">Explorer</div>
-              <div class="explorer-root">/ live-demo</div>
               <button
                 v-for="(demo, index) in demos"
                 :key="demo.id"
@@ -205,9 +202,10 @@
         </div>
         <div class="about-copy">
           <h2>关于我</h2>
-          <p>平时写点项目、工具脚本、页面小实验和部署笔记</p>
+          <p>爬楼的猪 · 平时写点项目、工具脚本、博客笔记</p>
+          <p>CSDN主页: <a href="https://blog.csdn.net/pldz1" target="_blank" rel="noopener noreferrer">https://blog.csdn.net/pldz1</a></p>
         </div>
-        <a class="button-ghost button-small" :href="githubLink">了解更多<span class="link-arrow" aria-hidden="true"></span></a>
+        <a class="button-ghost button-small" :href="githubLink">Github 主页<span class="link-arrow" aria-hidden="true"></span></a>
       </section>
     </main>
 
@@ -851,23 +849,6 @@ onBeforeUnmount(() => {
   background: #0f1724;
 }
 
-.explorer-heading,
-.explorer-root {
-  color: rgba(248, 251, 255, 0.48);
-  font-family: var(--font-mono);
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.explorer-root {
-  margin: 2px 0 6px;
-  color: rgba(248, 251, 255, 0.68);
-  letter-spacing: 0;
-  text-transform: none;
-}
-
 .demo-tab {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
@@ -1268,7 +1249,7 @@ onBeforeUnmount(() => {
   grid-template-columns: 64px minmax(0, 1fr) auto;
   gap: 16px;
   align-items: center;
-  padding: 20px 0 0;
+  padding: 20px 16px 0;
   border-top: 1px solid var(--app-border);
 }
 
@@ -1326,11 +1307,6 @@ onBeforeUnmount(() => {
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   }
 
-  .explorer-heading,
-  .explorer-root {
-    grid-column: 1 / -1;
-  }
-
   .featured-reading {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -1343,8 +1319,7 @@ onBeforeUnmount(() => {
   }
 
   .section-heading {
-    align-items: start;
-    flex-direction: column;
+    flex-direction: row;
   }
 
   .section-heading-side {
@@ -1366,6 +1341,7 @@ onBeforeUnmount(() => {
 
   .featured-reading {
     grid-template-columns: 1fr;
+    padding: 8px 16px;
   }
 
   .article-cover {
